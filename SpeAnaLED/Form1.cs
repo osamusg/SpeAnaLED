@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
+//using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 
@@ -10,7 +12,7 @@ namespace SpeAnaLED
     {
         private readonly Analyzer analizer;
         private readonly Form2 form2 = null;
-        private Bitmap[] canvas = new Bitmap[2];
+        private readonly Bitmap[] canvas = new Bitmap[2];
         private Color[] colors;
         private float[] positions;
         private Pen myPen;
@@ -19,18 +21,16 @@ namespace SpeAnaLED
         private Label[] freqLabel_Left;
         private Label[] freqLabel_Right;
         private int counterCycle;
-        private int[] peakValue;
+        private readonly int[] peakValue;
         private int peakCounter = 0;
-        private int[,] peakTiming = new int[2,16];
-        private int channel;
+        private readonly int[,] peakTiming = new int[2,16];
+        private readonly int channel;
         private int numberOfBar;
         private readonly int maxNumberOfBar = 16;
         private float ratio;
         private int dash;
-        //private readonly Button form2EnumButton;        // subscribe
-        //private readonly ComboBox form2NumberOfBar;     // subscribe
-        //private readonly CheckBox form2SSaverCheckbox;  // subscribe
-
+        private int displayOffCounter;
+        
         // parameters (set defaults)
         private int leftPadding = 25;
         private int endPointX = 0;              // グラデーションのデフォルト描画方向 上から下
@@ -42,9 +42,11 @@ namespace SpeAnaLED
         private int barSpacing = 10;
         private float labelFontSize = 9f;
         
-        private float sensibility = 7.8f;       // 変えた場合、form2.csのデフォルト値も直す
+        private float sensibility = 7.8f;       // 変えた場合、form2.csのデフォルト値も直すこと
         private int peakHoldTimeMsec = 2000;
-        private int peakHoldDecayCycle = 16;    // fast(heavy) <- 8cycle=160/20unit 10=160/16 16=160/10 20=160/8 -> slow(light)
+        private int peakHoldDecayCycle = 10;    // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)
+        private bool preventSSaver = true;
+        private bool peakhold = true;
 
         private readonly Color[] classicColors =
             {  Color.FromArgb(255,0,0),     //  0 100 50  red
@@ -60,8 +62,8 @@ namespace SpeAnaLED
                 Color.FromArgb(0,255,255),  // 180  cyan
                 Color.FromArgb(0,0,255),    // 240  blue
             };
-        private readonly float[] prisumPositions = { 0.0f, 0.45f, 0.5f, 0.55f, 1.0f };
-
+        private readonly  float[][] prisumPositions = new float[17][];   // maxNumberOfBar+1 jagg array for easy to see
+        
         private readonly Color[] simpleColors = { Color.LightSkyBlue, Color.LightSkyBlue};
         private readonly float[] simplePositions = { 0.0f, 1.0f };
 
@@ -69,14 +71,15 @@ namespace SpeAnaLED
         {
             InitializeComponent();
 
+
             form2 = new Form2();
             analizer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.ComboBox1)
             {
                 Enable = true,
                 DisplayEnable = true
             };
-            
-            // Event handler for option form (reseive)
+
+            // Event handler for option form (subscribe)
             form2.TrackBar1.ValueChanged += Form2_TrackBar1_ValueChanged;
             form2.TrackBar2.ValueChanged += Form2_TrackBar2_ValueChanged;
             form2.RadioClassic.CheckedChanged += Form2_RadioClassic_CheckChanged;
@@ -85,10 +88,14 @@ namespace SpeAnaLED
             form2.RadioRainbow.CheckedChanged += Form2_RadioRainbow_CheckChanged;
             form2.ComboBox1.SelectedIndexChanged += Form2_ComboBox1_SelectedItemChanged;
             form2.ComboBox2.SelectedIndexChanged += Form2_ComboBox2_SelectedItemChanged;
-            
-            // Event handler (reseive)
-            //analizer.ClearSpectrum += ClearSpectrum;
+            form2.SSaverCheckBox.CheckedChanged += Form2_SSaverCheckboxCheckedChanged;
+            form2.PeakholdCheckBox.CheckedChanged += Form2_PeakholdCheckboxCheckedChanged;
+            form2.AlwaysOnTopCheckBox.CheckedChanged += Form2_AlwaysOnTopCheckboxCheckChanged;
+
+            // Other Event handler (subscribe)
             analizer.SpectrumChanged += ReceiveSpectrumData;
+            Application.ApplicationExit += Application_ApplicationExit;
+
 
             spectrum1.Width = spectrum2.Width = 650;      // あとで計算するようにする
             spectrum1.Height = spectrum2.Height = 128;
@@ -99,10 +106,18 @@ namespace SpeAnaLED
             numberOfBar = analizer._lines;
             channel = analizer._channel;
             peakValue = new int[maxNumberOfBar * channel];
-            counterCycle = (int)(peakHoldTimeMsec / analizer._timer1.Interval.Milliseconds * 20 * (numberOfBar / 8.0));
-                                                                                    // I don't know why this needed, actual measurement.
-                                                                                    // If edit this param, edit "Form2_ComboBox1_SelectedItemChanged"
-                                                                                    // and "Form2_ComboBox2_SelectedItemChanged" as is.
+
+            // adjust Rainbow color position
+            prisumPositions[1] = new float[5] { 0.0f, 0.4f, 0.5f, 0.55f, 1.0f };    // red,yellow,lime,cyan,blue
+            prisumPositions[2] = new float[5] { 0.0f, 0.35f, 0.5f, 0.55f, 1.0f };
+            prisumPositions[4] = new float[5] { 0.0f, 0.35f, 0.5f, 0.55f, 1.0f };
+            prisumPositions[8] = new float[5] { 0.0f, 0.37f, 0.5f, 0.55f, 1.0f };
+            prisumPositions[16] = new float[5] { 0.0f, 0.36f, 0.5f, 0.55f, 1.0f };
+
+            // I don't know why "* 20 (num..." is necessary. This is due to actual measurements.
+            // If you edit this parameter, also edit "Form2_ComboBox1_SelectedItemChanged" and
+            // "Form2_ComboBox2_SelectedItemChanged".
+            counterCycle = (int)(peakHoldTimeMsec / analizer._timer1.Interval.Milliseconds * 40 * (numberOfBar * channel / 16.0));      // default hold time
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -117,7 +132,13 @@ namespace SpeAnaLED
             for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(spectrum1.Width,spectrum1.Height);
             bgPen = new Pen(Color.DimGray, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
             ClearSpectrum(this, EventArgs.Empty);
-            
+
+            if (channel < 2)
+            {
+                spectrum1.Visible = false;
+                for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Left[i].Visible = false;
+            }
+
             ratio = 0xff / canvas[0].Height * (10f - sensibility);
             dash = (int)penWidth / 10;
 
@@ -134,17 +155,38 @@ namespace SpeAnaLED
 
         private void Form1_DoubleClick(object sender, EventArgs e)
         {
-            form2.Show();
+            if (form2.Visible == false)
+                form2.Show(this);
         }
         
         private void Spectrum1_DoubleClick(object sender, EventArgs e)
         {
-            form2.Show();
+            if (form2.Visible == false)
+                form2.Show(this);
         }
 
         private void Spectrum2_DoubleClick(object sender, EventArgs e)
         {
-            form2.Show();
+            if (form2.Visible == false)
+                form2.Show(this);
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && form2.Visible == false)
+                form2.Show(this);
+        }
+
+        private void spectrum1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && form2.Visible == false)
+                form2.Show(this);
+        }
+
+        private void spectrum2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && form2.Visible == false)
+                form2.Show(this);
         }
 
         private void Form2_TrackBar1_ValueChanged(object sender, EventArgs e)           // 感度調整
@@ -156,21 +198,33 @@ namespace SpeAnaLED
 
         private void Form2_TrackBar2_ValueChanged(object sender, EventArgs e)           // 減衰スピード調整
         {
-            peakHoldDecayCycle = 160 / form2.TrackBar2.Value;       // スピードと値の増減方向が合うように逆数にする
+            peakHoldDecayCycle = 20 * numberOfBar / channel / form2.TrackBar2.Value;      // スピードと値の増減方向が合うように逆数にする
+            // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)
         }
 
         private void Form2_ComboBox1_SelectedItemChanged(object sender, EventArgs e)    // バンド数変更
         {
             numberOfBar = Convert.ToInt16(form2.ComboBox1.SelectedItem);
-            counterCycle = (int)(peakHoldTimeMsec / analizer._timer1.Interval.Milliseconds * 20 * (numberOfBar / 8.0));
-            //label1.Text = counterCycle.ToString();
+            counterCycle = (int)(peakHoldTimeMsec / analizer._timer1.Interval.Milliseconds * 40 * (numberOfBar / 16.0));    // ホールドタイムはバンド数に影響をうける
+            Form2_TrackBar2_ValueChanged(sender, e);
+
+            if (form2.RadioRainbow.Checked)     // need for color position adjust
+            {
+                endPointX = leftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - barSpacing;        // Horizontal
+                endPointY = 0;
+                brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
+                {
+                    InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions }
+                };
+                myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+            }
             ClearSpectrum(sender, EventArgs.Empty);
         }
 
         private void Form2_ComboBox2_SelectedItemChanged(object sender, EventArgs e)    // ホールドタイム変更
         {
             peakHoldTimeMsec = Convert.ToInt16(form2.ComboBox2.SelectedItem);
-            counterCycle = (int)(peakHoldTimeMsec / analizer._timer1.Interval.Milliseconds * 20 * (numberOfBar / 8.0));
+            counterCycle = (int)(peakHoldTimeMsec / analizer._timer1.Interval.Milliseconds * 40 * (numberOfBar / 16.0));
             //label1.Text = counterCycle.ToString();
         }
         
@@ -195,7 +249,7 @@ namespace SpeAnaLED
             if (form2.Form2_RadioPrisum.Checked)
             {
                 colors = prisumColors;
-                positions = prisumPositions;
+                positions = prisumPositions[16];
                 endPointX = 0;
                 endPointY = canvas[0].Height;
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
@@ -227,7 +281,7 @@ namespace SpeAnaLED
             if (form2.Form2_RadioRainbow.Checked)
             {
                 colors = prisumColors;
-                positions = prisumPositions;
+                positions = prisumPositions[numberOfBar];       // need for color position adjust
                 endPointX = leftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - barSpacing;        // Horizontal
                 endPointY = 0;
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
@@ -236,6 +290,21 @@ namespace SpeAnaLED
                 };
                 myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
             }
+        }
+
+        private void Form2_SSaverCheckboxCheckedChanged(object sender, EventArgs e)
+        {
+            preventSSaver = !preventSSaver;
+        }
+
+        private void Form2_PeakholdCheckboxCheckedChanged(object sender, EventArgs e)
+        {
+            peakhold = !peakhold;
+        }
+
+        private void Form2_AlwaysOnTopCheckboxCheckChanged(object sender, EventArgs e)
+        {
+            TopMost = !TopMost;
         }
 
         private void ReceiveSpectrumData(object sender, EventArgs e)
@@ -248,7 +317,7 @@ namespace SpeAnaLED
             
             for (int i = 0; i < numberOfBar * channel; i++)     // analizerから受け取る_spectumdataは Max16*2=32バイト L,R,L,R,...
             {
-                isRight = i % 2;
+                if (channel > 1) isRight = i % 2;
                 
                 var posX = leftPadding + (i - isRight) / channel * (penWidth + barSpacing);          //横方向の位置
                 var powY = (int)(analizer._spectrumdata[i] / ratio);
@@ -256,36 +325,51 @@ namespace SpeAnaLED
                 g[isRight].DrawLine(myPen, posX, canvas[0].Height, posX, canvas[0].Height - powY);
 
                 // Peak Hold
-                if (peakValue[i] <= powY && powY != 0)
+                if (peakhold)
                 {
-                    peakValue[i] = powY;        // ピーク更新するが描画は不要
-                    peakTiming[isRight, i / 2] = peakCounter;
+                    if (peakValue[i] <= powY && powY != 0)
+                    {
+                        peakValue[i] = powY;        // ピーク更新するが描画は不要
+                        peakTiming[isRight, i / 2] = peakCounter;       // int i/2 = 0,0,1,1,2,2,...
+                    }
+                    // 以下powYがpeak以下の時はpeakを描く
+                    else
+                    {
+                        if (peakCounter > counterCycle / 2      // 減衰させるかどうかを決定 /2はサイクル後半から減衰させるため
+                        && peakCounter % peakHoldDecayCycle == 0                                        // 減衰スピード
+                        && peakTiming[isRight, i / channel] + counterCycle > peakCounter)               // ホールドタイムを過ぎた?
+                        {
+                            for (int j = 0; j < peakValue.Length; j++) peakValue[j] -= (dash + dash);   // Peakを1レベル減衰させる
+                            if (peakValue[i] < powY ) peakValue[i] = powY;                              //減衰しすぎたら更新
+                            peakTiming[isRight, i / 2] = peakCounter;
+                        }
+                        
+                        bounds = ((int)((peakValue[i] - dash) / (dash + dash)) + 1) * (dash + dash) + dash - 2; // 描画境界を計算
+                                //((int)((x-3)/6)+1)*6+3  -(128-129)
+                        if (bounds <= 7) bounds = 0;    // 0x00はpowYが7になるから7以下は描画しない
+                        // Peak描画本体
+                        g[isRight].DrawLine(myPen, posX, canvas[0].Height - bounds, posX, canvas[0].Height - bounds - 2);   // boundsから上に向かってひと目盛だけ描く
+                    }
                 }
-                // 以下powYがpeak以下の時はpeakを描く
-                else if (peakCounter > counterCycle / 2      // 減衰させるかどうかを決定 /2はサイクル後半から減衰させるため
-                    && peakCounter % peakHoldDecayCycle == 0                                        // 減衰スピード
-                    && peakTiming[isRight, i / channel] + counterCycle > peakCounter)                // ホールドタイムを過ぎた?
-                {       for (int j = 0; j < peakValue.Length; j++) peakValue[j] -= (dash + dash);   // Peakを1レベル減衰させる
-                    
-                    bounds = ((int)((peakValue[i] - dash) / (dash + dash)) + 1) * (dash + dash) + dash - 2; // 描画境界を計算
-                            //((int)((x-3)/6)+1)*6+3  -(128-129)
-                    if (bounds <= 7) bounds = 0;    // 0x00はpowYが7になるから7以下は描画しない
-                    // Peak描画本体
-                    g[isRight].DrawLine(myPen, posX, canvas[0].Height - bounds , posX, canvas[0].Height - bounds - 2);   // boundsから上に向かってひと目盛だけ描く
-                }
-                else
-                {
-                    bounds = ((int)((peakValue[i] - dash) / (dash + dash)) + 1) * (dash + dash) + dash - 2; // 描画境界を計算
-                    if (bounds <= 7) bounds = 0;    // 0x00はpowYが7になるから7以下は描画しない
-                    g[isRight].DrawLine(myPen, posX, canvas[0].Height - bounds, posX, canvas[0].Height - bounds - 2);   // boundsから上に向かってひと目盛だけ描く
-                }
-                
                 peakCounter++;
-                if (peakCounter >= counterCycle)
+                if (peakCounter >= counterCycle)      // peakhold=falseでもスクリーンセーバー制御に使っているのでカウンターだけは回しておく
                 {
                     peakCounter = 0;   // 規定サイクル回ったらカウンターをリセット
                     peakValue[i] = powY;
+                    displayOffCounter++;
+                    label1.Text = counterCycle.ToString();
                 }
+                if (displayOffCounter > 5)  //100
+                {
+                    displayOffCounter = 0;
+                    if (preventSSaver)
+                    {
+                        int xPosShift = Cursor.Position.X == 0 ? 1 : -1;
+                        Cursor.Position = new System.Drawing.Point(Cursor.Position.X + xPosShift, Cursor.Position.Y);
+                        Cursor.Position = new System.Drawing.Point(Cursor.Position.X - xPosShift, Cursor.Position.Y);
+                    }
+                }
+                label1.Text = counterCycle.ToString();
             }
             
             for (int i = 0; i < channel; i++) g[i].Dispose();
@@ -384,7 +468,12 @@ namespace SpeAnaLED
 
             }*/
             
-            label1.Text = counterCycle.ToString();
+            //label1.Text = counterCycle.ToString();
+        }
+
+        private void Application_ApplicationExit(object sender, EventArgs e)
+        {
+            ;
         }
     }
 }

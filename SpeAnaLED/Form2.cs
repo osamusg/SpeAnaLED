@@ -7,10 +7,12 @@ namespace SpeAnaLED
 
     public partial class Form2 : Form
     {
-        private readonly string defaultSensibilityText = "7.8";     // Configから設定するようにする デザイナーでスライダーも変更要
-        private readonly string defaultDecaySpeedText = "16";       // Configから設定するようにする デザイナーでスライダーも変更要
+        private readonly string defaultSensibilityText = "7.8";     // Configから設定するようにする デザイナーとの連動用でスライダーも変更要
+        private readonly string defaultDecaySpeedText = "10";       // Configから設定するようにする デザイナーとの連動用でスライダーも変更要
         private readonly bool RadioClassicChecked = true;
         private readonly bool SSPreventChecked = true;
+        private readonly bool PeakholdChecked = true;
+        private readonly bool AlwaysOnTopChecked = false;
 
         // go public controls
         //public ComboBox Form2_ComboBox1 { get { return this.ComboBox1; } }
@@ -22,6 +24,8 @@ namespace SpeAnaLED
         public RadioButton Form2_RadioRainbow { get { return this.RadioRainbow; } }
         public ComboBox Form2_ComboBox1 { get { return this.ComboBox2; } }
         public CheckBox Form2_SSaverCheckBox { get { return this.SSaverCheckBox; } }
+        public CheckBox Form2_PeakholdCheckbox { get { return this.PeakholdCheckBox; } }
+        public CheckBox Form2_AlwaysOnTopCheckbox { get { return this.AlwaysOnTopCheckBox; } }
 
         public event EventHandler ClearSpectrum;
 
@@ -33,11 +37,15 @@ namespace SpeAnaLED
             //TextBox_Sensibility.Text = (TrackBar1.Value / 10f).ToString("0,0");   // Configから設定するようにする
             TextBox_Sensibility.Text = defaultSensibilityText;
             TextBox_DecaySpeed.Text = defaultDecaySpeedText;
-            ComboBox1.SelectedIndex = 3;    // 8 Bars
+            ComboBox1.SelectedIndex = 4;    // 16 Bars
             ComboBox2.SelectedIndex = 3;    // 2000ms
             
             Form2_RadioClassic.Checked = RadioClassicChecked;                       // Configから設定するようにする
             Form2_SSaverCheckBox.Checked = SSPreventChecked;
+            Form2_PeakholdCheckbox.Checked = PeakholdChecked;
+            Form2_AlwaysOnTopCheckbox.Checked = AlwaysOnTopChecked;
+
+            // Event handler (subscribe)
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -48,7 +56,6 @@ namespace SpeAnaLED
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
         {
             TextBox_Sensibility.Text = (TrackBar1.Value / 10f).ToString("0.0");
-
         }
 
         private void TextBox_Sensibility_KeyDown(object sender, KeyEventArgs e)

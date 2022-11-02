@@ -26,7 +26,7 @@ namespace SpeAnaLED
         public event EventHandler SpectrumChanged;      // for fire
 
         public readonly int _channel = 2;               // 1: "mix-data"(mono) 2: L+R
-        public int _lines = 8;                          // default number of spectrum lines
+        public int _lines = 16;                         // default number of spectrum lines
 
 
         public Analyzer(ComboBox devicelist, Button enumButton, ComboBox numberofbar)    // イベントを受信するコントロールを登録
@@ -45,8 +45,8 @@ namespace SpeAnaLED
             _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
 
             // Event handler for option form (reseive)
-            _form2EnumButton.Click += new EventHandler(this.Form2_EnumerateButton_Click);
-            _form2NumberOfBar.SelectedIndexChanged += new EventHandler(this.Form2_NumberOfBarIndexChanged);
+            _form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Click);
+            _form2NumberOfBar.SelectedIndexChanged += new EventHandler(Form2_NumberOfBarIndexChanged);
 
             Init();
         }
@@ -58,7 +58,7 @@ namespace SpeAnaLED
         private void Init()
         {
             bool result = false;
-            int i = 9;          // Configfileで処理するようにする
+            int i = 9;          // device number Configfileで処理するようにする
             var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(i);
             if (device.IsEnabled && device.IsLoopback)
             {
@@ -79,7 +79,7 @@ namespace SpeAnaLED
             }
             catch
             {
-                MessageBox.Show("No Output Device found.\r\nExit the program.",
+                MessageBox.Show("No Output Device found.\r\nExit the Application.",
                     "No Output Device found.",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
@@ -146,9 +146,12 @@ namespace SpeAnaLED
             {
                 float peak_left = 0;
                 float peak_right = 0;
-                freqValue = (int)Math.Pow(2, (bandX * 10.0/(_lines - 1))+4.35);             // 4.35 from actual measurement, not logic...
+                if (_channel > 1)
+                    freqValue = (int)Math.Pow(2, (bandX * 10.0/(_lines - 1)) + 4.35);       // 4.35 from actual measurement, not logic...
+                else
+                    freqValue = (int)Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + 2);        // Ditto
                 if (freqValue <= fftPos) freqValue = fftPos + 1;                            // なぜか範囲外だったらバンドの最低周波数にする
-                if (freqValue > 16384 - _channel) freqValue = 16384 - _channel;             // 最後のデータははみ出る
+                if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;     // 最後のデータははみ出る
                 //for (; freqPos < freqValue; freqPos++)                                    // 周波数バンド内を順に調べる
                 for (; fftPos < freqValue; fftPos+=_channel)                                // 周波数バンド内を順にinterreaveで調べる
                 {

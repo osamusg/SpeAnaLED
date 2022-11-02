@@ -50,11 +50,17 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.TextBox_DecaySpeed = new System.Windows.Forms.TextBox();
             this.SSaverCheckBox = new System.Windows.Forms.CheckBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.HorizontalRadio = new System.Windows.Forms.RadioButton();
+            this.VerticalRadio = new System.Windows.Forms.RadioButton();
+            this.PeakholdCheckBox = new System.Windows.Forms.CheckBox();
+            this.AlwaysOnTopCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.TrackBar1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackBar2)).BeginInit();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // devicelist
@@ -67,12 +73,12 @@
             // 
             // Button1
             // 
-            this.Button1.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.Button1.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Button1.Location = new System.Drawing.Point(562, 310);
             this.Button1.Name = "Button1";
             this.Button1.Size = new System.Drawing.Size(75, 23);
             this.Button1.TabIndex = 2;
-            this.Button1.Text = "OK";
+            this.Button1.Text = "Close";
             this.Button1.UseVisualStyleBackColor = true;
             this.Button1.Click += new System.EventHandler(this.Button1_Click);
             // 
@@ -281,7 +287,7 @@
             this.TrackBar2.SmallChange = 2;
             this.TrackBar2.TabIndex = 21;
             this.TrackBar2.TickFrequency = 2;
-            this.TrackBar2.Value = 16;
+            this.TrackBar2.Value = 10;
             this.TrackBar2.ValueChanged += new System.EventHandler(this.TrackBar2_ValueChanged);
             // 
             // groupBox3
@@ -309,12 +315,68 @@
             // 
             this.SSaverCheckBox.AutoSize = true;
             this.SSaverCheckBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SSaverCheckBox.Location = new System.Drawing.Point(458, 152);
+            this.SSaverCheckBox.Location = new System.Drawing.Point(367, 205);
             this.SSaverCheckBox.Name = "SSaverCheckBox";
             this.SSaverCheckBox.Size = new System.Drawing.Size(165, 20);
             this.SSaverCheckBox.TabIndex = 23;
             this.SSaverCheckBox.Text = "Prevant Screen Saver";
             this.SSaverCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.HorizontalRadio);
+            this.groupBox4.Controls.Add(this.VerticalRadio);
+            this.groupBox4.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox4.Location = new System.Drawing.Point(207, 117);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(139, 76);
+            this.groupBox4.TabIndex = 24;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Channel Layout";
+            // 
+            // HorizontalRadio
+            // 
+            this.HorizontalRadio.AutoSize = true;
+            this.HorizontalRadio.Location = new System.Drawing.Point(21, 50);
+            this.HorizontalRadio.Name = "HorizontalRadio";
+            this.HorizontalRadio.Size = new System.Drawing.Size(87, 20);
+            this.HorizontalRadio.TabIndex = 1;
+            this.HorizontalRadio.TabStop = true;
+            this.HorizontalRadio.Text = "Horizontal";
+            this.HorizontalRadio.UseVisualStyleBackColor = true;
+            // 
+            // VerticalRadio
+            // 
+            this.VerticalRadio.AutoSize = true;
+            this.VerticalRadio.Location = new System.Drawing.Point(21, 22);
+            this.VerticalRadio.Name = "VerticalRadio";
+            this.VerticalRadio.Size = new System.Drawing.Size(71, 20);
+            this.VerticalRadio.TabIndex = 0;
+            this.VerticalRadio.TabStop = true;
+            this.VerticalRadio.Text = "Vertical";
+            this.VerticalRadio.UseVisualStyleBackColor = true;
+            // 
+            // PeakholdCheckBox
+            // 
+            this.PeakholdCheckBox.AutoSize = true;
+            this.PeakholdCheckBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PeakholdCheckBox.Location = new System.Drawing.Point(367, 153);
+            this.PeakholdCheckBox.Name = "PeakholdCheckBox";
+            this.PeakholdCheckBox.Size = new System.Drawing.Size(85, 20);
+            this.PeakholdCheckBox.TabIndex = 25;
+            this.PeakholdCheckBox.Text = "Peakhold";
+            this.PeakholdCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // AlwaysOnTopCheckBox
+            // 
+            this.AlwaysOnTopCheckBox.AutoSize = true;
+            this.AlwaysOnTopCheckBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AlwaysOnTopCheckBox.Location = new System.Drawing.Point(367, 179);
+            this.AlwaysOnTopCheckBox.Name = "AlwaysOnTopCheckBox";
+            this.AlwaysOnTopCheckBox.Size = new System.Drawing.Size(116, 20);
+            this.AlwaysOnTopCheckBox.TabIndex = 26;
+            this.AlwaysOnTopCheckBox.Text = "Always on Top";
+            this.AlwaysOnTopCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form2
             // 
@@ -322,6 +384,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(654, 348);
             this.ControlBox = false;
+            this.Controls.Add(this.AlwaysOnTopCheckBox);
+            this.Controls.Add(this.PeakholdCheckBox);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.SSaverCheckBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label4);
@@ -339,7 +404,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form2";
-            this.Text = "Options - SpeAnaLED";
+            this.Text = "Option - SpeAnaLED";
             ((System.ComponentModel.ISupportInitialize)(this.TrackBar1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -348,6 +413,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.TrackBar2)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -376,6 +443,11 @@
         public System.Windows.Forms.TrackBar TrackBar2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox TextBox_DecaySpeed;
-        private System.Windows.Forms.CheckBox SSaverCheckBox;
+        public System.Windows.Forms.CheckBox SSaverCheckBox;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.RadioButton HorizontalRadio;
+        private System.Windows.Forms.RadioButton VerticalRadio;
+        public System.Windows.Forms.CheckBox PeakholdCheckBox;
+        public System.Windows.Forms.CheckBox AlwaysOnTopCheckBox;
     }
 }
