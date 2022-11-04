@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using System.Windows.Media.Animation;
 using ConfigFile;
 
 
