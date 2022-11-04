@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using ConfigFile;
 
 namespace SpeAnaLED
 {
@@ -7,25 +8,29 @@ namespace SpeAnaLED
 
     public partial class Form2 : Form
     {
-        private readonly string defaultSensibilityText = "7.8";     // Configから設定するようにする デザイナーとの連動用でスライダーも変更要
-        private readonly string defaultDecaySpeedText = "10";       // Configから設定するようにする デザイナーとの連動用でスライダーも変更要
+        /*
+        private readonly string defaultSensibilityText = "7.8";     // Configから設定するようにした デザイナーとの連動用でスライダーも変更要
+        private readonly string defaultDecaySpeedText = "10";       // Configから設定するようにした デザイナーとの連動用でスライダーも変更要
         private readonly bool RadioClassicChecked = true;
         private readonly bool SSPreventChecked = true;
         private readonly bool PeakholdChecked = true;
         private readonly bool AlwaysOnTopChecked = false;
+        */
 
         // go public controls
         //public ComboBox Form2_ComboBox1 { get { return this.ComboBox1; } }
         public TrackBar Form2_TrackBar1 { get { return this.TrackBar1; } }
-        public TrackBar Form2_TrackBar2 { get { return this.TrackBar2; } }
-        public RadioButton Form2_RadioClassic { get { return this.RadioClassic; } }
-        public RadioButton Form2_RadioPrisum { get { return this.RadioPrisum; } }
-        public RadioButton Form2_RadioSimple { get { return this.RadioSimple; } }
-        public RadioButton Form2_RadioRainbow { get { return this.RadioRainbow; } }
-        public ComboBox Form2_ComboBox1 { get { return this.ComboBox2; } }
-        public CheckBox Form2_SSaverCheckBox { get { return this.SSaverCheckBox; } }
-        public CheckBox Form2_PeakholdCheckbox { get { return this.PeakholdCheckBox; } }
-        public CheckBox Form2_AlwaysOnTopCheckbox { get { return this.AlwaysOnTopCheckBox; } }
+        public TrackBar Form2_TrackBar2 { get { return TrackBar2; } }
+        public RadioButton Form2_RadioClassic { get { return RadioClassic; } }
+        public RadioButton Form2_RadioPrisum { get { return RadioPrisum; } }
+        public RadioButton Form2_RadioSimple { get { return RadioSimple; } }
+        public RadioButton Form2_RadioRainbow { get { return RadioRainbow; } }
+        public ComboBox Form2_ComboBox1 { get { return ComboBox2; } }
+        public CheckBox Form2_SSaverCheckBox { get { return SSaverCheckBox; } }
+        public CheckBox Form2_PeakholdCheckbox { get { return PeakholdCheckBox; } }
+        public CheckBox Form2_AlwaysOnTopCheckbox { get { return AlwaysOnTopCheckBox; } }
+        //public TextBox Form2_SensibilityTextbox { get { return TextBox_Sensibility; } }
+        //public TextBox Form2_DecaySpeedTextbox { get { return TextBox_DecaySpeed; } }
 
         public event EventHandler ClearSpectrum;
 
@@ -34,18 +39,24 @@ namespace SpeAnaLED
         {
             InitializeComponent();
 
-            //TextBox_Sensibility.Text = (TrackBar1.Value / 10f).ToString("0,0");   // Configから設定するようにする
-            TextBox_Sensibility.Text = defaultSensibilityText;
+            //TextBox_Sensibility.Text = (TrackBar1.Value / 10f).ToString("0,0");   // Configから設定するようにした
+            /*TextBox_Sensibility.Text = defaultSensibilityText;
             TextBox_DecaySpeed.Text = defaultDecaySpeedText;
             ComboBox1.SelectedIndex = 4;    // 16 Bars
             ComboBox2.SelectedIndex = 3;    // 2000ms
             
-            Form2_RadioClassic.Checked = RadioClassicChecked;                       // Configから設定するようにする
+            Form2_RadioClassic.Checked = RadioClassicChecked;                       // Configから設定するようにした
             Form2_SSaverCheckBox.Checked = SSPreventChecked;
             Form2_PeakholdCheckbox.Checked = PeakholdChecked;
             Form2_AlwaysOnTopCheckbox.Checked = AlwaysOnTopChecked;
+            */
 
             // Event handler (subscribe)
+
+            // 未実装対応
+            groupBox4.Enabled = false;
+            VerticalRadio.Enabled = false;
+            HorizontalRadio.Enabled = false;
         }
 
         private void Button1_Click(object sender, EventArgs e)

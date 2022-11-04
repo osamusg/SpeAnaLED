@@ -26,7 +26,7 @@ namespace SpeAnaLED
         public event EventHandler SpectrumChanged;      // for fire
 
         public readonly int _channel = 2;               // 1: "mix-data"(mono) 2: L+R
-        public int _lines = 16;                         // default number of spectrum lines
+        public int _lines;// = 16;                         // default number of spectrum lines
 
 
         public Analyzer(ComboBox devicelist, Button enumButton, ComboBox numberofbar)    // イベントを受信するコントロールを登録
@@ -43,6 +43,7 @@ namespace SpeAnaLED
             _form2EnumButton = enumButton;
             _form2NumberOfBar = numberofbar;
             _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
+            _lines = Convert.ToInt16(_form2NumberOfBar.SelectedItem);
 
             // Event handler for option form (reseive)
             _form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Click);
@@ -80,7 +81,7 @@ namespace SpeAnaLED
             catch
             {
                 MessageBox.Show("No Output Device found.\r\nExit the Application.",
-                    "No Output Device found.",
+                    "No Output Device - SpeAnaLED",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
                 Free();
