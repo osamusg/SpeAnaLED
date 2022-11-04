@@ -1,29 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+//using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Windows.Media.Animation;
-using ConfigFile;
 
 
 namespace SpeAnaLED
 {
     public partial class Form1 : Form
     {
-        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
-        static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
-
-        [FlagsAttribute]
-        public enum EXECUTION_STATE : uint
-        {
-            ES_SYSTEM_REQUIRED = 0x00000001,
-            ES_DISPLAY_REQUIRED = 0x00000002,
-            ES_AWAYMODE_REQUIRED = 0x00000040,
-            ES_CONTINUOUS = 0X80000000,
-        }
-        
         private readonly Analyzer analizer;
         private readonly Form2 form2 = null;
         private readonly Bitmap[] canvas = new Bitmap[2];
@@ -39,68 +25,60 @@ namespace SpeAnaLED
         private int peakCounter = 0;
         private readonly int[,] peakTiming = new int[2,16];
         private readonly int channel;
-        public int numberOfBar;
+        private int numberOfBar;
         private readonly int maxNumberOfBar = 16;
         private float ratio;
         private int dash;
         private int displayOffCounter;
-        private string configFileName;
-        private bool inInit = false;
-
+        
         // parameters (set defaults)
+        private int leftPadding = 25;
         private int endPointX = 0;              // グラデーションのデフォルト描画方向 上から下
         private int endPointY;                  // PictureBoxの大きさにより可変?
-        private float penWidth = 30f;           // 計算で出すもの?
-        private int labelPadding = 6;           // 計算で出すもの?
-        private int barSpacing = 10;            // 計算で出すもの?
-        private float labelFontSize = 9f;       // 計算で出すもの?
-        private int leftPadding;
-        private int horizontalPadding;
-        private int verticalPadding;
-        private int horizontalSpacing;
-        private float sensibility;
-        private int form2TrackBar1Value;
-        private int peakHoldTimeMsec;
+        private float penWidth = 30f;
+        private int horizontalPadding = 12;
+        private int verticalPadding = 12;
+        private int labelPadding = 6;
+        private int barSpacing = 10;
+        private float labelFontSize = 9f;
+        
+        private float sensibility = 7.8f;       // 変えた場合、form2.csのデフォルト値も直すこと
+        private int peakHoldTimeMsec = 2000;
         private int peakHoldDecayCycle = 10;    // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)
-        private int form2TrackBar2Value;
-        private bool peakhold;
-        private bool alwaysOnTop;
-        private bool preventSSaver;
-        private bool classicChecked, prisumChecked, simpleChecked, rainbowChecked;
-        private bool rightSideFlip = false;
+        private bool preventSSaver = true;
+        private bool peakhold = true;
 
-        // 念のためデフォルト値はセットしておく
-        private Color[] classicColors =
+        private readonly Color[] classicColors =
             {  Color.FromArgb(255,0,0),     //  0 100 50  red
                Color.FromArgb(255,255,0),   // 60 100 50  yellow
                Color.FromArgb(0,128,0),     //120 100 25  green
             };
-        private float[] classicPositions = { 0.0f, 0.3f, 1.0f };
+        private readonly float[] classicPositions = { 0.0f, 0.3f, 1.0f };
 
-        private Color[] prisumColors =
+        private readonly Color[] prisumColors =
             {   Color.FromArgb(255,0,0),    //   0  red
                 Color.FromArgb(255,255,0),  //  60  yellow
                 Color.FromArgb(0,255,0),    // 120  lime
                 Color.FromArgb(0,255,255),  // 180  cyan
                 Color.FromArgb(0,0,255),    // 240  blue
             };
-        private float[][] prisumPositions = new float[17][];   // maxNumberOfBar+1 jagg array for easy to see
+        private readonly  float[][] prisumPositions = new float[17][];   // maxNumberOfBar+1 jagg array for easy to see
         
-        private Color[] simpleColors = { Color.LightSkyBlue, Color.LightSkyBlue};
-        private float[] simplePositions = { 0.0f, 1.0f };
-        
+        private readonly Color[] simpleColors = { Color.LightSkyBlue, Color.LightSkyBlue};
+        private readonly float[] simplePositions = { 0.0f, 1.0f };
+
         public Form1()
         {
             InitializeComponent();
 
-            inInit = true;
-            form2 = new Form2(); 
+
+            form2 = new Form2();
             analizer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.ComboBox1)
             {
                 Enable = true,
                 DisplayEnable = true
             };
-            
+
             // Event handler for option form (subscribe)
             form2.TrackBar1.ValueChanged += Form2_TrackBar1_ValueChanged;
             form2.TrackBar2.ValueChanged += Form2_TrackBar2_ValueChanged;
@@ -118,12 +96,23 @@ namespace SpeAnaLED
             analizer.SpectrumChanged += ReceiveSpectrumData;
             Application.ApplicationExit += Application_ApplicationExit;
 
-            // 以下内部の計算で出すもの
-            
+
+            spectrum1.Width = spectrum2.Width = 650;      // あとで計算するようにする
+            spectrum1.Height = spectrum2.Height = 128;
+            spectrum1.Left = spectrum2.Left = horizontalPadding;
+            spectrum1.Top = verticalPadding;
+            spectrum2.Top = spectrum1.Bottom + 46;
             endPointY = spectrum1.Height;
             numberOfBar = analizer._lines;
             channel = analizer._channel;
             peakValue = new int[maxNumberOfBar * channel];
+
+            // adjust Rainbow color position
+            prisumPositions[1] = new float[5] { 0.0f, 0.4f, 0.5f, 0.55f, 1.0f };    // red,yellow,lime,cyan,blue
+            prisumPositions[2] = new float[5] { 0.0f, 0.35f, 0.5f, 0.55f, 1.0f };
+            prisumPositions[4] = new float[5] { 0.0f, 0.35f, 0.5f, 0.55f, 1.0f };
+            prisumPositions[8] = new float[5] { 0.0f, 0.37f, 0.5f, 0.55f, 1.0f };
+            prisumPositions[16] = new float[5] { 0.0f, 0.36f, 0.5f, 0.55f, 1.0f };
 
             // I don't know why "* 20 (num..." is necessary. This is due to actual measurements.
             // If you edit this parameter, also edit "Form2_ComboBox1_SelectedItemChanged" and
@@ -133,38 +122,6 @@ namespace SpeAnaLED
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            try
-            {
-                LoadConfigParams();
-            }
-            catch
-            {
-                MessageBox.Show("Opps! Config file seems something wrong...\r\nUse default parameters.",
-                    "Config file error - SpeAnaLED",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-
-                numberOfBar = 16;
-                spectrum1.Width = 650;
-                spectrum1.Height = 128;
-                horizontalPadding = 12;
-                verticalPadding = 12;
-                horizontalSpacing = 46;
-                leftPadding = 25;
-                peakHoldTimeMsec = 1000;
-                form2TrackBar1Value = 78;
-                form2TrackBar2Value = 10;
-                peakhold = true;
-                alwaysOnTop = false;
-                preventSSaver = true;
-                classicChecked = false;
-                prisumChecked = true;
-                simpleChecked = false;
-                rainbowChecked = false;
-            }
-
-            spectrum2.Top = spectrum1.Bottom + horizontalSpacing;
-
             freqLabel_Left = new Label[maxNumberOfBar];
             freqLabel_Right = new Label[maxNumberOfBar];
             for (int i = 0; i < maxNumberOfBar; i++)
@@ -186,65 +143,14 @@ namespace SpeAnaLED
             dash = (int)penWidth / 10;
 
             // デフォルト(前回)カラー(pen)の事前準備
-            colors = prisumColors;         // あとでconfigに前回内容を保存する？
-            positions = prisumPositions[numberOfBar];
+            colors = classicColors;         // あとでconfigに前回内容を保存する？
+            positions = classicPositions;
 
             brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
             {
                 InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions }
             };
             myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
-
-            // form2 setting
-            form2.ComboBox1.SelectedIndex = form2.ComboBox1.Items.IndexOf(numberOfBar.ToString());
-            form2.ComboBox2.SelectedIndex = form2.ComboBox2.Items.IndexOf(peakHoldTimeMsec.ToString());
-            form2.TrackBar1.Value = form2TrackBar1Value;    // (int)(sensibility * 10f);
-            form2.TrackBar2.Value = form2TrackBar2Value;
-            form2.TextBox_Sensibility.Text = (form2TrackBar1Value / 10f).ToString("0.0");
-            form2.TextBox_DecaySpeed.Text = form2TrackBar2Value.ToString();
-            form2.PeakholdCheckBox.Checked = peakhold;
-            form2.AlwaysOnTopCheckBox.Checked = alwaysOnTop;
-            form2.SSaverCheckBox.Checked = preventSSaver;
-            if ((form2.RadioPrisum.Checked = prisumChecked) == true)
-            {
-                colors = prisumColors;
-                positions = prisumPositions[numberOfBar];
-                endPointX = 0;
-                endPointY = canvas[0].Height;
-            }
-            else if ((form2.RadioClassic.Checked = classicChecked) == true)
-            {
-                colors = classicColors;
-                positions = classicPositions;
-                endPointX = 0;
-                endPointY = canvas[0].Height;
-            }
-            else if ((form2.RadioSimple.Checked = simpleChecked) == true)
-            {
-                colors = simpleColors;
-                positions = simplePositions;
-                endPointX = 0;
-                endPointY = canvas[0].Height;
-            }
-            else
-            {
-                form2.RadioRainbow.Checked = rainbowChecked;
-                colors = prisumColors;
-                positions = prisumPositions[numberOfBar];       // need for color position adjust
-                endPointX = leftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - barSpacing;        // Horizontal
-                endPointY = 0;
-            }
-            brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
-            {
-                InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions }
-            }; 
-            myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
-
-            sensibility = form2.TrackBar1.Value / 10f;
-            ratio = 0xff / canvas[0].Height * (10f - sensibility);
-
-            
-            inInit = false;
         }
 
         private void Form1_DoubleClick(object sender, EventArgs e)
@@ -324,7 +230,7 @@ namespace SpeAnaLED
         
         private void Form2_RadioClassic_CheckChanged(object sender, EventArgs e)
         {
-            if (form2.Form2_RadioClassic.Checked && !inInit)
+            if (form2.Form2_RadioClassic.Checked)
             {
                 colors = classicColors;
                 positions = classicPositions;
@@ -340,10 +246,10 @@ namespace SpeAnaLED
 
         private void Form2_RadioPrisum_CheckChanged(object sender, EventArgs e)
         {
-            if (form2.Form2_RadioPrisum.Checked && !inInit)
+            if (form2.Form2_RadioPrisum.Checked)
             {
                 colors = prisumColors;
-                positions = prisumPositions[numberOfBar];
+                positions = prisumPositions[16];
                 endPointX = 0;
                 endPointY = canvas[0].Height;
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
@@ -356,7 +262,7 @@ namespace SpeAnaLED
 
         private void Form2_RadioSimple_CheckChanged(object sender, EventArgs e)
         {
-            if (form2.Form2_RadioSimple.Checked && !inInit)
+            if (form2.Form2_RadioSimple.Checked)
             {
                 colors = simpleColors;
                 positions = simplePositions;
@@ -372,7 +278,7 @@ namespace SpeAnaLED
 
         private void Form2_RadioRainbow_CheckChanged(object sender, EventArgs e)
         {
-            if (form2.Form2_RadioRainbow.Checked && !inInit)
+            if (form2.Form2_RadioRainbow.Checked)
             {
                 colors = prisumColors;
                 positions = prisumPositions[numberOfBar];       // need for color position adjust
@@ -388,17 +294,17 @@ namespace SpeAnaLED
 
         private void Form2_SSaverCheckboxCheckedChanged(object sender, EventArgs e)
         {
-            if (inInit == false) preventSSaver = !preventSSaver;
+            preventSSaver = !preventSSaver;
         }
 
         private void Form2_PeakholdCheckboxCheckedChanged(object sender, EventArgs e)
         {
-            if (inInit == false) peakhold = !peakhold;
+            peakhold = !peakhold;
         }
 
         private void Form2_AlwaysOnTopCheckboxCheckChanged(object sender, EventArgs e)
         {
-            if (inInit == false) TopMost = !TopMost;
+            TopMost = !TopMost;
         }
 
         private void ReceiveSpectrumData(object sender, EventArgs e)
@@ -451,33 +357,37 @@ namespace SpeAnaLED
                     peakCounter = 0;   // 規定サイクル回ったらカウンターをリセット
                     peakValue[i] = powY;
                     displayOffCounter++;
-                    //label1.Text = counterCycle.ToString();
+                    label1.Text = counterCycle.ToString();
                 }
                 if (displayOffCounter > 5)  //100
                 {
+                    displayOffCounter = 0;
                     if (preventSSaver)
                     {
-                        SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_SYSTEM_REQUIRED);
+                        int xPosShift = Cursor.Position.X == 0 ? 1 : -1;
+                        Cursor.Position = new System.Drawing.Point(Cursor.Position.X + xPosShift, Cursor.Position.Y);
+                        Cursor.Position = new System.Drawing.Point(Cursor.Position.X - xPosShift, Cursor.Position.Y);
                     }
-                    displayOffCounter = 0;
                 }
-                //label1.Text = sensibility.ToString();
+                label1.Text = counterCycle.ToString();
             }
             
             for (int i = 0; i < channel; i++) g[i].Dispose();
 
-            if (rightSideFlip) canvas[0].RotateFlip(RotateFlipType.RotateNoneFlipX);       // canvas[0] is right...
+            //canvas[0].RotateFlip(RotateFlipType.Rotate180FlipX);
+            //canvas[1].RotateFlip(RotateFlipType.Rotate180FlipX);
             spectrum2.Image = canvas[0];
             if (canvas[1] != null) spectrum1.Image = canvas[1];
+            //spectrum2.Image.RotateFlip(RotateFlipType.RotateNoneFlipXY);
         }
 
         private void ClearSpectrum(object sender, EventArgs e)
         {
-            //numberOfBar = analizer._lines;
+            numberOfBar = analizer._lines;
             spectrum1.Width = leftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - (leftPadding - barSpacing);
             spectrum2.Width = spectrum1.Width;
 
-            for (int i = 0; i< canvas.Length; i++) canvas[i] =  new Bitmap(spectrum1.Width, spectrum1.Height);
+            //canvas[0] =  new Bitmap(spectrum1.Width, spectrum1.Height);
             var g = Graphics.FromImage(canvas[0]);
             for (int j = 0; j < numberOfBar; j++)
             {
@@ -490,7 +400,6 @@ namespace SpeAnaLED
             spectrum2.Image = canvas[0];
             spectrum1.Update();
             spectrum2.Update();
-            //label1.Text = canvas[0].Width.ToString();
 
             if(form2.RadioRainbow.Checked == true)
                 endPointX = leftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - barSpacing;
@@ -532,161 +441,6 @@ namespace SpeAnaLED
             ResumeLayout(false);
         }
 
-        private void LoadConfigParams()
-        {
-            //config reader
-            configFileName = @".\" + this.ProductName + @".conf";
-            if (!System.IO.File.Exists(configFileName)) System.IO.File.Create(configFileName);
-            var confReader = new ConfigReader(configFileName);
-
-            numberOfBar = confReader.GetValue("numberOFBar", 16);
-            
-            spectrum1.Width = spectrum2.Width = confReader.GetValue("spectrum.Width", 650);      // フォームのサイズを決めてから逆算するべき?
-            spectrum1.Height = spectrum2.Height = confReader.GetValue("spectrum.Height", 128);
-            spectrum1.Left = spectrum2.Left = horizontalPadding = confReader.GetValue("horizontalPadding", 12);
-            spectrum1.Top = verticalPadding = confReader.GetValue("verticalPadding", 12);
-
-            horizontalSpacing = confReader.GetValue("horizontalSpacing", 46);
-            leftPadding = confReader.GetValue("leftPadding", 25);
-
-            peakHoldTimeMsec = confReader.GetValue("peakHoldTimeMsec", 1000);
-            form2TrackBar1Value = confReader.GetValue("form2TrackBar1Value", 78);
-            form2TrackBar2Value = confReader.GetValue("form2TrackBar2Value", 10);
-            
-            peakhold = confReader.GetValue("peakhold", true);
-            alwaysOnTop = confReader.GetValue("alwaysOnTop", false);
-            preventSSaver = confReader.GetValue("preventSSaver", true);
-
-            //classicChecked = prisumChecked = simpleChecked = rainbowChecked = false;
-            if ((prisumChecked = confReader.GetValue("prisumChecked", true)) == false)
-                if ((classicChecked = confReader.GetValue("classicChecked", false)) == false)
-                    if ((simpleChecked = confReader.GetValue("simpleChecked", false)) == false)
-                        rainbowChecked = confReader.GetValue("rainbowChecked", false);
-
-            string[] ARGB = confReader.GetValue("classicColors", "255,255,0,0, 255,255,255,0, 255,0,128,0").Split(',');
-            int pos = 0;
-            for (int i = 0; i < ARGB.Length / 4; i++)
-            {
-                classicColors[i] = Color.FromArgb(int.Parse(ARGB[pos]), int.Parse(ARGB[pos + 1]), int.Parse(ARGB[pos + 2]), int.Parse(ARGB[pos + 3]));
-                pos += 4;
-            }
-            ARGB = confReader.GetValue("prisumColors", "255,255,0,0, 255,255,255,0, 255,0,255,0, 255,0,255,255, 255,0,0,255").Split(',');
-            pos = 0;
-            for (int i = 0; i < ARGB.Length / 4; i++)
-            {
-                prisumColors[i] = Color.FromArgb(int.Parse(ARGB[pos]), int.Parse(ARGB[pos + 1]), int.Parse(ARGB[pos + 2]), int.Parse(ARGB[pos + 3]));
-                pos += 4;
-            }
-            ARGB = confReader.GetValue("simpleColors", "255,135,206,250, 255,135,206,250").Split(',');
-            pos = 0;
-            for (int i = 0; i < ARGB.Length / 4; i++)
-            {
-                simpleColors[i] = Color.FromArgb(int.Parse(ARGB[pos]), int.Parse(ARGB[pos + 1]), int.Parse(ARGB[pos + 2]), int.Parse(ARGB[pos + 3]));
-                pos += 4;
-            }
-
-            // adjust Rainbow color position
-            int[] bars = { 1, 2, 4, 8, 16 };
-            string[][] param = new string[maxNumberOfBar + 1][];
-            param[1] = confReader.GetValue("prisumPositions_1", "0.0, 0.40, 0.5, 0.55, 1.0").Split(',');      // red,yellow,lime,cyan,blue
-            param[2] = confReader.GetValue("prisumPositions_2", "0.0, 0.35, 0.5, 0.55, 1.0").Split(',');
-            param[4] = confReader.GetValue("prisumPositions_4", "0.0, 0.35, 0.5, 0.55, 1.0").Split(',');
-            param[8] = confReader.GetValue("prisumPositions_8", "0.0, 0.37, 0.5, 0.55, 1.0").Split(',');
-            param[16] = confReader.GetValue("prisumPositions_16", "0.0, 0.36, 0.5, 0.55, 1.0").Split(',');
-            foreach (int i in bars)                                 // 1,2,4,8,16
-            {
-                foreach (int j in bars)                             // 1,2,4,8,16
-                {
-                    prisumPositions[j] = new float[/*param[j].Length*/5];
-                    for (int k = 0; k < bars.Length; k++)           // 0,1,2,3,4
-                        prisumPositions[j][k] = float.Parse(param[j][k]);
-                }
-            }
-        }
-
-        private bool SaveConfigParams()
-        {
-            var confWriter = new ConfigWriter();
-            confWriter.AddValue("numberOfBar", numberOfBar);    //次はloadを書くところから
-            
-            confWriter.AddValue("spectrum.Width", spectrum1.Width);      // フォームのサイズを決めてから逆算するべき?
-            confWriter.AddValue("spectrum.Height", spectrum1.Height);
-            confWriter.AddValue("horizontalPadding", horizontalPadding);
-            confWriter.AddValue("verticalPadding", verticalPadding);
-            confWriter.AddValue("horizontalSpacing", horizontalSpacing);
-            confWriter.AddValue("leftPadding", leftPadding);
-            confWriter.AddValue("peakHoldTimeMsec", peakHoldTimeMsec);
-            confWriter.AddValue("form2TrackBar1Value", form2.TrackBar1.Value);
-            confWriter.AddValue("form2TrackBar2Value", form2.TrackBar2.Value);
-            confWriter.AddValue("peakhold", peakhold);
-            confWriter.AddValue("alwaysOnTop", alwaysOnTop);
-            confWriter.AddValue("preventSSaver", preventSSaver);
-            confWriter.AddValue("classicChecked", form2.Form2_RadioClassic.Checked);
-            confWriter.AddValue("prisumChecked", form2.Form2_RadioPrisum.Checked);
-            confWriter.AddValue("simpleChecked", form2.Form2_RadioSimple.Checked);
-            confWriter.AddValue("rainbowChecked", form2.Form2_RadioRainbow.Checked);
-
-            string strColors = "";
-            for (int i = 0; i < classicColors.Length; i++)
-                strColors += Convert.ToInt16(classicColors[i].A).ToString() + "," +
-                    Convert.ToInt16(classicColors[i].R).ToString() + "," +
-                    Convert.ToInt16(classicColors[i].G).ToString() + "," +
-                    Convert.ToInt16(classicColors[i].B).ToString() + ",";
-            confWriter.AddValue("classicColors", strColors.TrimEnd(','));
-
-            strColors = "";
-            for (int i = 0; i < prisumColors.Length; i++)
-                strColors += Convert.ToInt16(prisumColors[i].A).ToString() + "," +
-                    Convert.ToInt16(prisumColors[i].R).ToString() + "," +
-                    Convert.ToInt16(prisumColors[i].G).ToString() + "," +
-                    Convert.ToInt16(prisumColors[i].B).ToString() + ",";
-            confWriter.AddValue("prisumColors", strColors.TrimEnd(','));
-            
-            strColors = "";
-            for (int i = 0; i < simpleColors.Length; i++)
-                strColors += Convert.ToInt16(simpleColors[i].A).ToString() + "," +
-                    Convert.ToInt16(simpleColors[i].R).ToString() + "," +
-                    Convert.ToInt16(simpleColors[i].G).ToString() + "," +
-                    Convert.ToInt16(simpleColors[i].B).ToString() + ",";
-            confWriter.AddValue("simpleColors", strColors.TrimEnd(','));
-
-            int[] bars = { 1, 2, 4, 8, 16 };
-            string[] strPrisumPosition = new string[maxNumberOfBar+1];
-            foreach (int bar in bars)
-            {
-                foreach (var position in prisumPositions[bar])
-                {
-                    strPrisumPosition[bar] += position.ToString("0.00") + ",";
-                }
-                strPrisumPosition[bar] = strPrisumPosition[bar].TrimEnd(',');
-            }
-            confWriter.AddValue("prisumPositions_1", strPrisumPosition[1]);
-            confWriter.AddValue("prisumPositions_2", strPrisumPosition[2]);
-            confWriter.AddValue("prisumPositions_4", strPrisumPosition[4]);
-            confWriter.AddValue("prisumPositions_8", strPrisumPosition[8]);
-            confWriter.AddValue("prisumPositions_16", strPrisumPosition[16]);
-
-            string strClassicPosition = "";
-            foreach (var item in classicPositions) strClassicPosition += item.ToString("0.00") + ",";
-            strClassicPosition = strClassicPosition.Trim(',');
-            confWriter.AddValue("classicPosition", strClassicPosition);
-
-            string strSimplePosition = "";
-            foreach (var item in simplePositions) strSimplePosition += item.ToString("0.00") + ",";
-            strSimplePosition = strSimplePosition.Trim(',');
-            confWriter.AddValue("simplePosition", strSimplePosition);
-            
-            try
-            {
-                confWriter.Save(configFileName);
-                return true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
         private void label1_Click(object sender, EventArgs e)
         {
             /* テスト用メソッド
@@ -719,7 +473,7 @@ namespace SpeAnaLED
 
         private void Application_ApplicationExit(object sender, EventArgs e)
         {
-            SaveConfigParams();
+            ;
         }
     }
 }

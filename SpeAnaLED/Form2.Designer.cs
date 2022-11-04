@@ -69,7 +69,7 @@
             this.devicelist.Location = new System.Drawing.Point(12, 28);
             this.devicelist.Name = "devicelist";
             this.devicelist.Size = new System.Drawing.Size(440, 20);
-            this.devicelist.TabIndex = 1;
+            this.devicelist.TabIndex = 0;
             // 
             // Button1
             // 
@@ -77,7 +77,7 @@
             this.Button1.Location = new System.Drawing.Point(562, 310);
             this.Button1.Name = "Button1";
             this.Button1.Size = new System.Drawing.Size(75, 23);
-            this.Button1.TabIndex = 0;
+            this.Button1.TabIndex = 2;
             this.Button1.Text = "Close";
             this.Button1.UseVisualStyleBackColor = true;
             this.Button1.Click += new System.EventHandler(this.Button1_Click);
@@ -90,7 +90,7 @@
             this.TrackBar1.Minimum = 10;
             this.TrackBar1.Name = "TrackBar1";
             this.TrackBar1.Size = new System.Drawing.Size(273, 45);
-            this.TrackBar1.TabIndex = 13;
+            this.TrackBar1.TabIndex = 3;
             this.TrackBar1.Value = 78;
             this.TrackBar1.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
             // 
@@ -100,7 +100,7 @@
             this.TextBox_Sensibility.Location = new System.Drawing.Point(279, 18);
             this.TextBox_Sensibility.Name = "TextBox_Sensibility";
             this.TextBox_Sensibility.Size = new System.Drawing.Size(43, 23);
-            this.TextBox_Sensibility.TabIndex = 14;
+            this.TextBox_Sensibility.TabIndex = 5;
             this.TextBox_Sensibility.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.TextBox_Sensibility.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_Sensibility_KeyDown);
             // 
@@ -108,10 +108,10 @@
             // 
             this.RadioClassic.AutoSize = true;
             this.RadioClassic.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RadioClassic.Location = new System.Drawing.Point(17, 47);
+            this.RadioClassic.Location = new System.Drawing.Point(17, 21);
             this.RadioClassic.Name = "RadioClassic";
             this.RadioClassic.Size = new System.Drawing.Size(70, 20);
-            this.RadioClassic.TabIndex = 4;
+            this.RadioClassic.TabIndex = 6;
             this.RadioClassic.TabStop = true;
             this.RadioClassic.Text = "Classic";
             this.RadioClassic.UseVisualStyleBackColor = true;
@@ -120,12 +120,12 @@
             // 
             this.RadioPrisum.AutoSize = true;
             this.RadioPrisum.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RadioPrisum.Location = new System.Drawing.Point(17, 22);
+            this.RadioPrisum.Location = new System.Drawing.Point(17, 47);
             this.RadioPrisum.Name = "RadioPrisum";
-            this.RadioPrisum.Size = new System.Drawing.Size(52, 20);
-            this.RadioPrisum.TabIndex = 5;
+            this.RadioPrisum.Size = new System.Drawing.Size(68, 20);
+            this.RadioPrisum.TabIndex = 7;
             this.RadioPrisum.TabStop = true;
-            this.RadioPrisum.Text = "LED";
+            this.RadioPrisum.Text = "Prisum";
             this.RadioPrisum.UseVisualStyleBackColor = true;
             // 
             // RadioSimple
@@ -135,7 +135,7 @@
             this.RadioSimple.Location = new System.Drawing.Point(17, 73);
             this.RadioSimple.Name = "RadioSimple";
             this.RadioSimple.Size = new System.Drawing.Size(67, 20);
-            this.RadioSimple.TabIndex = 6;
+            this.RadioSimple.TabIndex = 8;
             this.RadioSimple.TabStop = true;
             this.RadioSimple.Text = "Simple";
             this.RadioSimple.UseVisualStyleBackColor = true;
@@ -147,7 +147,7 @@
             this.RadioRainbow.Location = new System.Drawing.Point(17, 98);
             this.RadioRainbow.Name = "RadioRainbow";
             this.RadioRainbow.Size = new System.Drawing.Size(155, 20);
-            this.RadioRainbow.TabIndex = 7;
+            this.RadioRainbow.TabIndex = 9;
             this.RadioRainbow.TabStop = true;
             this.RadioRainbow.Text = "Rainbow (Horizontal)";
             this.RadioRainbow.UseVisualStyleBackColor = true;
@@ -162,7 +162,7 @@
             this.groupBox1.Location = new System.Drawing.Point(12, 54);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(174, 133);
-            this.groupBox1.TabIndex = 3;
+            this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Style";
             // 
@@ -172,7 +172,7 @@
             this.EnumerateButton.Location = new System.Drawing.Point(458, 28);
             this.EnumerateButton.Name = "EnumerateButton";
             this.EnumerateButton.Size = new System.Drawing.Size(75, 23);
-            this.EnumerateButton.TabIndex = 2;
+            this.EnumerateButton.TabIndex = 11;
             this.EnumerateButton.Text = "Enumerate";
             this.EnumerateButton.UseVisualStyleBackColor = true;
             // 
@@ -206,8 +206,7 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(179, 71);
-            this.textBox1.TabIndex = 21;
-            this.textBox1.TabStop = false;
+            this.textBox1.TabIndex = 15;
             this.textBox1.Text = "Depending on the number of output device (disabled or not), enumerating may take " +
     "several minute.";
             // 
@@ -225,7 +224,7 @@
             this.ComboBox1.Location = new System.Drawing.Point(344, 59);
             this.ComboBox1.Name = "ComboBox1";
             this.ComboBox1.Size = new System.Drawing.Size(47, 24);
-            this.ComboBox1.TabIndex = 7;
+            this.ComboBox1.TabIndex = 16;
             this.ComboBox1.ValueMember = "1,2,4,8,16";
             this.ComboBox1.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
             // 
@@ -255,7 +254,7 @@
             this.ComboBox2.Location = new System.Drawing.Point(333, 87);
             this.ComboBox2.Name = "ComboBox2";
             this.ComboBox2.Size = new System.Drawing.Size(58, 24);
-            this.ComboBox2.TabIndex = 8;
+            this.ComboBox2.TabIndex = 18;
             // 
             // label3
             // 
@@ -286,7 +285,7 @@
             this.TrackBar2.Name = "TrackBar2";
             this.TrackBar2.Size = new System.Drawing.Size(267, 45);
             this.TrackBar2.SmallChange = 2;
-            this.TrackBar2.TabIndex = 16;
+            this.TrackBar2.TabIndex = 21;
             this.TrackBar2.TickFrequency = 2;
             this.TrackBar2.Value = 10;
             this.TrackBar2.ValueChanged += new System.EventHandler(this.TrackBar2_ValueChanged);
@@ -299,7 +298,7 @@
             this.groupBox3.Location = new System.Drawing.Point(12, 270);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(334, 66);
-            this.groupBox3.TabIndex = 15;
+            this.groupBox3.TabIndex = 22;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Peakhold Decay Speed (4 - 20)";
             // 
@@ -308,7 +307,7 @@
             this.TextBox_DecaySpeed.Location = new System.Drawing.Point(279, 18);
             this.TextBox_DecaySpeed.Name = "TextBox_DecaySpeed";
             this.TextBox_DecaySpeed.Size = new System.Drawing.Size(43, 23);
-            this.TextBox_DecaySpeed.TabIndex = 17;
+            this.TextBox_DecaySpeed.TabIndex = 22;
             this.TextBox_DecaySpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.TextBox_DecaySpeed.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_DecaySpeed_KeyDown);
             // 
@@ -319,8 +318,8 @@
             this.SSaverCheckBox.Location = new System.Drawing.Point(367, 205);
             this.SSaverCheckBox.Name = "SSaverCheckBox";
             this.SSaverCheckBox.Size = new System.Drawing.Size(165, 20);
-            this.SSaverCheckBox.TabIndex = 20;
-            this.SSaverCheckBox.Text = "Prevent Screen Saver";
+            this.SSaverCheckBox.TabIndex = 23;
+            this.SSaverCheckBox.Text = "Prevant Screen Saver";
             this.SSaverCheckBox.UseVisualStyleBackColor = true;
             // 
             // groupBox4
@@ -331,7 +330,7 @@
             this.groupBox4.Location = new System.Drawing.Point(207, 117);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(139, 76);
-            this.groupBox4.TabIndex = 9;
+            this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Channel Layout";
             // 
@@ -341,7 +340,7 @@
             this.HorizontalRadio.Location = new System.Drawing.Point(21, 50);
             this.HorizontalRadio.Name = "HorizontalRadio";
             this.HorizontalRadio.Size = new System.Drawing.Size(87, 20);
-            this.HorizontalRadio.TabIndex = 11;
+            this.HorizontalRadio.TabIndex = 1;
             this.HorizontalRadio.TabStop = true;
             this.HorizontalRadio.Text = "Horizontal";
             this.HorizontalRadio.UseVisualStyleBackColor = true;
@@ -352,7 +351,7 @@
             this.VerticalRadio.Location = new System.Drawing.Point(21, 22);
             this.VerticalRadio.Name = "VerticalRadio";
             this.VerticalRadio.Size = new System.Drawing.Size(71, 20);
-            this.VerticalRadio.TabIndex = 10;
+            this.VerticalRadio.TabIndex = 0;
             this.VerticalRadio.TabStop = true;
             this.VerticalRadio.Text = "Vertical";
             this.VerticalRadio.UseVisualStyleBackColor = true;
@@ -364,7 +363,7 @@
             this.PeakholdCheckBox.Location = new System.Drawing.Point(367, 153);
             this.PeakholdCheckBox.Name = "PeakholdCheckBox";
             this.PeakholdCheckBox.Size = new System.Drawing.Size(85, 20);
-            this.PeakholdCheckBox.TabIndex = 18;
+            this.PeakholdCheckBox.TabIndex = 25;
             this.PeakholdCheckBox.Text = "Peakhold";
             this.PeakholdCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -375,7 +374,7 @@
             this.AlwaysOnTopCheckBox.Location = new System.Drawing.Point(367, 179);
             this.AlwaysOnTopCheckBox.Name = "AlwaysOnTopCheckBox";
             this.AlwaysOnTopCheckBox.Size = new System.Drawing.Size(116, 20);
-            this.AlwaysOnTopCheckBox.TabIndex = 19;
+            this.AlwaysOnTopCheckBox.TabIndex = 26;
             this.AlwaysOnTopCheckBox.Text = "Always on Top";
             this.AlwaysOnTopCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -425,6 +424,7 @@
 
         public System.Windows.Forms.ComboBox devicelist;
         private System.Windows.Forms.Button Button1;
+        private System.Windows.Forms.TextBox TextBox_Sensibility;
         public System.Windows.Forms.TrackBar TrackBar1;
         private System.Windows.Forms.GroupBox groupBox1;
         public System.Windows.Forms.Button EnumerateButton;
@@ -442,13 +442,12 @@
         public System.Windows.Forms.ComboBox ComboBox2;
         public System.Windows.Forms.TrackBar TrackBar2;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox TextBox_DecaySpeed;
         public System.Windows.Forms.CheckBox SSaverCheckBox;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.RadioButton HorizontalRadio;
         private System.Windows.Forms.RadioButton VerticalRadio;
         public System.Windows.Forms.CheckBox PeakholdCheckBox;
         public System.Windows.Forms.CheckBox AlwaysOnTopCheckBox;
-        public System.Windows.Forms.TextBox TextBox_Sensibility;
-        public System.Windows.Forms.TextBox TextBox_DecaySpeed;
     }
 }
