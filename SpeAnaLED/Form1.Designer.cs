@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.spectrum1 = new System.Windows.Forms.PictureBox();
             this.Timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
@@ -43,7 +44,8 @@
             this.spectrum1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.spectrum1.Location = new System.Drawing.Point(12, 12);
             this.spectrum1.Name = "spectrum1";
-            this.spectrum1.Size = new System.Drawing.Size(640, 128);
+            this.spectrum1.Size = new System.Drawing.Size(100, 50);
+            this.spectrum1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.spectrum1.TabIndex = 0;
             this.spectrum1.TabStop = false;
             this.spectrum1.DoubleClick += new System.EventHandler(this.Spectrum1_DoubleClick);
@@ -72,6 +74,7 @@
             this.spectrum2.Location = new System.Drawing.Point(12, 197);
             this.spectrum2.Name = "spectrum2";
             this.spectrum2.Size = new System.Drawing.Size(100, 50);
+            this.spectrum2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.spectrum2.TabIndex = 2;
             this.spectrum2.TabStop = false;
             this.spectrum2.DoubleClick += new System.EventHandler(this.Spectrum2_DoubleClick);
@@ -85,9 +88,12 @@
             this.Controls.Add(this.spectrum2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.spectrum1);
+            this.HelpButton = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "SpeAnaLED";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.DoubleClick += new System.EventHandler(this.Form1_DoubleClick);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             ((System.ComponentModel.ISupportInitialize)(this.spectrum1)).EndInit();

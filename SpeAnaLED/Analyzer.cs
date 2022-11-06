@@ -59,6 +59,8 @@ namespace SpeAnaLED
         private void Init()
         {
             bool result = false;
+            //for (int i = 0; i < BassWasapi.BASS_WASAPI_GetDeviceCount(); i++)
+            //{
             int i = 9;          // device number Configfileで処理するようにする
             var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(i);
             if (device.IsEnabled && device.IsLoopback)
@@ -73,7 +75,7 @@ namespace SpeAnaLED
                 }
                 else _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
             }
-
+            //}
             try
             {
                 _devicelist.SelectedIndex = 0;
@@ -213,7 +215,17 @@ namespace SpeAnaLED
                 }
             }
 
-            _devicelist.SelectedIndex = 0;
+            try
+            {
+                _devicelist.SelectedIndex = 0;
+            }
+            catch
+            {
+                MessageBox.Show("No Output Device found.",
+                    "No Output Device - SpeAnaLED",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+            }
             Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
             result = Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
             if (!result) throw new Exception("Source Device Initialize Error"); 
