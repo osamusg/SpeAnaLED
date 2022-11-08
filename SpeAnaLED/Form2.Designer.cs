@@ -32,7 +32,7 @@
             this.devicelist = new System.Windows.Forms.ComboBox();
             this.Button1 = new System.Windows.Forms.Button();
             this.TrackBar1 = new System.Windows.Forms.TrackBar();
-            this.TextBox_Sensibility = new System.Windows.Forms.TextBox();
+            this.TextBox_Sensitivity = new System.Windows.Forms.TextBox();
             this.RadioClassic = new System.Windows.Forms.RadioButton();
             this.RadioPrisum = new System.Windows.Forms.RadioButton();
             this.RadioSimple = new System.Windows.Forms.RadioButton();
@@ -107,15 +107,15 @@
             this.TrackBar1.Value = 78;
             this.TrackBar1.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
             // 
-            // TextBox_Sensibility
+            // TextBox_Sensitivity
             // 
-            this.TextBox_Sensibility.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TextBox_Sensibility.Location = new System.Drawing.Point(279, 18);
-            this.TextBox_Sensibility.Name = "TextBox_Sensibility";
-            this.TextBox_Sensibility.Size = new System.Drawing.Size(43, 23);
-            this.TextBox_Sensibility.TabIndex = 14;
-            this.TextBox_Sensibility.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.TextBox_Sensibility.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_Sensibility_KeyDown);
+            this.TextBox_Sensitivity.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBox_Sensitivity.Location = new System.Drawing.Point(279, 18);
+            this.TextBox_Sensitivity.Name = "TextBox_Sensitivity";
+            this.TextBox_Sensitivity.Size = new System.Drawing.Size(43, 23);
+            this.TextBox_Sensitivity.TabIndex = 14;
+            this.TextBox_Sensitivity.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.TextBox_Sensitivity.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_Sensitivity_KeyDown);
             // 
             // RadioClassic
             // 
@@ -192,14 +192,14 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.TrackBar1);
-            this.groupBox2.Controls.Add(this.TextBox_Sensibility);
+            this.groupBox2.Controls.Add(this.TextBox_Sensitivity);
             this.groupBox2.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(12, 226);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(334, 71);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Sensibility (1.0 - 9.9)";
+            this.groupBox2.Text = "Sensitivity (1.0 - 9.9)";
             // 
             // label1
             // 
@@ -582,7 +582,7 @@
         protected internal System.Windows.Forms.CheckBox SSaverCheckBox;
         protected internal System.Windows.Forms.CheckBox PeakholdCheckBox;
         protected internal System.Windows.Forms.CheckBox AlwaysOnTopCheckBox;
-        protected internal System.Windows.Forms.TextBox TextBox_Sensibility;
+        protected internal System.Windows.Forms.TextBox TextBox_Sensitivity;
         protected internal System.Windows.Forms.TextBox TextBox_DecaySpeed;
         protected internal System.Windows.Forms.RadioButton RadioHorizontal;
         protected internal System.Windows.Forms.RadioButton RadioVertical;

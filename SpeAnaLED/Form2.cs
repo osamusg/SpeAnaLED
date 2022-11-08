@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using ConfigFile;
 
 namespace SpeAnaLED
 {
@@ -20,7 +19,6 @@ namespace SpeAnaLED
 
             // 未実装対応
             RadioMono.Enabled = false;
-            CheckBoxFlip.Visible = false;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -30,24 +28,24 @@ namespace SpeAnaLED
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
         {
-            TextBox_Sensibility.Text = (TrackBar1.Value / 10f).ToString("0.0");
+            TextBox_Sensitivity.Text = (TrackBar1.Value / 10f).ToString("0.0");
         }
 
-        private void TextBox_Sensibility_KeyDown(object sender, KeyEventArgs e)
+        private void TextBox_Sensitivity_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
             {
                 e.SuppressKeyPress = true;      // suppress bell rings
                 try
                 {
-                    int SensibilityChangedValue = Convert.ToInt16(float.Parse(TextBox_Sensibility.Text) * 10f);
-                    if (SensibilityChangedValue >= 10 && SensibilityChangedValue < 100)
-                        TrackBar1.Value = SensibilityChangedValue;
-                    else TextBox_Sensibility.Text = (TrackBar1.Value / 10f).ToString("0.0");
+                    int SensitivityChangedValue = Convert.ToInt16(float.Parse(TextBox_Sensitivity.Text) * 10f);
+                    if (SensitivityChangedValue >= 10 && SensitivityChangedValue < 100)
+                        TrackBar1.Value = SensitivityChangedValue;
+                    else TextBox_Sensitivity.Text = (TrackBar1.Value / 10f).ToString("0.0");
                 }
                 catch
                 {
-                    TextBox_Sensibility.Text = (TrackBar1.Value / 10f).ToString("0.0");
+                    TextBox_Sensitivity.Text = (TrackBar1.Value / 10f).ToString("0.0");
                 }
             }
         }

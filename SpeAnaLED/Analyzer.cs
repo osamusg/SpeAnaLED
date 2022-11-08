@@ -26,10 +26,10 @@ namespace SpeAnaLED
         public event EventHandler SpectrumChanged;      // for fire
 
         public readonly int _channel = 2;               // 1: "mix-data"(mono) 2: L+R
-        public int _lines;// = 16;                         // default number of spectrum lines
+        public int _lines;                              // default number of spectrum lines
 
 
-        public Analyzer(ComboBox devicelist, Button enumButton, ComboBox numberofbar)    // イベントを受信するコントロールを登録
+        public Analyzer(ComboBox devicelist, Button enumButton, ComboBox numberofbar)    // Control data for event subscribe
         {
             _fft = new float[8192 * _channel];
             _devicelist = devicelist;
@@ -37,7 +37,7 @@ namespace SpeAnaLED
             _process = new WASAPIPROC(Process);
             _timer1 = new DispatcherTimer();
             _timer1.Tick += Timer1_Tick;
-            _timer1.Interval = TimeSpan.FromMilliseconds(25);   // 40hz refresh rate // 16.667? 60hz
+            _timer1.Interval = TimeSpan.FromMilliseconds(25);   // 40hz refresh rate
             _timer1.IsEnabled = false;
             _spectrumdata = new List<byte>();
             _form2EnumButton = enumButton;
@@ -61,19 +61,12 @@ namespace SpeAnaLED
             bool result = false;
             //for (int i = 0; i < BassWasapi.BASS_WASAPI_GetDeviceCount(); i++)
             //{
-            int i = 9;          // device number Configfileで処理するようにする
+            int i = 9;          // device number Configfileで処理するようにすること
+            Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UNICODE, true);
             var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(i);
             if (device.IsEnabled && device.IsLoopback)
             {
-                // Modified cheaply because of Bass.dll's not-good handling of system default encoding.
-                if (device.name[0] > 0x007f)
-                {
-                    byte[] byteStream = Encoding.GetEncoding("UTF-8").GetBytes(device.name);
-                    byteStream = GetTrueSjisByte(byteStream);
-                    string trueSjisName = Encoding.GetEncoding(Encoding.Default.CodePage).GetString(byteStream);
-                    _devicelist.Items.Add(string.Format("{0} - {1}", i, trueSjisName));
-                }
-                else _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
+                _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
             }
             //}
             try
@@ -134,14 +127,14 @@ namespace SpeAnaLED
             return length;
         }
 
-        //イベントの受信処理用
+        // reseived event function
         //timer
         private void Timer1_Tick(object sender, EventArgs e)
         {
             int ret = BassWasapi.BASS_WASAPI_GetData(_fft, (int)_DATAFLAG);                 //get channel fft data
             if (ret < -1) return;
             int bandX, powerY;
-            int fftPos = 0;     // bufferデータ内の位置
+            int fftPos = 0;     // buffer data position
             int freqValue = 1;
 
             // computes the spectrum data, the code is taken from a bass_wasapi sample.
@@ -153,15 +146,13 @@ namespace SpeAnaLED
                     freqValue = (int)Math.Pow(2, (bandX * 10.0/(_lines - 1)) + 4.35);       // 4.35 from actual measurement, not logic...
                 else
                     freqValue = (int)Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + 2);        // Ditto
-                if (freqValue <= fftPos) freqValue = fftPos + 1;                            // なぜか範囲外だったらバンドの最低周波数にする
-                if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;     // 最後のデータははみ出る
-                //for (; freqPos < freqValue; freqPos++)                                    // 周波数バンド内を順に調べる
-                for (; fftPos < freqValue; fftPos+=_channel)                                // 周波数バンド内を順にinterreaveで調べる
+                if (freqValue <= fftPos) freqValue = fftPos + 1;                            // if out of range, min. freq. selected
+                if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;     // truncate last data
+                for (; fftPos < freqValue; fftPos += _channel)                                // freq band in interreave sequence
                 {
-                    for (int i = 0; i < _channel; i++)                                      // interreave対応
+                    for (int i = 0; i < _channel; i++)                                      // interreave L,R,L,R,... or L+R,L+R,L+R...
                     { 
-                        if (peak_left < _fft[1 + fftPos]) peak_left = _fft[1 + fftPos];     // _fft[x]の最大値を探してpeakに代入
-                                                                                            // なぜかLとRが逆かも
+                        if (peak_left < _fft[1 + fftPos]) peak_left = _fft[1 + fftPos];     // set max _fft[x] to peak
                         if (peak_right < _fft[1 + fftPos + (_channel - 1)]) peak_right = _fft[1 + fftPos + (_channel - 1)];
                     }
                 }
@@ -178,7 +169,7 @@ namespace SpeAnaLED
                 }
             }
 
-            // 描画データ処理を発火
+            //  fire draw event to form1
             if (SpectrumChanged != null) SpectrumChanged(this, EventArgs.Empty);
             
             _spectrumdata.Clear();
@@ -203,15 +194,7 @@ namespace SpeAnaLED
                 var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(i);
                 if (device.IsEnabled && device.IsLoopback)
                 {
-                    // Modified cheaply because of Bass.dll's not-good handling of system default encoding.
-                    if (device.name[0] > 0x007f)
-                    {
-                        byte[] byteStream = Encoding.GetEncoding("UTF-8").GetBytes(device.name);
-                        byteStream = GetTrueSjisByte(byteStream);
-                        string trueSjisName = Encoding.GetEncoding(Encoding.Default.CodePage).GetString(byteStream);
-                        _devicelist.Items.Add(string.Format("{0} - {1}", i, trueSjisName));
-                    }
-                    else _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
+                    _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
                 }
             }
 
@@ -239,62 +222,6 @@ namespace SpeAnaLED
         {
             BassWasapi.BASS_WASAPI_Free();
             Bass.BASS_Free();
-        }
-
-        private byte[] GetTrueSjisByte(byte[] byteStream)
-        {
-            byte[] bs = byteStream;
-            int bsPos = 0;
-            int outPos = 0;
-            byte[] key = { 0xef, 0xbf, 0xbd };
-            byte[] output = new byte[256];
-            while (bsPos < bs.Length)
-            {
-                if (bs[bsPos] == key[0] && bs[bsPos + 1] == key[1] && bs[bsPos + 2] == key[2])
-                {
-                    if (bs[bsPos + 3] == 0x5b)
-                    {
-                        output[outPos] = 0x81;
-                        outPos++;
-                        bsPos += 3;
-                    }
-                    else if (bs[bsPos + 3] == key[0] && bs[bsPos + 4] == key[1] && bs[bsPos + 5] == key[2]
-                        && bs[bsPos + 6] == key[0] && bs[bsPos + 7] == key[1] && bs[bsPos + 8] == key[2])
-                    {
-                        output[outPos] = 0x83;
-                        output[outPos + 1] = 0x93;
-                        outPos += 2;
-                        bsPos += 6;
-                    }
-                    else if (bs[bsPos + 3] == key[0] && bs[bsPos + 4] == key[1] && bs[bsPos + 5] == key[2])
-                    {
-                        output[outPos] = 0x83;
-                        output[outPos + 1] = 0x8b;
-                        outPos += 2;
-                        bsPos += 3;
-                    }
-                    else if (bs[bsPos + 3] == 0x20)
-                    {
-                        bsPos += 3;
-                    }
-                    else
-                    {
-                        output[outPos] = 0x83;
-                        outPos++;
-                        bsPos += 3;
-                    }
-
-                }
-                else
-                {
-                    output[outPos] = bs[bsPos];
-                    bsPos++;
-                    outPos++;
-                }
-            }
-            Array.Resize(ref output, outPos);
-
-            return output;
         }
     }
 }
