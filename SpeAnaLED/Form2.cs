@@ -10,6 +10,7 @@ namespace SpeAnaLED
         // go public controls
         //public TrackBar Form2_TrackBar1 { get { return this.TrackBar1; } }
         //public TrackBar Form2_TrackBar2 { get { return TrackBar2; } }
+        public ComboBox Devicelist { get { return devicelist; } }
         
         public event EventHandler ClearSpectrum;
 
@@ -77,6 +78,17 @@ namespace SpeAnaLED
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
+            if (devicelist.SelectedIndex == -1/* && devicelist.Items.Count == 0*/)
+            {
+                devicelist.Items.Add("Please Enumrate Devices");
+                devicelist.SelectedIndex = 0;
+            }
+        }
+
+        private void Form2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                this.Visible = false;
         }
     }
 }

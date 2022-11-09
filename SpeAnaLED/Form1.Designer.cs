@@ -60,12 +60,12 @@
             // 
             this.LabelCycle.AutoSize = true;
             this.LabelCycle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.LabelCycle.Location = new System.Drawing.Point(12, 166);
+            this.LabelCycle.Location = new System.Drawing.Point(22, 24);
             this.LabelCycle.Name = "LabelCycle";
             this.LabelCycle.Size = new System.Drawing.Size(41, 14);
             this.LabelCycle.TabIndex = 1;
             this.LabelCycle.Text = "label1";
-            this.LabelCycle.Click += new System.EventHandler(this.label1_Click);
+            this.LabelCycle.Click += new System.EventHandler(this.LabelCycle_Click);
             // 
             // Spectrum2
             // 
@@ -78,7 +78,7 @@
             this.Spectrum2.TabIndex = 2;
             this.Spectrum2.TabStop = false;
             this.Spectrum2.DoubleClick += new System.EventHandler(this.Spectrum2_DoubleClick);
-            this.Spectrum2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.spectrum2_MouseDown);
+            this.Spectrum2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseDown);
             // 
             // Form1
             // 
@@ -111,4 +111,3 @@
         private System.Windows.Forms.PictureBox Spectrum2;
     }
 }
-

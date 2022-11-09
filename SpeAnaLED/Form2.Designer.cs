@@ -53,6 +53,10 @@
             this.SSaverCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.CheckBoxFlip = new System.Windows.Forms.CheckBox();
+            this.GroupFlip = new System.Windows.Forms.GroupBox();
+            this.RadioNoFlip = new System.Windows.Forms.RadioButton();
+            this.RadioRightFlip = new System.Windows.Forms.RadioButton();
+            this.RadioLeftFlip = new System.Windows.Forms.RadioButton();
             this.RadioHorizontal = new System.Windows.Forms.RadioButton();
             this.RadioVertical = new System.Windows.Forms.RadioButton();
             this.PeakholdCheckBox = new System.Windows.Forms.CheckBox();
@@ -62,18 +66,15 @@
             this.RadioMono = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
             this.ShowCyclCheckBox = new System.Windows.Forms.CheckBox();
-            this.GroupFlip = new System.Windows.Forms.GroupBox();
-            this.RadioLeftFlip = new System.Windows.Forms.RadioButton();
-            this.RadioRightFlip = new System.Windows.Forms.RadioButton();
-            this.RadioNoFlip = new System.Windows.Forms.RadioButton();
+            this.CheckBoxHideFreq = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.TrackBar1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackBar2)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.GroupFlip.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // devicelist
@@ -171,7 +172,7 @@
             this.groupBox1.Controls.Add(this.RadioRainbow);
             this.groupBox1.Controls.Add(this.RadioPrisum);
             this.groupBox1.Controls.Add(this.RadioSimple);
-            this.groupBox1.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 54);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(174, 133);
@@ -182,7 +183,7 @@
             // EnumerateButton
             // 
             this.EnumerateButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.EnumerateButton.Location = new System.Drawing.Point(458, 28);
+            this.EnumerateButton.Location = new System.Drawing.Point(458, 26);
             this.EnumerateButton.Name = "EnumerateButton";
             this.EnumerateButton.Size = new System.Drawing.Size(75, 23);
             this.EnumerateButton.TabIndex = 2;
@@ -193,7 +194,7 @@
             // 
             this.groupBox2.Controls.Add(this.TrackBar1);
             this.groupBox2.Controls.Add(this.TextBox_Sensitivity);
-            this.groupBox2.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(12, 226);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(334, 71);
@@ -204,10 +205,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(50, 16);
+            this.label1.Size = new System.Drawing.Size(44, 15);
             this.label1.TabIndex = 13;
             this.label1.Text = "Device";
             // 
@@ -243,12 +244,12 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(204, 62);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(117, 16);
+            this.label2.Size = new System.Drawing.Size(132, 15);
             this.label2.TabIndex = 17;
-            this.label2.Text = "Number of Band :";
+            this.label2.Text = "Number of Bandwidth :";
             // 
             // ComboBox2
             // 
@@ -271,20 +272,20 @@
             // LabelPeakhold
             // 
             this.LabelPeakhold.AutoSize = true;
-            this.LabelPeakhold.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LabelPeakhold.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LabelPeakhold.Location = new System.Drawing.Point(219, 111);
             this.LabelPeakhold.Name = "LabelPeakhold";
-            this.LabelPeakhold.Size = new System.Drawing.Size(108, 16);
+            this.LabelPeakhold.Size = new System.Drawing.Size(96, 15);
             this.LabelPeakhold.TabIndex = 19;
             this.LabelPeakhold.Text = "Peakhold Time :";
             // 
             // LabelMsec
             // 
             this.LabelMsec.AutoSize = true;
-            this.LabelMsec.Font = new System.Drawing.Font("Arial", 10F);
+            this.LabelMsec.Font = new System.Drawing.Font("Arial", 9F);
             this.LabelMsec.Location = new System.Drawing.Point(393, 111);
             this.LabelMsec.Name = "LabelMsec";
-            this.LabelMsec.Size = new System.Drawing.Size(44, 16);
+            this.LabelMsec.Size = new System.Drawing.Size(41, 15);
             this.LabelMsec.TabIndex = 20;
             this.LabelMsec.Text = "msec.";
             // 
@@ -306,7 +307,7 @@
             // 
             this.groupBox3.Controls.Add(this.TextBox_DecaySpeed);
             this.groupBox3.Controls.Add(this.TrackBar2);
-            this.groupBox3.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(12, 303);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(334, 66);
@@ -318,7 +319,7 @@
             // 
             this.TextBox_DecaySpeed.Location = new System.Drawing.Point(279, 18);
             this.TextBox_DecaySpeed.Name = "TextBox_DecaySpeed";
-            this.TextBox_DecaySpeed.Size = new System.Drawing.Size(43, 23);
+            this.TextBox_DecaySpeed.Size = new System.Drawing.Size(43, 21);
             this.TextBox_DecaySpeed.TabIndex = 17;
             this.TextBox_DecaySpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.TextBox_DecaySpeed.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_DecaySpeed_KeyDown);
@@ -326,10 +327,10 @@
             // SSaverCheckBox
             // 
             this.SSaverCheckBox.AutoSize = true;
-            this.SSaverCheckBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SSaverCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SSaverCheckBox.Location = new System.Drawing.Point(206, 169);
             this.SSaverCheckBox.Name = "SSaverCheckBox";
-            this.SSaverCheckBox.Size = new System.Drawing.Size(165, 20);
+            this.SSaverCheckBox.Size = new System.Drawing.Size(143, 19);
             this.SSaverCheckBox.TabIndex = 20;
             this.SSaverCheckBox.Text = "Prevent Screen Saver";
             this.SSaverCheckBox.UseVisualStyleBackColor = true;
@@ -351,19 +352,71 @@
             // CheckBoxFlip
             // 
             this.CheckBoxFlip.AutoSize = true;
+            this.CheckBoxFlip.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CheckBoxFlip.Location = new System.Drawing.Point(121, 50);
             this.CheckBoxFlip.Name = "CheckBoxFlip";
-            this.CheckBoxFlip.Size = new System.Drawing.Size(77, 20);
+            this.CheckBoxFlip.Size = new System.Drawing.Size(69, 19);
             this.CheckBoxFlip.TabIndex = 12;
             this.CheckBoxFlip.Text = "Flip Left";
             this.CheckBoxFlip.UseVisualStyleBackColor = true;
+            this.CheckBoxFlip.Visible = false;
+            // 
+            // GroupFlip
+            // 
+            this.GroupFlip.Controls.Add(this.RadioNoFlip);
+            this.GroupFlip.Controls.Add(this.RadioRightFlip);
+            this.GroupFlip.Controls.Add(this.RadioLeftFlip);
+            this.GroupFlip.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GroupFlip.Location = new System.Drawing.Point(31, 76);
+            this.GroupFlip.Name = "GroupFlip";
+            this.GroupFlip.Size = new System.Drawing.Size(163, 97);
+            this.GroupFlip.TabIndex = 12;
+            this.GroupFlip.TabStop = false;
+            this.GroupFlip.Text = "Flip";
+            // 
+            // RadioNoFlip
+            // 
+            this.RadioNoFlip.AutoSize = true;
+            this.RadioNoFlip.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RadioNoFlip.Location = new System.Drawing.Point(18, 23);
+            this.RadioNoFlip.Name = "RadioNoFlip";
+            this.RadioNoFlip.Size = new System.Drawing.Size(64, 19);
+            this.RadioNoFlip.TabIndex = 2;
+            this.RadioNoFlip.TabStop = true;
+            this.RadioNoFlip.Text = "No Flip";
+            this.RadioNoFlip.UseVisualStyleBackColor = true;
+            // 
+            // RadioRightFlip
+            // 
+            this.RadioRightFlip.AutoSize = true;
+            this.RadioRightFlip.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RadioRightFlip.Location = new System.Drawing.Point(18, 49);
+            this.RadioRightFlip.Name = "RadioRightFlip";
+            this.RadioRightFlip.Size = new System.Drawing.Size(113, 19);
+            this.RadioRightFlip.TabIndex = 1;
+            this.RadioRightFlip.TabStop = true;
+            this.RadioRightFlip.Text = "R.ch (Center Hi)";
+            this.RadioRightFlip.UseVisualStyleBackColor = true;
+            // 
+            // RadioLeftFlip
+            // 
+            this.RadioLeftFlip.AutoSize = true;
+            this.RadioLeftFlip.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RadioLeftFlip.Location = new System.Drawing.Point(18, 75);
+            this.RadioLeftFlip.Name = "RadioLeftFlip";
+            this.RadioLeftFlip.Size = new System.Drawing.Size(122, 19);
+            this.RadioLeftFlip.TabIndex = 0;
+            this.RadioLeftFlip.TabStop = true;
+            this.RadioLeftFlip.Text = "L.ch (Center Low)";
+            this.RadioLeftFlip.UseVisualStyleBackColor = true;
             // 
             // RadioHorizontal
             // 
             this.RadioHorizontal.AutoSize = true;
-            this.RadioHorizontal.Location = new System.Drawing.Point(21, 50);
+            this.RadioHorizontal.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RadioHorizontal.Location = new System.Drawing.Point(16, 48);
             this.RadioHorizontal.Name = "RadioHorizontal";
-            this.RadioHorizontal.Size = new System.Drawing.Size(87, 20);
+            this.RadioHorizontal.Size = new System.Drawing.Size(80, 19);
             this.RadioHorizontal.TabIndex = 11;
             this.RadioHorizontal.TabStop = true;
             this.RadioHorizontal.Text = "Horizontal";
@@ -372,9 +425,10 @@
             // RadioVertical
             // 
             this.RadioVertical.AutoSize = true;
-            this.RadioVertical.Location = new System.Drawing.Point(21, 22);
+            this.RadioVertical.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RadioVertical.Location = new System.Drawing.Point(16, 23);
             this.RadioVertical.Name = "RadioVertical";
-            this.RadioVertical.Size = new System.Drawing.Size(71, 20);
+            this.RadioVertical.Size = new System.Drawing.Size(64, 19);
             this.RadioVertical.TabIndex = 10;
             this.RadioVertical.TabStop = true;
             this.RadioVertical.Text = "Vertical";
@@ -383,10 +437,10 @@
             // PeakholdCheckBox
             // 
             this.PeakholdCheckBox.AutoSize = true;
-            this.PeakholdCheckBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PeakholdCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PeakholdCheckBox.Location = new System.Drawing.Point(207, 88);
             this.PeakholdCheckBox.Name = "PeakholdCheckBox";
-            this.PeakholdCheckBox.Size = new System.Drawing.Size(85, 20);
+            this.PeakholdCheckBox.Size = new System.Drawing.Size(78, 19);
             this.PeakholdCheckBox.TabIndex = 18;
             this.PeakholdCheckBox.Text = "Peakhold";
             this.PeakholdCheckBox.UseVisualStyleBackColor = true;
@@ -394,10 +448,10 @@
             // AlwaysOnTopCheckBox
             // 
             this.AlwaysOnTopCheckBox.AutoSize = true;
-            this.AlwaysOnTopCheckBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AlwaysOnTopCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AlwaysOnTopCheckBox.Location = new System.Drawing.Point(206, 143);
             this.AlwaysOnTopCheckBox.Name = "AlwaysOnTopCheckBox";
-            this.AlwaysOnTopCheckBox.Size = new System.Drawing.Size(116, 20);
+            this.AlwaysOnTopCheckBox.Size = new System.Drawing.Size(104, 19);
             this.AlwaysOnTopCheckBox.TabIndex = 19;
             this.AlwaysOnTopCheckBox.Text = "Always on Top";
             this.AlwaysOnTopCheckBox.UseVisualStyleBackColor = true;
@@ -408,21 +462,22 @@
             this.groupBox5.Controls.Add(this.RadioMono);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.groupBox4);
-            this.groupBox5.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox5.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox5.Location = new System.Drawing.Point(417, 143);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(220, 270);
             this.groupBox5.TabIndex = 22;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Number of Channel";
+            this.groupBox5.Text = "Number of Channels";
             // 
             // RadioStereo
             // 
             this.RadioStereo.AutoSize = true;
             this.RadioStereo.Checked = true;
-            this.RadioStereo.Location = new System.Drawing.Point(128, 23);
+            this.RadioStereo.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RadioStereo.Location = new System.Drawing.Point(122, 20);
             this.RadioStereo.Name = "RadioStereo";
-            this.RadioStereo.Size = new System.Drawing.Size(83, 20);
+            this.RadioStereo.Size = new System.Drawing.Size(74, 19);
             this.RadioStereo.TabIndex = 2;
             this.RadioStereo.TabStop = true;
             this.RadioStereo.Text = "2: Stereo";
@@ -431,9 +486,11 @@
             // RadioMono
             // 
             this.RadioMono.AutoSize = true;
-            this.RadioMono.Location = new System.Drawing.Point(7, 23);
+            this.RadioMono.Enabled = false;
+            this.RadioMono.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RadioMono.Location = new System.Drawing.Point(23, 20);
             this.RadioMono.Name = "RadioMono";
-            this.RadioMono.Size = new System.Drawing.Size(106, 20);
+            this.RadioMono.Size = new System.Drawing.Size(93, 19);
             this.RadioMono.TabIndex = 1;
             this.RadioMono.TabStop = true;
             this.RadioMono.Text = "1: Mono(Mix)";
@@ -443,12 +500,13 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Enabled = false;
-            this.label5.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(6, 50);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(137, 16);
+            this.label5.Size = new System.Drawing.Size(117, 14);
             this.label5.TabIndex = 0;
             this.label5.Text = "This needs App restart";
+            this.label5.Visible = false;
             // 
             // ShowCyclCheckBox
             // 
@@ -461,50 +519,16 @@
             this.ShowCyclCheckBox.Text = "Show Cycle (debug)";
             this.ShowCyclCheckBox.UseVisualStyleBackColor = true;
             // 
-            // GroupFlip
+            // CheckBoxHideFreq
             // 
-            this.GroupFlip.Controls.Add(this.RadioNoFlip);
-            this.GroupFlip.Controls.Add(this.RadioRightFlip);
-            this.GroupFlip.Controls.Add(this.RadioLeftFlip);
-            this.GroupFlip.Location = new System.Drawing.Point(31, 76);
-            this.GroupFlip.Name = "GroupFlip";
-            this.GroupFlip.Size = new System.Drawing.Size(163, 97);
-            this.GroupFlip.TabIndex = 12;
-            this.GroupFlip.TabStop = false;
-            this.GroupFlip.Text = "Flip";
-            // 
-            // RadioLeftFlip
-            // 
-            this.RadioLeftFlip.AutoSize = true;
-            this.RadioLeftFlip.Location = new System.Drawing.Point(18, 75);
-            this.RadioLeftFlip.Name = "RadioLeftFlip";
-            this.RadioLeftFlip.Size = new System.Drawing.Size(138, 20);
-            this.RadioLeftFlip.TabIndex = 0;
-            this.RadioLeftFlip.TabStop = true;
-            this.RadioLeftFlip.Text = "L.ch (Center Low)";
-            this.RadioLeftFlip.UseVisualStyleBackColor = true;
-            // 
-            // RadioRightFlip
-            // 
-            this.RadioRightFlip.AutoSize = true;
-            this.RadioRightFlip.Location = new System.Drawing.Point(18, 49);
-            this.RadioRightFlip.Name = "RadioRightFlip";
-            this.RadioRightFlip.Size = new System.Drawing.Size(127, 20);
-            this.RadioRightFlip.TabIndex = 1;
-            this.RadioRightFlip.TabStop = true;
-            this.RadioRightFlip.Text = "R.ch (Center Hi)";
-            this.RadioRightFlip.UseVisualStyleBackColor = true;
-            // 
-            // RadioNoFlip
-            // 
-            this.RadioNoFlip.AutoSize = true;
-            this.RadioNoFlip.Location = new System.Drawing.Point(18, 23);
-            this.RadioNoFlip.Name = "RadioNoFlip";
-            this.RadioNoFlip.Size = new System.Drawing.Size(69, 20);
-            this.RadioNoFlip.TabIndex = 2;
-            this.RadioNoFlip.TabStop = true;
-            this.RadioNoFlip.Text = "No Flip";
-            this.RadioNoFlip.UseVisualStyleBackColor = true;
+            this.CheckBoxHideFreq.AutoSize = true;
+            this.CheckBoxHideFreq.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CheckBoxHideFreq.Location = new System.Drawing.Point(206, 196);
+            this.CheckBoxHideFreq.Name = "CheckBoxHideFreq";
+            this.CheckBoxHideFreq.Size = new System.Drawing.Size(117, 19);
+            this.CheckBoxHideFreq.TabIndex = 24;
+            this.CheckBoxHideFreq.Text = "Hide Freq. Label";
+            this.CheckBoxHideFreq.UseVisualStyleBackColor = true;
             // 
             // Form2
             // 
@@ -512,6 +536,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(654, 457);
             this.ControlBox = false;
+            this.Controls.Add(this.CheckBoxHideFreq);
             this.Controls.Add(this.ShowCyclCheckBox);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.AlwaysOnTopCheckBox);
@@ -531,11 +556,13 @@
             this.Controls.Add(this.Button1);
             this.Controls.Add(this.devicelist);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form2";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Setting - SpeAnaLED";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form2_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.TrackBar1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -546,10 +573,10 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
             this.GroupFlip.ResumeLayout(false);
             this.GroupFlip.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -593,5 +620,6 @@
         protected internal System.Windows.Forms.GroupBox GroupFlip;
         protected internal System.Windows.Forms.Label LabelPeakhold;
         protected internal System.Windows.Forms.Label LabelMsec;
+        protected internal System.Windows.Forms.CheckBox CheckBoxHideFreq;
     }
 }
