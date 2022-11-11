@@ -19,7 +19,7 @@ namespace SpeAnaLED
             InitializeComponent();
 
             // 未実装対応
-            RadioMono.Enabled = false;
+            //RadioMono.Enabled = false;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -29,7 +29,7 @@ namespace SpeAnaLED
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
         {
-            TextBox_Sensitivity.Text = (TrackBar1.Value / 10f).ToString("0.0");
+            SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
         }
 
         private void TextBox_Sensitivity_KeyDown(object sender, KeyEventArgs e)
@@ -39,21 +39,21 @@ namespace SpeAnaLED
                 e.SuppressKeyPress = true;      // suppress bell rings
                 try
                 {
-                    int SensitivityChangedValue = Convert.ToInt16(float.Parse(TextBox_Sensitivity.Text) * 10f);
+                    int SensitivityChangedValue = Convert.ToInt16(float.Parse(SensitivityTextBox.Text) * 10f);
                     if (SensitivityChangedValue >= 10 && SensitivityChangedValue < 100)
-                        TrackBar1.Value = SensitivityChangedValue;
-                    else TextBox_Sensitivity.Text = (TrackBar1.Value / 10f).ToString("0.0");
+                        SensitivityTrackBar.Value = SensitivityChangedValue;
+                    else SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
                 }
                 catch
                 {
-                    TextBox_Sensitivity.Text = (TrackBar1.Value / 10f).ToString("0.0");
+                    SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
                 }
             }
         }
 
         private void TrackBar2_ValueChanged(object sender, EventArgs e)
         {
-            TextBox_DecaySpeed.Text = TrackBar2.Value.ToString();
+            DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
         }
 
         private void TextBox_DecaySpeed_KeyDown(object sender, KeyEventArgs e)
@@ -63,14 +63,14 @@ namespace SpeAnaLED
                 e.SuppressKeyPress = true;      // suppress bell rings
                 try
                 {
-                    int DecaySpeedChangeValue = Convert.ToInt16(TextBox_DecaySpeed.Text);
+                    int DecaySpeedChangeValue = Convert.ToInt16(DecaySpeedTextBox.Text);
                     if (DecaySpeedChangeValue >= 4 && DecaySpeedChangeValue <= 20)
-                        TrackBar2.Value = DecaySpeedChangeValue;
-                    else TextBox_DecaySpeed.Text = TrackBar2.Value.ToString();
+                        PeakholdDecayTimeTrackBar.Value = DecaySpeedChangeValue;
+                    else DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
                 }
                 catch (Exception)
                 {
-                    TextBox_DecaySpeed.Text = TrackBar2.Value.ToString();
+                    DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
                 }
             }
         }
@@ -87,8 +87,15 @@ namespace SpeAnaLED
 
         private void Form2_KeyDown(object sender, KeyEventArgs e)
         {
+            e.SuppressKeyPress = true;      // suppress bell rings
             if (e.KeyCode == Keys.Escape)
                 this.Visible = false;
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LinkLabel1.LinkVisited = true;
+            System.Diagnostics.Process.Start("https://github.com/osamusg/SpeAnaLED");
         }
     }
 }

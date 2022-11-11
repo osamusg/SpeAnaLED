@@ -42,14 +42,16 @@
             // 
             this.Spectrum1.BackColor = System.Drawing.Color.Black;
             this.Spectrum1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Spectrum1.Location = new System.Drawing.Point(12, 12);
+            this.Spectrum1.Location = new System.Drawing.Point(14, 15);
+            this.Spectrum1.Margin = new System.Windows.Forms.Padding(4);
             this.Spectrum1.Name = "Spectrum1";
-            this.Spectrum1.Size = new System.Drawing.Size(100, 50);
+            this.Spectrum1.Size = new System.Drawing.Size(116, 62);
             this.Spectrum1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Spectrum1.TabIndex = 0;
             this.Spectrum1.TabStop = false;
             this.Spectrum1.DoubleClick += new System.EventHandler(this.Spectrum1_DoubleClick);
             this.Spectrum1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Spectrum1_MouseDown);
+            this.Spectrum1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Spectrum1_MouseMove);
             // 
             // Timer1
             // 
@@ -59,10 +61,11 @@
             // LabelCycle
             // 
             this.LabelCycle.AutoSize = true;
-            this.LabelCycle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.LabelCycle.Location = new System.Drawing.Point(22, 24);
+            this.LabelCycle.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LabelCycle.Location = new System.Drawing.Point(26, 30);
+            this.LabelCycle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LabelCycle.Name = "LabelCycle";
-            this.LabelCycle.Size = new System.Drawing.Size(41, 14);
+            this.LabelCycle.Size = new System.Drawing.Size(41, 15);
             this.LabelCycle.TabIndex = 1;
             this.LabelCycle.Text = "label1";
             this.LabelCycle.Click += new System.EventHandler(this.LabelCycle_Click);
@@ -71,27 +74,31 @@
             // 
             this.Spectrum2.BackColor = System.Drawing.Color.Black;
             this.Spectrum2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Spectrum2.Location = new System.Drawing.Point(12, 197);
+            this.Spectrum2.Location = new System.Drawing.Point(14, 246);
+            this.Spectrum2.Margin = new System.Windows.Forms.Padding(4);
             this.Spectrum2.Name = "Spectrum2";
-            this.Spectrum2.Size = new System.Drawing.Size(100, 50);
+            this.Spectrum2.Size = new System.Drawing.Size(116, 62);
             this.Spectrum2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Spectrum2.TabIndex = 2;
             this.Spectrum2.TabStop = false;
             this.Spectrum2.DoubleClick += new System.EventHandler(this.Spectrum2_DoubleClick);
             this.Spectrum2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseDown);
+            this.Spectrum2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseMove);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(676, 351);
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.ClientSize = new System.Drawing.Size(789, 439);
             this.Controls.Add(this.Spectrum2);
             this.Controls.Add(this.LabelCycle);
             this.Controls.Add(this.Spectrum1);
-            this.HelpButton = true;
+            this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
-            this.Text = "SpeAnaLED";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.DoubleClick += new System.EventHandler(this.Form1_DoubleClick);
