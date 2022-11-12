@@ -8,18 +8,16 @@ namespace SpeAnaLED
     public partial class Form2 : Form
     {
         // go public controls
-        //public TrackBar Form2_TrackBar1 { get { return this.TrackBar1; } }
-        //public TrackBar Form2_TrackBar2 { get { return TrackBar2; } }
         public ComboBox Devicelist { get { return devicelist; } }
         
+        // event handler
         public event EventHandler ClearSpectrum;
+
+        const string gitUri = "https://github.com/osamusg/SpeAnaLED";
 
         public Form2()
         {
             InitializeComponent();
-
-            // 未実装対応
-            //RadioMono.Enabled = false;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -78,7 +76,7 @@ namespace SpeAnaLED
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
-            if (devicelist.SelectedIndex == -1/* && devicelist.Items.Count == 0*/)
+            if (devicelist.SelectedIndex == -1)
             {
                 devicelist.Items.Add("Please Enumrate Devices");
                 devicelist.SelectedIndex = 0;
@@ -92,10 +90,10 @@ namespace SpeAnaLED
                 this.Visible = false;
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             LinkLabel1.LinkVisited = true;
-            System.Diagnostics.Process.Start("https://github.com/osamusg/SpeAnaLED");
+            System.Diagnostics.Process.Start(gitUri);
         }
     }
 }

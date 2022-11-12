@@ -34,6 +34,7 @@
             this.Timer1 = new System.Windows.Forms.Timer(this.components);
             this.LabelCycle = new System.Windows.Forms.Label();
             this.Spectrum2 = new System.Windows.Forms.PictureBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Spectrum1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Spectrum2)).BeginInit();
             this.SuspendLayout();
@@ -61,8 +62,9 @@
             // LabelCycle
             // 
             this.LabelCycle.AutoSize = true;
+            this.LabelCycle.BackColor = System.Drawing.Color.Transparent;
             this.LabelCycle.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelCycle.Location = new System.Drawing.Point(26, 30);
+            this.LabelCycle.Location = new System.Drawing.Point(21, 22);
             this.LabelCycle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LabelCycle.Name = "LabelCycle";
             this.LabelCycle.Size = new System.Drawing.Size(41, 15);
@@ -85,17 +87,29 @@
             this.Spectrum2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseDown);
             this.Spectrum2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseMove);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Arial", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(21, 381);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "label1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(789, 439);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.Spectrum2);
             this.Controls.Add(this.LabelCycle);
             this.Controls.Add(this.Spectrum1);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
@@ -116,5 +130,6 @@
         private System.Windows.Forms.Timer Timer1;
         private System.Windows.Forms.Label LabelCycle;
         private System.Windows.Forms.PictureBox Spectrum2;
+        private System.Windows.Forms.Label label1;
     }
 }

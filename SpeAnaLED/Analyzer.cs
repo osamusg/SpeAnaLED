@@ -28,7 +28,7 @@ namespace SpeAnaLED
         private readonly ComboBox _form2NumberOfBars;   // for subscribe
         private readonly RadioButton _form2MonoRadio;   // for subscribe
         public event EventHandler SpectrumChanged;      // for fire
-        public event EventHandler ChannelChanged;       // for fire
+        public event EventHandler NumberOfChannelChanged;   // for fire
         
         public int _channel;                           // 1: "mix-data"(mono) 2: L+R
         private int _lines;                             // default number of spectrum lines
@@ -68,7 +68,6 @@ namespace SpeAnaLED
         // initialization
         private void Init()
         {
-            bool result = false;
             try
             {
                 //for (int i = 0; i < BassWasapi.BASS_WASAPI_GetDeviceCount(); i++)
@@ -94,7 +93,7 @@ namespace SpeAnaLED
                 Free();
             }
             Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
-            result = Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);   // "no sound" device for Bass.dll
+            bool result = Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);   // "no sound" device for Bass.dll
             if (!result) throw new Exception("Source Device Initialize Error");
         }
 
@@ -123,7 +122,12 @@ namespace SpeAnaLED
                             _devicelist.Enabled = false;
                         }
                     }
-                    BassWasapi.BASS_WASAPI_Start();
+                    bool startResult = BassWasapi.BASS_WASAPI_Start();
+                    if (!startResult)
+                    {
+                        var error = Bass.BASS_ErrorGetCode();
+                        MessageBox.Show(error.ToString());
+                    }
                 }
                 else BassWasapi.BASS_WASAPI_Stop(true);
 
@@ -138,7 +142,7 @@ namespace SpeAnaLED
             return length;
         }
 
-        // reseived event function
+        // reseived event functions
         //timer
         private void Timer1_Tick(object sender, EventArgs e)
         {
@@ -154,10 +158,9 @@ namespace SpeAnaLED
                 float[] peak = new float[] { 0f, 0f };      // 0=Left(mono), 1=Right
 
                 if (_channel > 1)
-                    freqValue = (int)Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + 4.35);       // 4.35 from actual measurement, not logic...
+                    freqValue = (int)Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + 4.35);     // 4.35 from actual measurement, not logic...
                 else
-                    //freqValue = (int)Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + 2);        // Ditto
-                    freqValue = (int)(Math.Pow(2, bandX * 10.0 / (_lines - 1) + 4) / (_channel * 4));// * 10;
+                    freqValue = (int)(Math.Pow(2, bandX * 10.0 / (_lines - 1) + 4.35) / (_channel * 4));   // Ditto
 
                 if (freqValue <= fftPos) freqValue = fftPos + 1;                            // if out of range, min. freq. selected
                 if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;     // truncate last data
@@ -165,14 +168,14 @@ namespace SpeAnaLED
                 {
                     for (int i = 0; i < _channel; i++)                                      // interreave L,R,L,R,... or L+R,L+R,L+R...
                     { 
-                        if (peak[0] < _fft[1 + fftPos]) peak[0] = _fft[1 + fftPos];         // set max _fft[x] to peak
-                        if (peak[1] < _fft[1 + fftPos + (_channel - 1)]) peak[1] = _fft[1 + fftPos + (_channel - 1)];
+                        if (peak[0] < _fft[1 + fftPos]) peak[0] = _fft[1 + fftPos];         // set max _fft[x] to peak     L Ch.
+                        if (peak[1] < _fft[1 + fftPos + (_channel - 1)]) peak[1] = _fft[1 + fftPos + (_channel - 1)];   // R Ch.
                     }
                 }
 
                 for (int i = 0; i < _channel; i++)
                 {
-                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                         // sqrt to make low values more visible
+                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                       // sqrt to make low values more visible
                     if (powerY > 255) powerY = 255;
                     if (powerY < 0) powerY = 0;
                     _spectrumdata.Add((byte)powerY);
@@ -197,7 +200,6 @@ namespace SpeAnaLED
             Enable = false;
             Free();
 
-            bool result = false;
             _devicelist.Items.Clear();
 
             for (int i = 0; i < BassWasapi.BASS_WASAPI_GetDeviceCount(); i++)
@@ -213,8 +215,7 @@ namespace SpeAnaLED
             try
             {
                 _devicelist.SelectedIndex = 0;
-                Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
-                result = Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+                bool result = Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
                 if (!result) throw new Exception("Source Device Initialize Error");
 
                 Enable = true;
@@ -240,22 +241,29 @@ namespace SpeAnaLED
 
         private void Form2_MonoRadio_CheckChanged(object sender, EventArgs e)
         {
-            Enable = false;
-            Free();
             _channel = _form2MonoRadio.Checked ? 1 : 2;
+            Enable = false;
+            _initialized = false;
+            Free();
+            _fft.Initialize();
             _fft = new float[8192 * _channel];
             _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
+            bool result = Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+            if (!result) throw new Exception("Source Device Initialize Error");
             Enable = true;
-            Init();
+
             // fire channel change event to form1
-            if (ChannelChanged != null) ChannelChanged(this, EventArgs.Empty);
+            if (NumberOfChannelChanged != null) NumberOfChannelChanged(this, EventArgs.Empty);
         }
 
         // cleanup
         public void Free()
         {
-            BassWasapi.BASS_WASAPI_Free();
-            Bass.BASS_Free();
+            if (_devicelist.SelectedIndex != -1)
+            {
+                BassWasapi.BASS_WASAPI_Free();
+                Bass.BASS_Free();
+            }
         }
     }
 }
