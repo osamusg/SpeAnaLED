@@ -9,11 +9,12 @@ namespace SpeAnaLED
     {
         // go public controls
         public ComboBox Devicelist { get { return devicelist; } }
-        
+
         // event handler
         public event EventHandler ClearSpectrum;
 
-        const string gitUri = "https://github.com/osamusg/SpeAnaLED";
+        public static float freqMultiplyer;
+        private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
 
         public Form2()
         {
@@ -40,7 +41,7 @@ namespace SpeAnaLED
                     int SensitivityChangedValue = Convert.ToInt16(float.Parse(SensitivityTextBox.Text) * 10f);
                     if (SensitivityChangedValue >= 10 && SensitivityChangedValue < 100)
                         SensitivityTrackBar.Value = SensitivityChangedValue;
-                    else SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
+                    SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
                 }
                 catch
                 {
@@ -66,7 +67,7 @@ namespace SpeAnaLED
                         PeakholdDecayTimeTrackBar.Value = DecaySpeedChangeValue;
                     else DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
                 }
-                catch (Exception)
+                catch
                 {
                     DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
                 }
@@ -78,6 +79,7 @@ namespace SpeAnaLED
             if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
             if (devicelist.SelectedIndex == -1)
             {
+                devicelist.Items.Clear();
                 devicelist.Items.Add("Please Enumrate Devices");
                 devicelist.SelectedIndex = 0;
             }
@@ -85,9 +87,12 @@ namespace SpeAnaLED
 
         private void Form2_KeyDown(object sender, KeyEventArgs e)
         {
-            e.SuppressKeyPress = true;      // suppress bell rings
             if (e.KeyCode == Keys.Escape)
+            {
+                e.SuppressKeyPress = true;      // suppress bell rings
                 this.Visible = false;
+                this.Owner.Activate();          // prevent form1 go behind
+            }
         }
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -95,5 +100,33 @@ namespace SpeAnaLED
             LinkLabel1.LinkVisited = true;
             System.Diagnostics.Process.Start(gitUri);
         }
+
+        private void Form2_DoubleClick(object sender, EventArgs e)
+        {
+            FreqMultiplyerLabel.Visible = !FreqMultiplyerLabel.Visible;
+            FreqMultiplyerTextBox.Visible = !FreqMultiplyerTextBox.Visible;
+        }
+
+        private void FreqMultiplyerTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+            {
+                e.SuppressKeyPress = true;      // suppress bell rings
+                try
+                {
+                    freqMultiplyer = float.Parse(FreqMultiplyerTextBox.Text);
+                    if (freqMultiplyer < 0f && freqMultiplyer > 5f) { freqMultiplyer = 1.0f; }
+                    FreqMultiplyerTextBox.Text = freqMultiplyer.ToString("0.0");
+                }
+                catch
+                {
+                    FreqMultiplyerTextBox.Text = freqMultiplyer.ToString("0.0");
+                }
+            }
+        }
+
+        public static float FreqMultiplyer() { return freqMultiplyer; }
+
+        //public static void SetFreqMultiplyer(float Multiplyer) { freqMultiplyer = Multiplyer;  }
     }
 }

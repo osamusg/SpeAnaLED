@@ -18,22 +18,24 @@ namespace SpeAnaLED
         private bool _enable;                           // enabled status
         private bool _initialized;                      // initialized flag
         private readonly WASAPIPROC _process;           // callback function to obtain data
-        private int deviceindex;                        // used device index
+        //private int deviceindex;                        // used device index
         public List<byte> _spectrumdata;                // spectrum data buffer
         public readonly DispatcherTimer _timer1;        // timer that refreshes the display
         private BASSData _DATAFLAG;                     // for "interreave" format
         public int _devicenumber;
+        public float _freqMultiplyer;
         private readonly bool _UNICODE;                 // codepage switch
         private readonly Button _form2EnumButton;       // for subscribe
         private readonly ComboBox _form2NumberOfBars;   // for subscribe
         private readonly RadioButton _form2MonoRadio;   // for subscribe
+        private readonly TextBox _form2FreqMultiplyerTextBox;
         public event EventHandler SpectrumChanged;      // for fire
         public event EventHandler NumberOfChannelChanged;   // for fire
         
-        public int _channel;                           // 1: "mix-data"(mono) 2: L+R
+        public int _channel;                            // 1: "mix-data"(mono) 2: L+R
         private int _lines;                             // default number of spectrum lines
 
-        public Analyzer(ComboBox devicelist, Button enumButton, ComboBox numberofbars, RadioButton monoRadio)    // Control data for event subscribe
+        public Analyzer(ComboBox devicelist, Button enumButton, ComboBox numberofbars, RadioButton monoRadio, TextBox freqMultiplyerTextBox)    // Control data for event subscribe
         {
             _form2MonoRadio = monoRadio;
             _channel = monoRadio.Checked ? 1 : 2;
@@ -47,8 +49,10 @@ namespace SpeAnaLED
             _timer1.IsEnabled = false;
             _spectrumdata = new List<byte>();
             _devicenumber = Form1.DeviceNumber();
+            _freqMultiplyer = Form2.FreqMultiplyer();
             _form2EnumButton = enumButton;
             _form2NumberOfBars = numberofbars;
+            _form2FreqMultiplyerTextBox = freqMultiplyerTextBox;
             _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
             _lines = Convert.ToInt16(_form2NumberOfBars.SelectedItem);
             _UNICODE = Form1.Unicode();
@@ -58,6 +62,8 @@ namespace SpeAnaLED
             _form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Clicked);
             _form2NumberOfBars.SelectedIndexChanged += new EventHandler(Form2_NumberOfBarIndexChanged);
             _form2MonoRadio.CheckedChanged += new EventHandler(Form2_MonoRadio_CheckChanged);
+            devicelist.SelectedIndexChanged += new EventHandler(Form2_devicelist_SelectedIndexChanged);
+            _form2FreqMultiplyerTextBox.KeyDown += new KeyEventHandler(Form2_FreqMultiplyerTextBox_KeyDown);
 
             Init();
         }
@@ -75,16 +81,20 @@ namespace SpeAnaLED
                 if (_devicenumber == -1) throw new InvalidOperationException("no device");
                 Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UNICODE, _UNICODE);
                 var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(_devicenumber);
-                if (device.IsEnabled && device.IsLoopback)
+                /*if (device.IsEnabled && device.IsLoopback)
                 {
                     _devicelist.Items.Add(string.Format("{0} - {1}", _devicenumber, device.name));
-                }
+                }*/
                 //}
-                _devicelist.SelectedIndex = 0;
+                //_devicelist.SelectedIndex = 0;
+                string itemName = string.Format("{0} - {1}", _devicenumber, device.name);
+                _devicelist.SelectedIndex = _devicelist.Items.IndexOf(itemName);
             }
             catch
             {
-                MessageBox.Show("No (saveed) output device found.\r\nPlease enumrate devices from \"Setting\" dialog.",
+                MessageBox.Show("No (saveed) output device found.\r\n" +
+                    "(May be Device Power-SW off?)\r\n" +
+                    "Please enumrate devices from \"Setting\" dialog.",
                     "No Output Device - SpeAnaLED",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
@@ -108,9 +118,11 @@ namespace SpeAnaLED
                 {
                     if (!_initialized)
                     {
-                        var deviceArray = (_devicelist.Items[_devicelist.SelectedIndex] as string).Split(' ');
+                        /*var deviceArray = (_devicelist.Items[_devicelist.SelectedIndex] as string).Split(' ');
                         deviceindex = Convert.ToInt32(deviceArray[0]);
                         bool result = BassWasapi.BASS_WASAPI_Init(deviceindex, 0, 0, BASSWASAPIInit.BASS_WASAPI_BUFFER, 1f, 0.05f, _process, IntPtr.Zero);
+                        */
+                        bool result = BassWasapi.BASS_WASAPI_Init(_devicenumber, 0, 0, BASSWASAPIInit.BASS_WASAPI_BUFFER, 1f, 0.05f, _process, IntPtr.Zero);
                         if (!result)
                         {
                             var error = Bass.BASS_ErrorGetCode();
@@ -119,7 +131,7 @@ namespace SpeAnaLED
                         else
                         {
                             _initialized = true;
-                            _devicelist.Enabled = false;
+                            //_devicelist.Enabled = false;
                         }
                     }
                     bool startResult = BassWasapi.BASS_WASAPI_Start();
@@ -158,24 +170,24 @@ namespace SpeAnaLED
                 float[] peak = new float[] { 0f, 0f };      // 0=Left(mono), 1=Right
 
                 if (_channel > 1)
-                    freqValue = (int)Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + 4.35);     // 4.35 from actual measurement, not logic...
+                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + 4.35) * _freqMultiplyer);     // 4.35 from actual measurement, not logic...
                 else
-                    freqValue = (int)(Math.Pow(2, bandX * 10.0 / (_lines - 1) + 4.35) / (_channel * 4));   // Ditto
+                    freqValue = (int)(Math.Pow(2, bandX * 10.0 / (_lines - 1) + 4.35) / (_channel * 4) * _freqMultiplyer);    // Ditto
 
-                if (freqValue <= fftPos) freqValue = fftPos + 1;                            // if out of range, min. freq. selected
-                if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;     // truncate last data
-                for (; fftPos < freqValue; fftPos += _channel)                              // freq band in interreave step
+                if (freqValue <= fftPos) freqValue = fftPos + 1;                                            // if out of range, min. freq. selected
+                if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;         // truncate last data
+                for (; fftPos < freqValue; fftPos += _channel)                                              // freq band in interreave step
                 {
-                    for (int i = 0; i < _channel; i++)                                      // interreave L,R,L,R,... or L+R,L+R,L+R...
+                    for (int i = 0; i < _channel; i++)                                                      // interreave L,R,L,R,... or L+R,L+R,L+R...
                     { 
-                        if (peak[0] < _fft[1 + fftPos]) peak[0] = _fft[1 + fftPos];         // set max _fft[x] to peak     L Ch.
+                        if (peak[0] < _fft[1 + fftPos]) peak[0] = _fft[1 + fftPos];                         // set max _fft[x] to peak     L Ch.
                         if (peak[1] < _fft[1 + fftPos + (_channel - 1)]) peak[1] = _fft[1 + fftPos + (_channel - 1)];   // R Ch.
                     }
                 }
 
                 for (int i = 0; i < _channel; i++)
                 {
-                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                       // sqrt to make low values more visible
+                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                                       // sqrt to make low values more visible
                     if (powerY > 255) powerY = 255;
                     if (powerY < 0) powerY = 0;
                     _spectrumdata.Add((byte)powerY);
@@ -200,15 +212,14 @@ namespace SpeAnaLED
             Enable = false;
             Free();
 
+            _devicelist.SelectedIndex = -1;
             _devicelist.Items.Clear();
-
             for (int i = 0; i < BassWasapi.BASS_WASAPI_GetDeviceCount(); i++)
             {
                 var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(i);
                 if (device.IsEnabled && device.IsLoopback)
                 {
                     _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
-                    _devicenumber = i;
                 }
             }
 
@@ -217,6 +228,7 @@ namespace SpeAnaLED
                 _devicelist.SelectedIndex = 0;
                 bool result = Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
                 if (!result) throw new Exception("Source Device Initialize Error");
+                _devicenumber = Convert.ToInt16(_devicelist.SelectedItem.ToString().Split(' ')[0]);
 
                 Enable = true;
             }
@@ -237,6 +249,33 @@ namespace SpeAnaLED
             }
 
             _form2EnumButton.Enabled = true;
+        }
+
+        private void Form2_devicelist_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!_initialized == false)
+            {
+                _initialized = false;
+                Enable = false;
+                Free();
+
+                try
+                {
+                    _devicenumber = Convert.ToInt16(_devicelist.SelectedItem.ToString().Split(' ')[0]);
+                }
+                catch
+                {
+                    MessageBox.Show("No Valid Output Device found.",
+                        "No Valid Output Device - SpeAnaLED",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                    Enable = false;
+                    Free();
+                    return;
+                }
+                Init();
+                Enable = true;
+            }
         }
 
         private void Form2_MonoRadio_CheckChanged(object sender, EventArgs e)
@@ -263,6 +302,14 @@ namespace SpeAnaLED
             {
                 BassWasapi.BASS_WASAPI_Free();
                 Bass.BASS_Free();
+            }
+        }
+
+        private void Form2_FreqMultiplyerTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+            {
+                _freqMultiplyer = Form2.FreqMultiplyer();
             }
         }
     }
