@@ -47,10 +47,10 @@
             this.PeakholdTimeComboBox = new System.Windows.Forms.ComboBox();
             this.LabelPeakhold = new System.Windows.Forms.Label();
             this.LabelMsec = new System.Windows.Forms.Label();
-            this.PeakholdDecayTimeTrackBar = new System.Windows.Forms.TrackBar();
+            this.PeakholdDescentSpeedTrackBar = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.DecaySpeedTextBox = new System.Windows.Forms.TextBox();
+            this.PeakholdDescentSpeedTextBox = new System.Windows.Forms.TextBox();
             this.PeakholdCheckBox = new System.Windows.Forms.CheckBox();
             this.SSaverCheckBox = new System.Windows.Forms.CheckBox();
             this.ChannelLayoutGroup = new System.Windows.Forms.GroupBox();
@@ -72,10 +72,11 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.FreqMultiplyerLabel = new System.Windows.Forms.Label();
             this.FreqMultiplyerTextBox = new System.Windows.Forms.TextBox();
+            this.DeviceResetButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PeakholdDecayTimeTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PeakholdDescentSpeedTrackBar)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.ChannelLayoutGroup.SuspendLayout();
             this.FlipGroup.SuspendLayout();
@@ -99,7 +100,7 @@
             this.CloseButton.TabIndex = 1;
             this.CloseButton.Text = "Close";
             this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.Button1_Click);
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
             // SensitivityTrackBar
             // 
@@ -111,7 +112,7 @@
             this.SensitivityTrackBar.Size = new System.Drawing.Size(318, 45);
             this.SensitivityTrackBar.TabIndex = 15;
             this.SensitivityTrackBar.Value = 78;
-            this.SensitivityTrackBar.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
+            this.SensitivityTrackBar.ValueChanged += new System.EventHandler(this.SensitivityTrackBar_ValueChanged);
             // 
             // SensitivityTextBox
             // 
@@ -121,7 +122,7 @@
             this.SensitivityTextBox.Size = new System.Drawing.Size(43, 23);
             this.SensitivityTextBox.TabIndex = 16;
             this.SensitivityTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.SensitivityTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_Sensitivity_KeyDown);
+            this.SensitivityTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SensitivityTextBox_KeyDown);
             // 
             // ClassicRadio
             // 
@@ -188,7 +189,7 @@
             // EnumerateButton
             // 
             this.EnumerateButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.EnumerateButton.Location = new System.Drawing.Point(458, 26);
+            this.EnumerateButton.Location = new System.Drawing.Point(555, 25);
             this.EnumerateButton.Name = "EnumerateButton";
             this.EnumerateButton.Size = new System.Drawing.Size(75, 23);
             this.EnumerateButton.TabIndex = 39;
@@ -200,7 +201,7 @@
             this.groupBox2.Controls.Add(this.SensitivityTrackBar);
             this.groupBox2.Controls.Add(this.SensitivityTextBox);
             this.groupBox2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(12, 214);
+            this.groupBox2.Location = new System.Drawing.Point(12, 363);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(386, 71);
             this.groupBox2.TabIndex = 14;
@@ -224,11 +225,11 @@
             this.textBox1.Location = new System.Drawing.Point(458, 57);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(179, 71);
+            this.textBox1.Size = new System.Drawing.Size(173, 71);
             this.textBox1.TabIndex = 35;
             this.textBox1.TabStop = false;
-            this.textBox1.Text = "Depending on the number of output device (disabled or not), enumerating may take " +
-    "several minute.";
+            this.textBox1.Text = "Depending on the number of device (disabled or not), enumerating may take several" +
+    " minute.";
             // 
             // NumberOfBarComboBox
             // 
@@ -244,7 +245,7 @@
             this.NumberOfBarComboBox.Size = new System.Drawing.Size(47, 24);
             this.NumberOfBarComboBox.TabIndex = 7;
             this.NumberOfBarComboBox.ValueMember = "1,2,4,8,16";
-            this.NumberOfBarComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
+            this.NumberOfBarComboBox.SelectedIndexChanged += new System.EventHandler(this.NumberOfBarComboBox_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -269,7 +270,7 @@
             "3000",
             "3500",
             "4000"});
-            this.PeakholdTimeComboBox.Location = new System.Drawing.Point(127, 46);
+            this.PeakholdTimeComboBox.Location = new System.Drawing.Point(206, 21);
             this.PeakholdTimeComboBox.Name = "PeakholdTimeComboBox";
             this.PeakholdTimeComboBox.Size = new System.Drawing.Size(58, 24);
             this.PeakholdTimeComboBox.TabIndex = 20;
@@ -278,7 +279,7 @@
             // 
             this.LabelPeakhold.AutoSize = true;
             this.LabelPeakhold.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelPeakhold.Location = new System.Drawing.Point(14, 50);
+            this.LabelPeakhold.Location = new System.Drawing.Point(104, 25);
             this.LabelPeakhold.Name = "LabelPeakhold";
             this.LabelPeakhold.Size = new System.Drawing.Size(96, 15);
             this.LabelPeakhold.TabIndex = 19;
@@ -288,39 +289,39 @@
             // 
             this.LabelMsec.AutoSize = true;
             this.LabelMsec.Font = new System.Drawing.Font("Arial", 9F);
-            this.LabelMsec.Location = new System.Drawing.Point(191, 50);
+            this.LabelMsec.Location = new System.Drawing.Point(270, 25);
             this.LabelMsec.Name = "LabelMsec";
             this.LabelMsec.Size = new System.Drawing.Size(41, 15);
             this.LabelMsec.TabIndex = 20;
             this.LabelMsec.Text = "msec.";
             // 
-            // PeakholdDecayTimeTrackBar
+            // PeakholdDescentSpeedTrackBar
             // 
-            this.PeakholdDecayTimeTrackBar.LargeChange = 4;
-            this.PeakholdDecayTimeTrackBar.Location = new System.Drawing.Point(6, 94);
-            this.PeakholdDecayTimeTrackBar.Maximum = 20;
-            this.PeakholdDecayTimeTrackBar.Minimum = 4;
-            this.PeakholdDecayTimeTrackBar.Name = "PeakholdDecayTimeTrackBar";
-            this.PeakholdDecayTimeTrackBar.Size = new System.Drawing.Size(318, 45);
-            this.PeakholdDecayTimeTrackBar.SmallChange = 2;
-            this.PeakholdDecayTimeTrackBar.TabIndex = 22;
-            this.PeakholdDecayTimeTrackBar.TickFrequency = 2;
-            this.PeakholdDecayTimeTrackBar.Value = 10;
-            this.PeakholdDecayTimeTrackBar.ValueChanged += new System.EventHandler(this.TrackBar2_ValueChanged);
+            this.PeakholdDescentSpeedTrackBar.LargeChange = 4;
+            this.PeakholdDescentSpeedTrackBar.Location = new System.Drawing.Point(6, 68);
+            this.PeakholdDescentSpeedTrackBar.Maximum = 20;
+            this.PeakholdDescentSpeedTrackBar.Minimum = 4;
+            this.PeakholdDescentSpeedTrackBar.Name = "PeakholdDescentSpeedTrackBar";
+            this.PeakholdDescentSpeedTrackBar.Size = new System.Drawing.Size(318, 45);
+            this.PeakholdDescentSpeedTrackBar.SmallChange = 2;
+            this.PeakholdDescentSpeedTrackBar.TabIndex = 22;
+            this.PeakholdDescentSpeedTrackBar.TickFrequency = 2;
+            this.PeakholdDescentSpeedTrackBar.Value = 10;
+            this.PeakholdDescentSpeedTrackBar.ValueChanged += new System.EventHandler(this.PeakholdDescentSpeedTrackBar_ValueChanged);
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Controls.Add(this.DecaySpeedTextBox);
-            this.groupBox3.Controls.Add(this.PeakholdDecayTimeTrackBar);
+            this.groupBox3.Controls.Add(this.PeakholdDescentSpeedTextBox);
+            this.groupBox3.Controls.Add(this.PeakholdDescentSpeedTrackBar);
             this.groupBox3.Controls.Add(this.PeakholdCheckBox);
             this.groupBox3.Controls.Add(this.PeakholdTimeComboBox);
             this.groupBox3.Controls.Add(this.LabelPeakhold);
             this.groupBox3.Controls.Add(this.LabelMsec);
             this.groupBox3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(12, 291);
+            this.groupBox3.Location = new System.Drawing.Point(12, 230);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(386, 143);
+            this.groupBox3.Size = new System.Drawing.Size(386, 127);
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Peakhold";
@@ -328,20 +329,20 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(14, 76);
+            this.label4.Location = new System.Drawing.Point(7, 50);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(189, 15);
+            this.label4.Size = new System.Drawing.Size(134, 15);
             this.label4.TabIndex = 21;
-            this.label4.Text = "Peakhold Descent Speed (4 - 20)";
+            this.label4.Text = "Descent Speed (4 - 20)";
             // 
-            // DecaySpeedTextBox
+            // PeakholdDescentSpeedTextBox
             // 
-            this.DecaySpeedTextBox.Location = new System.Drawing.Point(330, 94);
-            this.DecaySpeedTextBox.Name = "DecaySpeedTextBox";
-            this.DecaySpeedTextBox.Size = new System.Drawing.Size(43, 21);
-            this.DecaySpeedTextBox.TabIndex = 23;
-            this.DecaySpeedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.DecaySpeedTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_DecaySpeed_KeyDown);
+            this.PeakholdDescentSpeedTextBox.Location = new System.Drawing.Point(330, 68);
+            this.PeakholdDescentSpeedTextBox.Name = "PeakholdDescentSpeedTextBox";
+            this.PeakholdDescentSpeedTextBox.Size = new System.Drawing.Size(43, 21);
+            this.PeakholdDescentSpeedTextBox.TabIndex = 23;
+            this.PeakholdDescentSpeedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.PeakholdDescentSpeedTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PeakholdDescentSpeedTextBox_KeyDown);
             // 
             // PeakholdCheckBox
             // 
@@ -585,10 +586,18 @@
             this.FreqMultiplyerTextBox.Name = "FreqMultiplyerTextBox";
             this.FreqMultiplyerTextBox.Size = new System.Drawing.Size(29, 20);
             this.FreqMultiplyerTextBox.TabIndex = 51;
-            this.FreqMultiplyerTextBox.Text = "1.0";
+            this.FreqMultiplyerTextBox.Text = "1.00";
             this.FreqMultiplyerTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.FreqMultiplyerTextBox.Visible = false;
-            this.FreqMultiplyerTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FreqMultiplyerTextBox_KeyDown);
+            // 
+            // DeviceResetButton
+            // 
+            this.DeviceResetButton.Location = new System.Drawing.Point(458, 25);
+            this.DeviceResetButton.Name = "DeviceResetButton";
+            this.DeviceResetButton.Size = new System.Drawing.Size(90, 23);
+            this.DeviceResetButton.TabIndex = 52;
+            this.DeviceResetButton.Text = "Device Reset";
+            this.DeviceResetButton.UseVisualStyleBackColor = true;
             // 
             // Form2
             // 
@@ -596,9 +605,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(654, 486);
             this.ControlBox = false;
+            this.Controls.Add(this.DeviceResetButton);
             this.Controls.Add(this.FreqMultiplyerTextBox);
             this.Controls.Add(this.FreqMultiplyerLabel);
             this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.ExitAppButton);
             this.Controls.Add(this.LinkLabel1);
             this.Controls.Add(this.HideTitleCheckBox);
@@ -607,7 +618,6 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.AlwaysOnTopCheckBox);
             this.Controls.Add(this.SSaverCheckBox);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.NumberOfBarComboBox);
             this.Controls.Add(this.textBox1);
@@ -631,7 +641,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PeakholdDecayTimeTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PeakholdDescentSpeedTrackBar)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ChannelLayoutGroup.ResumeLayout(false);
@@ -666,12 +676,12 @@
         protected internal System.Windows.Forms.RadioButton SimpleRadio;
         protected internal System.Windows.Forms.RadioButton RainbowRadio;
         protected internal System.Windows.Forms.ComboBox PeakholdTimeComboBox;
-        protected internal System.Windows.Forms.TrackBar PeakholdDecayTimeTrackBar;
+        protected internal System.Windows.Forms.TrackBar PeakholdDescentSpeedTrackBar;
         protected internal System.Windows.Forms.CheckBox SSaverCheckBox;
         protected internal System.Windows.Forms.CheckBox PeakholdCheckBox;
         protected internal System.Windows.Forms.CheckBox AlwaysOnTopCheckBox;
         protected internal System.Windows.Forms.TextBox SensitivityTextBox;
-        protected internal System.Windows.Forms.TextBox DecaySpeedTextBox;
+        protected internal System.Windows.Forms.TextBox PeakholdDescentSpeedTextBox;
         protected internal System.Windows.Forms.RadioButton HorizontalRadio;
         protected internal System.Windows.Forms.RadioButton VerticalRadio;
         protected internal System.Windows.Forms.RadioButton StereoRadio;
@@ -689,5 +699,6 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label FreqMultiplyerLabel;
         protected internal System.Windows.Forms.TextBox FreqMultiplyerTextBox;
+        protected internal System.Windows.Forms.Button DeviceResetButton;
     }
 }

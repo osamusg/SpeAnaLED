@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace SpeAnaLED
@@ -7,13 +8,13 @@ namespace SpeAnaLED
 
     public partial class Form2 : Form
     {
-        // go public controls
+        // go public controls for Analyzer class
         public ComboBox Devicelist { get { return devicelist; } }
 
         // event handler
         public event EventHandler ClearSpectrum;
 
-        public static float freqMultiplyer;
+        //public static float freqMultiplyer;
         private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
 
         public Form2()
@@ -21,17 +22,43 @@ namespace SpeAnaLED
             InitializeComponent();
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void Form2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                e.SuppressKeyPress = true;      // suppress bell rings
+                this.Visible = false;
+                this.Owner.Activate();          // prevent form1 go behind
+            }
+        }
+
+        private void Form2_DoubleClick(object sender, EventArgs e)
+        {
+        
+        }
+
+        private void CloseButton_Click(object sender, EventArgs e)
         {
             this.Visible = false;
         }
 
-        private void TrackBar1_ValueChanged(object sender, EventArgs e)
+        private void NumberOfBarComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
+            if (devicelist.SelectedIndex == -1)
+            {
+                devicelist.Items.Clear();
+                devicelist.Items.Add("Please Enumrate Devices");
+                devicelist.SelectedIndex = 0;
+            }
+        }
+        
+        private void SensitivityTrackBar_ValueChanged(object sender, EventArgs e)
         {
             SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
         }
 
-        private void TextBox_Sensitivity_KeyDown(object sender, KeyEventArgs e)
+        private void SensitivityTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
             {
@@ -50,49 +77,29 @@ namespace SpeAnaLED
             }
         }
 
-        private void TrackBar2_ValueChanged(object sender, EventArgs e)
+        private void PeakholdDescentSpeedTrackBar_ValueChanged(object sender, EventArgs e)
         {
-            DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
+            PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
         }
 
-        private void TextBox_DecaySpeed_KeyDown(object sender, KeyEventArgs e)
+        private void PeakholdDescentSpeedTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
             {
                 e.SuppressKeyPress = true;      // suppress bell rings
                 try
                 {
-                    int DecaySpeedChangeValue = Convert.ToInt16(DecaySpeedTextBox.Text);
+                    int DecaySpeedChangeValue = Convert.ToInt16(PeakholdDescentSpeedTextBox.Text);
                     if (DecaySpeedChangeValue >= 4 && DecaySpeedChangeValue <= 20)
-                        PeakholdDecayTimeTrackBar.Value = DecaySpeedChangeValue;
-                    else DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
+                        PeakholdDescentSpeedTrackBar.Value = DecaySpeedChangeValue;
+                    else PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
                 }
                 catch
                 {
-                    DecaySpeedTextBox.Text = PeakholdDecayTimeTrackBar.Value.ToString();
+                    PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
                 }
             }
-        }
 
-        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
-            if (devicelist.SelectedIndex == -1)
-            {
-                devicelist.Items.Clear();
-                devicelist.Items.Add("Please Enumrate Devices");
-                devicelist.SelectedIndex = 0;
-            }
-        }
-
-        private void Form2_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Escape)
-            {
-                e.SuppressKeyPress = true;      // suppress bell rings
-                this.Visible = false;
-                this.Owner.Activate();          // prevent form1 go behind
-            }
         }
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -101,32 +108,5 @@ namespace SpeAnaLED
             System.Diagnostics.Process.Start(gitUri);
         }
 
-        private void Form2_DoubleClick(object sender, EventArgs e)
-        {
-            FreqMultiplyerLabel.Visible = !FreqMultiplyerLabel.Visible;
-            FreqMultiplyerTextBox.Visible = !FreqMultiplyerTextBox.Visible;
-        }
-
-        private void FreqMultiplyerTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Return)
-            {
-                e.SuppressKeyPress = true;      // suppress bell rings
-                try
-                {
-                    freqMultiplyer = float.Parse(FreqMultiplyerTextBox.Text);
-                    if (freqMultiplyer < 0f && freqMultiplyer > 5f) { freqMultiplyer = 1.0f; }
-                    FreqMultiplyerTextBox.Text = freqMultiplyer.ToString("0.0");
-                }
-                catch
-                {
-                    FreqMultiplyerTextBox.Text = freqMultiplyer.ToString("0.0");
-                }
-            }
-        }
-
-        public static float FreqMultiplyer() { return freqMultiplyer; }
-
-        //public static void SetFreqMultiplyer(float Multiplyer) { freqMultiplyer = Multiplyer;  }
     }
 }

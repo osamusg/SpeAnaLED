@@ -61,7 +61,8 @@ namespace SpeAnaLED
         private int canvasWidth;
         private bool inLayout = false;
         private Point mousePoint = new Point(0, 0);
-        private float freqMultiplyer;
+        //private float freqMultiplyer;
+        public static float[] freqIndex = new float[256];
 
 
         // parameters (set defaults)
@@ -139,13 +140,13 @@ namespace SpeAnaLED
                 }
             }
 
+            // before analizer birth...
             string[] deviceItems = devices.Split(',');
-            for (int i = 0; i < deviceItems.Length; i++) form2.devicelist.Items.Add(deviceItems[i].TrimStart());//.TrimEnd(','));
+            for (int i = 0; i < deviceItems.Length; i++) form2.devicelist.Items.Add(deviceItems[i].TrimStart());
 
-            // after param load, make Analyzer instance.
-            analyzer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.NumberOfBarComboBox, form2.MonoRadio, form2.FreqMultiplyerTextBox);
+            // after param load, make a Analyzer instance.
+            analyzer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.DeviceResetButton, form2.NumberOfBarComboBox, form2.MonoRadio);
 
-            //if (analyzer._devicelist.SelectedIndex == -1)       // = form2.devicelist.SelectedIndex
             if (devices == null)
             {
                 analyzer.Enable = false;
@@ -163,7 +164,7 @@ namespace SpeAnaLED
             // Event handler for option form (subscribe)
             form2.devicelist.SelectedIndexChanged += Form2_devicelistSelectedIndexChanged;
             form2.SensitivityTrackBar.ValueChanged += Form2_SensitivityTrackBar_ValueChanged;
-            form2.PeakholdDecayTimeTrackBar.ValueChanged += Form2_PeakholdDecayTimeTrackBar_ValueChanged;
+            form2.PeakholdDescentSpeedTrackBar.ValueChanged += Form2_PeakholdDecayTimeTrackBar_ValueChanged;
             form2.ClassicRadio.CheckedChanged += Form2_ClassicRadio_CheckChanged;
             form2.PrisumRadio.CheckedChanged += Form2_PrisumRadio_CheckChanged;
             form2.SimpleRadio.CheckedChanged += Form2_SimpleRadio_CheckChanged;
@@ -182,6 +183,7 @@ namespace SpeAnaLED
             form2.HideFreqCheckBox.CheckedChanged += Form2_HideFreqCheckBoxCheckChanged;
             form2.HideTitleCheckBox.CheckedChanged += Form2_HideTitleCheckBoxCheckChanged;
             form2.ExitAppButton.Click += Form2_ExitAppButtonClicked;
+            form2.ClearSpectrum += ClearSpectrum;
 
             // Other Event handler (subscribe)
             analyzer.SpectrumChanged += Analyzer_ReceiveSpectrumData;
@@ -221,14 +223,8 @@ namespace SpeAnaLED
             form2.NumberOfBarComboBox.SelectedIndex = form2.NumberOfBarComboBox.Items.IndexOf(numberOfBar.ToString());
             form2.PeakholdTimeComboBox.SelectedIndex = form2.PeakholdTimeComboBox.Items.IndexOf(peakHoldTimeMsec.ToString());
             form2.SensitivityTextBox.Text = (form2.SensitivityTrackBar.Value / 10f).ToString("0.0");
-            form2.DecaySpeedTextBox.Text = form2.PeakholdDecayTimeTrackBar.Value.ToString();
+            form2.PeakholdDescentSpeedTextBox.Text = form2.PeakholdDescentSpeedTrackBar.Value.ToString();
             if (!form2.PeakholdCheckBox.Checked) form2.LabelPeakhold.Enabled = form2.LabelMsec.Enabled = form2.PeakholdTimeComboBox.Enabled = false;
-            if (freqMultiplyer != 1f)
-            {
-                analyzer._freqMultiplyer = freqMultiplyer;
-                form2.FreqMultiplyerTextBox.Text = freqMultiplyer.ToString();
-                Form2.freqMultiplyer = freqMultiplyer;
-            }
             if (form2.HideTitleCheckBox.Checked)
             {
                 titleHeight = 0;
@@ -515,7 +511,7 @@ namespace SpeAnaLED
 
         private void Form2_PeakholdDecayTimeTrackBar_ValueChanged(object sender, EventArgs e)
         {
-            peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDecayTimeTrackBar.Value;            // Inverse the value so that the direction of
+            peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;            // Inverse the value so that the direction of
             // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)            //  speed and value increase/decrease match.
         }
 
@@ -525,7 +521,7 @@ namespace SpeAnaLED
             {
                 numberOfBar = Convert.ToInt16(form2.NumberOfBarComboBox.SelectedItem);
                 counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * cycleMultiplyer * (numberOfBar / 16.0));    // Hold time is affected by the number of bands
-                peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDecayTimeTrackBar.Value;        // Inverse the value so that the direction of
+                peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;        // Inverse the value so that the direction of
                 // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)        //  speed and value increase/decrease match.
 
                 if (form2.RainbowRadio.Checked)     // need for color position adjust (Horizontal LED(Prisum) color)
@@ -961,7 +957,7 @@ namespace SpeAnaLED
             channel = analyzer._channel;
             peakValue = new int[maxNumberOfBar * channel];
             counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * cycleMultiplyer * (numberOfBar * channel / 16.0));
-            peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDecayTimeTrackBar.Value;      // Inverse the value so that the direction of
+            peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;      // Inverse the value so that the direction of
             for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(Spectrum1.Width, Spectrum1.Height);  //  speed and value increase/decrease match.
             for (int i = 0; i < analyzer._spectrumdata.Count; i++) analyzer._spectrumdata[i] = 0x00;
 
@@ -1087,10 +1083,13 @@ namespace SpeAnaLED
             {
                 string labelText;
                 
-                int freqvalues = (int)(Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.35));                       //  4.35 is magic number...
-                if (freqvalues > 1000)
+                int freqvalues = (int)(Math.Round(Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.29), 0));                       //  4.35 is magic number...
+                if (freqvalues > 10000)
                     labelText = (freqvalues / 1000).ToString("0") + "KHz";
-                else labelText = (freqvalues / 10 * 10).ToString("0") + "Hz";    // round -1
+                else if (freqvalues > 1000)
+                    labelText = (freqvalues / 100 * 100 / 1000f).ToString("0.0") + "KHz";
+                else
+                    labelText = (freqvalues / 10 * 10).ToString("0") + "Hz";    // round -1
 
                 int j = isFlip ? numberOfBar - 1 - i : i;
                 
@@ -1159,7 +1158,7 @@ namespace SpeAnaLED
 
             peakHoldTimeMsec = confReader.GetValue("peakHoldTimeMsec", 500);
             form2.SensitivityTrackBar.Value = confReader.GetValue("sensitivity", 80);
-            form2.PeakholdDecayTimeTrackBar.Value = confReader.GetValue("peakholdDecayTime", 10);
+            form2.PeakholdDescentSpeedTrackBar.Value = confReader.GetValue("peakholdDecayTime", 10);
             form2.PeakholdCheckBox.Checked = confReader.GetValue("peakhold", true);
             form2.AlwaysOnTopCheckBox.Checked = confReader.GetValue("alwaysOnTop", false);
             form2.SSaverCheckBox.Checked = confReader.GetValue("preventSSaver", true);
@@ -1246,7 +1245,6 @@ namespace SpeAnaLED
             maximized = confReader.GetValue("maximized", false);
 
             UNICODE = confReader.GetValue("unicode", true);                 // add "unicode=false" in conf file cause codepage change to ANSI
-            freqMultiplyer = confReader.GetValue("freqMultiplyer", 1f);
         }
 
         private bool SaveConfigParams()
@@ -1272,7 +1270,7 @@ namespace SpeAnaLED
 
             confWriter.AddValue("peakHoldTimeMsec", peakHoldTimeMsec);
             confWriter.AddValue("sensitivity", form2.SensitivityTrackBar.Value);                    // sensitivity
-            confWriter.AddValue("peakDecayTime", form2.PeakholdDecayTimeTrackBar.Value);            // peakhold decay time
+            confWriter.AddValue("peakDecayTime", form2.PeakholdDescentSpeedTrackBar.Value);            // peakhold decay time
 
             confWriter.AddValue("peakhold", form2.PeakholdCheckBox.Checked);
             confWriter.AddValue("alwaysOnTop", form2.AlwaysOnTopCheckBox.Checked);
@@ -1361,7 +1359,12 @@ namespace SpeAnaLED
                 confWriter.AddValue("devices", devices.TrimEnd(','));
 
             if (UNICODE == false) confWriter.AddValue("unicode", false);
-            if (Form2.FreqMultiplyer() != 1.0f) confWriter.AddValue<float>("freqMultiplyer",Form2.FreqMultiplyer());
+            
+            for (int i = 0; i < freqIndex.Length; i++)
+            {
+                if (freqIndex[i] != 0f) confWriter.AddValue<float>("freqIndex_" + i as string, freqIndex[i]);
+                //int idx = Int16.Parse(((string)form2.devicelist.Items[i]).Split(' ')[0]);
+            }
 
             confWriter.AddValue("spectrum2Width", Spectrum2.Width);         // save only for debug
             confWriter.AddValue("spectrum2Height", Spectrum2.Height);
