@@ -73,6 +73,7 @@
             this.FreqMultiplyerLabel = new System.Windows.Forms.Label();
             this.FreqMultiplyerTextBox = new System.Windows.Forms.TextBox();
             this.DeviceResetButton = new System.Windows.Forms.Button();
+            this.FrequencyLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -189,7 +190,7 @@
             // EnumerateButton
             // 
             this.EnumerateButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.EnumerateButton.Location = new System.Drawing.Point(555, 25);
+            this.EnumerateButton.Location = new System.Drawing.Point(567, 72);
             this.EnumerateButton.Name = "EnumerateButton";
             this.EnumerateButton.Size = new System.Drawing.Size(75, 23);
             this.EnumerateButton.TabIndex = 39;
@@ -222,7 +223,7 @@
             // 
             this.textBox1.BackColor = System.Drawing.SystemColors.Control;
             this.textBox1.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(458, 57);
+            this.textBox1.Location = new System.Drawing.Point(469, 101);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(173, 71);
@@ -372,7 +373,7 @@
             this.ChannelLayoutGroup.Controls.Add(this.HorizontalRadio);
             this.ChannelLayoutGroup.Controls.Add(this.VerticalRadio);
             this.ChannelLayoutGroup.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ChannelLayoutGroup.Location = new System.Drawing.Point(6, 98);
+            this.ChannelLayoutGroup.Location = new System.Drawing.Point(6, 62);
             this.ChannelLayoutGroup.Name = "ChannelLayoutGroup";
             this.ChannelLayoutGroup.Size = new System.Drawing.Size(207, 178);
             this.ChannelLayoutGroup.TabIndex = 24;
@@ -469,9 +470,9 @@
             this.groupBox5.Controls.Add(this.MonoRadio);
             this.groupBox5.Controls.Add(this.ChannelLayoutGroup);
             this.groupBox5.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox5.Location = new System.Drawing.Point(417, 152);
+            this.groupBox5.Location = new System.Drawing.Point(422, 188);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(220, 282);
+            this.groupBox5.Size = new System.Drawing.Size(220, 246);
             this.groupBox5.TabIndex = 32;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Number of Channels";
@@ -592,12 +593,22 @@
             // 
             // DeviceResetButton
             // 
-            this.DeviceResetButton.Location = new System.Drawing.Point(458, 25);
+            this.DeviceResetButton.Location = new System.Drawing.Point(520, 28);
             this.DeviceResetButton.Name = "DeviceResetButton";
             this.DeviceResetButton.Size = new System.Drawing.Size(90, 23);
             this.DeviceResetButton.TabIndex = 52;
-            this.DeviceResetButton.Text = "Device Reset";
+            this.DeviceResetButton.Text = "Reset";
             this.DeviceResetButton.UseVisualStyleBackColor = true;
+            // 
+            // FrequencyLabel
+            // 
+            this.FrequencyLabel.AutoSize = true;
+            this.FrequencyLabel.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FrequencyLabel.Location = new System.Drawing.Point(458, 31);
+            this.FrequencyLabel.Name = "FrequencyLabel";
+            this.FrequencyLabel.Size = new System.Drawing.Size(56, 15);
+            this.FrequencyLabel.TabIndex = 53;
+            this.FrequencyLabel.Text = "- - . - KHz";
             // 
             // Form2
             // 
@@ -605,6 +616,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(654, 486);
             this.ControlBox = false;
+            this.Controls.Add(this.FrequencyLabel);
             this.Controls.Add(this.DeviceResetButton);
             this.Controls.Add(this.FreqMultiplyerTextBox);
             this.Controls.Add(this.FreqMultiplyerLabel);
@@ -700,5 +712,6 @@
         private System.Windows.Forms.Label FreqMultiplyerLabel;
         protected internal System.Windows.Forms.TextBox FreqMultiplyerTextBox;
         protected internal System.Windows.Forms.Button DeviceResetButton;
+        protected internal System.Windows.Forms.Label FrequencyLabel;
     }
 }

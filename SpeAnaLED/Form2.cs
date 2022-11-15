@@ -89,9 +89,9 @@ namespace SpeAnaLED
                 e.SuppressKeyPress = true;      // suppress bell rings
                 try
                 {
-                    int DecaySpeedChangeValue = Convert.ToInt16(PeakholdDescentSpeedTextBox.Text);
-                    if (DecaySpeedChangeValue >= 4 && DecaySpeedChangeValue <= 20)
-                        PeakholdDescentSpeedTrackBar.Value = DecaySpeedChangeValue;
+                    int DescentSpeedChangeValue = Convert.ToInt16(PeakholdDescentSpeedTextBox.Text);
+                    if (DescentSpeedChangeValue >= 4 && DescentSpeedChangeValue <= 20)
+                        PeakholdDescentSpeedTrackBar.Value = DescentSpeedChangeValue;
                     else PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
                 }
                 catch

@@ -61,8 +61,6 @@ namespace SpeAnaLED
         private int canvasWidth;
         private bool inLayout = false;
         private Point mousePoint = new Point(0, 0);
-        //private float freqMultiplyer;
-        public static float[] freqIndex = new float[256];
 
 
         // parameters (set defaults)
@@ -71,7 +69,7 @@ namespace SpeAnaLED
         private const float penWidth = 30f;
         private int labelPadding;
         private const int barSpacing = 10;
-        private readonly float baseLabelFontSize = 7f;
+        private float baseLabelFontSize = 7f;
         private const int baseLabelFontWidth = 37;
         private const int baseLabelFontHeight = 13;
         private int barLeftPadding;
@@ -87,7 +85,7 @@ namespace SpeAnaLED
         public static int deviceNumber;
         private float sensitivity;
         private int peakHoldTimeMsec;
-        private int peakHoldDecayCycle = 10;    // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)
+        private int peakHoldDescentCycle = 10;    // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)
         private bool classicChecked, prisumChecked, simpleChecked, rainbowChecked;
         private readonly Color[] classicColors =
             {  Color.FromArgb(255,0,0),     //  0 100 50  red
@@ -113,47 +111,39 @@ namespace SpeAnaLED
             inInit = true;
             form2 = new Form2 { Owner = this };
 
-            string configFileName = @".\" + ProductName + @".conf";
+            string configFileName = @".\" + ProductName + @".conf";      // globalにする？
             try
             {
                 LoadConfigParams();
             }
             catch
             {
-                if (!System.IO.File.Exists(configFileName))
-                {
-                    MessageBox.Show("No Config file was found.\r\nUse default Parameters.",
-                        "Config file not found - " + ProductName,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                    LoadConfigParams();
-                }
-                else
-                {
-                    MessageBox.Show("Opps! Config file seems something wrong...\r\n" +
-                        "Delete file and use default parameters.",
-                        "Config file error - " + ProductName,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                    System.IO.File.Delete(configFileName);
-                    LoadConfigParams();
-                }
+                MessageBox.Show("Opps! Config file seems something wrong...\r\n" +
+                    "Delete file and use default parameters.",
+                    "Config file error - " + ProductName,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                System.IO.File.Delete(configFileName);
+                LoadConfigParams();
             }
 
             // before analizer birth...
             string[] deviceItems = devices.Split(',');
             for (int i = 0; i < deviceItems.Length; i++) form2.devicelist.Items.Add(deviceItems[i].TrimStart());
+            form2.devicelist.SelectedIndex = 0;
 
             // after param load, make a Analyzer instance.
-            analyzer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.DeviceResetButton, form2.NumberOfBarComboBox, form2.MonoRadio);
+            analyzer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.DeviceResetButton, form2.NumberOfBarComboBox, form2.MonoRadio,form2.FrequencyLabel);
 
-            if (devices == null)
+            if (devices == null || devices == string.Empty)
             {
-                analyzer.Enable = false;
-                analyzer.DisplayEnable = false;
+                analyzer.inInit = true;
                 form2.devicelist.Items.Clear();
                 form2.devicelist.Items.Add("Please Enumrate Devices");
                 form2.devicelist.SelectedIndex = 0;
+                form2.devicelist.Enabled = false;
+                form2.DeviceResetButton.Enabled = false;
+                analyzer.inInit = false;
             }
             else
             {
@@ -162,9 +152,8 @@ namespace SpeAnaLED
             }
 
             // Event handler for option form (subscribe)
-            form2.devicelist.SelectedIndexChanged += Form2_devicelistSelectedIndexChanged;
             form2.SensitivityTrackBar.ValueChanged += Form2_SensitivityTrackBar_ValueChanged;
-            form2.PeakholdDescentSpeedTrackBar.ValueChanged += Form2_PeakholdDecayTimeTrackBar_ValueChanged;
+            form2.PeakholdDescentSpeedTrackBar.ValueChanged += Form2_PeakholdDescentSpeedTrackBar_ValueChanged;
             form2.ClassicRadio.CheckedChanged += Form2_ClassicRadio_CheckChanged;
             form2.PrisumRadio.CheckedChanged += Form2_PrisumRadio_CheckChanged;
             form2.SimpleRadio.CheckedChanged += Form2_SimpleRadio_CheckChanged;
@@ -495,11 +484,6 @@ namespace SpeAnaLED
                 mousePoint = new Point(e.X, e.Y);
         }
         
-        private void Form2_devicelistSelectedIndexChanged(object sender, EventArgs e)
-        {
-            //deviceNumber = Convert.ToInt16( form2.devicelist.SelectedItem.ToString().Split(' ')[0]);
-        }
-        
         private void Form2_SensitivityTrackBar_ValueChanged(object sender, EventArgs e)
         {
             if (!inInit)
@@ -509,9 +493,9 @@ namespace SpeAnaLED
             }
         }
 
-        private void Form2_PeakholdDecayTimeTrackBar_ValueChanged(object sender, EventArgs e)
+        private void Form2_PeakholdDescentSpeedTrackBar_ValueChanged(object sender, EventArgs e)
         {
-            peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;            // Inverse the value so that the direction of
+            peakHoldDescentCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;            // Inverse the value so that the direction of
             // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)            //  speed and value increase/decrease match.
         }
 
@@ -521,7 +505,7 @@ namespace SpeAnaLED
             {
                 numberOfBar = Convert.ToInt16(form2.NumberOfBarComboBox.SelectedItem);
                 counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * cycleMultiplyer * (numberOfBar / 16.0));    // Hold time is affected by the number of bands
-                peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;        // Inverse the value so that the direction of
+                peakHoldDescentCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;        // Inverse the value so that the direction of
                 // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)        //  speed and value increase/decrease match.
 
                 if (form2.RainbowRadio.Checked)     // need for color position adjust (Horizontal LED(Prisum) color)
@@ -875,7 +859,7 @@ namespace SpeAnaLED
                     }
                     // down here, when powY is below peak, draw peak
                     else if (peakCounter > counterCycle * 0.75      // decide whether to descend peak. 0.75 is to descend from cycle of 3/4
-                        && peakCounter % peakHoldDecayCycle == 0)                                   // speed of descend
+                        && peakCounter % peakHoldDescentCycle == 0)                                   // speed of descend
                     {
                         for (int j = 0; j < peakValue.Length; j++) peakValue[j] -= (dash + dash);   // let Peak descend 1 level
                         if (peakValue[i] < powY) peakValue[i] = powY;                               // When it descends too much, update
@@ -883,7 +867,7 @@ namespace SpeAnaLED
                         {
                             peakValue[i] = powY;                                                    // When it descends too much, update
                         }*/
-                        else if (powY == 0 && peakValue[i] > 0 /*&& peakCounter % peakHoldDecayCycle == 0*/)
+                        else if (powY == 0 && peakValue[i] > 0 /*&& peakCounter % peakHoldDescentCycle == 0*/)
                         { // 到達しない?
                             for (int j = 0; j < peakValue.Length; j++) peakValue[j] -= (dash + dash);
                         }
@@ -957,7 +941,7 @@ namespace SpeAnaLED
             channel = analyzer._channel;
             peakValue = new int[maxNumberOfBar * channel];
             counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * cycleMultiplyer * (numberOfBar * channel / 16.0));
-            peakHoldDecayCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;      // Inverse the value so that the direction of
+            peakHoldDescentCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;      // Inverse the value so that the direction of
             for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(Spectrum1.Width, Spectrum1.Height);  //  speed and value increase/decrease match.
             for (int i = 0; i < analyzer._spectrumdata.Count; i++) analyzer._spectrumdata[i] = 0x00;
 
@@ -1076,8 +1060,8 @@ namespace SpeAnaLED
 
             spectrumWidthScale = (float)Spectrum1.Width / baseSpectrumWidth * (maxNumberOfBar / numberOfBar);
             float labelFontSize = (float)Math.Round(baseLabelFontSize * spectrumWidthScale, 1);
-            labelFontSize = labelFontSize <= 11f ? labelFontSize : 11f;
-            labelFontSize = labelFontSize >= 7f ? labelFontSize : 7f;
+            labelFontSize = labelFontSize < 11f ? labelFontSize : 11f;
+            labelFontSize = labelFontSize > 6f ? labelFontSize : 6f;
 
             for (int i = 0; i < maxNumberOfBar; i++)
             {
@@ -1134,14 +1118,20 @@ namespace SpeAnaLED
         {
             //config reader
             var configFileName = @".\" + ProductName + @".conf";
-            FileStream fs;
-            if (!System.IO.File.Exists(configFileName))
-            {
-                fs = new FileStream(configFileName, FileMode.CreateNew);
-                fs.Dispose();
-            }
 
-            var confReader = new ConfigReader(configFileName);
+            var confReader = new ConfigReader();
+            try
+            {
+                confReader = new ConfigReader(configFileName);
+            }
+            catch
+            {
+                MessageBox.Show("No Config file was found.\r\nUse default Parameters.\r\n" +
+                    "Please enumrate devices from \"Setting\" dialog.",
+                    "Config file not found - " + ProductName,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+            }
 
             numberOfBar = confReader.GetValue("numberOfBar", 16);
             deviceNumber = confReader.GetValue("deviceNumber", -1);
@@ -1158,7 +1148,7 @@ namespace SpeAnaLED
 
             peakHoldTimeMsec = confReader.GetValue("peakHoldTimeMsec", 500);
             form2.SensitivityTrackBar.Value = confReader.GetValue("sensitivity", 80);
-            form2.PeakholdDescentSpeedTrackBar.Value = confReader.GetValue("peakholdDecayTime", 10);
+            form2.PeakholdDescentSpeedTrackBar.Value = confReader.GetValue("peakholdDescentSpeed", 10);
             form2.PeakholdCheckBox.Checked = confReader.GetValue("peakhold", true);
             form2.AlwaysOnTopCheckBox.Checked = confReader.GetValue("alwaysOnTop", false);
             form2.SSaverCheckBox.Checked = confReader.GetValue("preventSSaver", true);
@@ -1170,10 +1160,10 @@ namespace SpeAnaLED
             form2.HideFreqCheckBox.Checked = confReader.GetValue("hideFreq", false);
             form2.HideTitleCheckBox.Checked = confReader.GetValue("hideTitle", false);
 
-            /*penWidth = confReader.GetValue("penWidth",30f);
+            //penWidth = confReader.GetValue("penWidth",30f);
+            //barSpacing = confReader.GetValue("barSpacing", 10);
+            baseLabelFontSize = confReader.GetValue("baseLabelFontSize", 6f);
             labelPadding = confReader.GetValue("labelPadding", 6);
-            barSpacing = confReader.GetValue("barSpacing", 10);
-            baseLabelFontSize = confReader.GetValue("baseLabelFontSize", 6f);*/
 
             if ((prisumChecked = confReader.GetValue("LED", true)) == false)
                 if ((classicChecked = confReader.GetValue("classic", false)) == false)
@@ -1269,8 +1259,8 @@ namespace SpeAnaLED
             confWriter.AddValue("labelPadding", labelPadding);
 
             confWriter.AddValue("peakHoldTimeMsec", peakHoldTimeMsec);
-            confWriter.AddValue("sensitivity", form2.SensitivityTrackBar.Value);                    // sensitivity
-            confWriter.AddValue("peakDecayTime", form2.PeakholdDescentSpeedTrackBar.Value);            // peakhold decay time
+            confWriter.AddValue("sensitivity", form2.SensitivityTrackBar.Value);
+            confWriter.AddValue("peakDescentSpeed", form2.PeakholdDescentSpeedTrackBar.Value);
 
             confWriter.AddValue("peakhold", form2.PeakholdCheckBox.Checked);
             confWriter.AddValue("alwaysOnTop", form2.AlwaysOnTopCheckBox.Checked);
@@ -1281,18 +1271,17 @@ namespace SpeAnaLED
             confWriter.AddValue("classic", form2.ClassicRadio.Checked);
             confWriter.AddValue("simple", form2.SimpleRadio.Checked);
             confWriter.AddValue("rainbow", form2.RainbowRadio.Checked);
-
             confWriter.AddValue("verticalLayout", form2.VerticalRadio.Checked);
             confWriter.AddValue("horizontalLayout", form2.HorizontalRadio.Checked);
             confWriter.AddValue("flipNone", form2.NoFlipRadio.Checked);
             confWriter.AddValue("flipRight", form2.RightFlipRadio.Checked);
             confWriter.AddValue("flipLeft", form2.LeftFlipRadio.Checked);
             confWriter.AddValue("hideTitle", form2.HideTitleCheckBox.Checked);
-
-
             confWriter.AddValue("mono", form2.MonoRadio.Checked);
             confWriter.AddValue("stereo", form2.StereoRadio.Checked);
 
+            confWriter.AddValue("baseLabelFontSize", baseLabelFontSize);
+            confWriter.AddValue("labelPadding", labelPadding);
 
             string strColors = "";
             for (int i = 0; i < classicColors.Length; i++)
@@ -1360,26 +1349,27 @@ namespace SpeAnaLED
 
             if (UNICODE == false) confWriter.AddValue("unicode", false);
             
-            for (int i = 0; i < freqIndex.Length; i++)
-            {
-                if (freqIndex[i] != 0f) confWriter.AddValue<float>("freqIndex_" + i as string, freqIndex[i]);
-                //int idx = Int16.Parse(((string)form2.devicelist.Items[i]).Split(' ')[0]);
-            }
-
             confWriter.AddValue("spectrum2Width", Spectrum2.Width);         // save only for debug
             confWriter.AddValue("spectrum2Height", Spectrum2.Height);
             confWriter.AddValue("spectrum2Top", Spectrum2.Top);
             confWriter.AddValue("spectrum2Left", Spectrum2.Height);
 
-            // add "unicode=false" in conf file cause codepage change to ANSI (do not save)
+            // add "unicode=false" in config file to change cause codepage to ANSI (not saved)
 
+            string configFileName = @".\" + ProductName + @".conf";
             try
             {
-                confWriter.Save(@".\" + ProductName + @".conf");
+                confWriter.Save(configFileName);
                 return true;
             }
             catch (Exception)
             {
+                FileStream fs;
+                if (!System.IO.File.Exists(configFileName))
+                {
+                    fs = new FileStream(configFileName, FileMode.CreateNew);
+                    fs.Dispose();
+                }
                 throw;
             }
         }
