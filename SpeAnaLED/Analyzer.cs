@@ -9,10 +9,12 @@ namespace SpeAnaLED
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1005:デリゲート呼び出しを簡素化できます。", Justification = "<保留中>")]
 
+    //
+    // based on h0uri's Analyzer.cs (https://www.instructables.com/Audio-Spectrum-Software-C/) 
+    //
     internal class Analyzer
     {
         public float[] _fft;                            // buffer for fft data
-        public readonly ComboBox _devicelist;           // device list
         private bool _enable;                           // enabled status
         private bool _initialized;                      // initialized flag
         private readonly WASAPIPROC _process;           // callback function to obtain data
@@ -23,6 +25,7 @@ namespace SpeAnaLED
         private readonly BASSData _DATAFLAG_16384;      // for Hi-Reso
         public int _devicenumber;
         private readonly bool _UNICODE;                 // codepage switch
+        public readonly ComboBox _devicelist;           // for subscribe
         private readonly Button _form2EnumButton;       // for subscribe
         private readonly Button _form2DeviceResetButton;// for subscribe
         private readonly ComboBox _form2NumberOfBars;   // for subscribe
@@ -40,10 +43,14 @@ namespace SpeAnaLED
 
         public Analyzer(ComboBox devicelist, Button enumButton, Button deviceResetButton, ComboBox numberofbars, RadioButton monoRadio, Label freqLabel)    // Control data for event subscribe
         {
+            _devicelist = devicelist;
+            _form2EnumButton = enumButton;
+            _form2DeviceResetButton = deviceResetButton;
+            _form2NumberOfBars = numberofbars;
             _form2MonoRadio = monoRadio;
+            _form2FreqLabel = freqLabel;
             _channel = monoRadio.Checked ? 1 : 2;
             _fft = new float[16384 * _channel];
-            _devicelist = devicelist;
             _initialized = false;
             _process = new WASAPIPROC(Process);
             _timer1 = new DispatcherTimer();
@@ -52,18 +59,14 @@ namespace SpeAnaLED
             _timer1.IsEnabled = false;
             _spectrumdata = new List<byte>();
             _devicenumber = Form1.DeviceNumber();
-            _form2EnumButton = enumButton;
-            _form2DeviceResetButton = deviceResetButton;
-            _form2NumberOfBars = numberofbars;
-            _form2FreqLabel = freqLabel;
             _DATAFLAG_8192 = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
             _DATAFLAG_16384 = _channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
             _lines = Convert.ToInt16(_form2NumberOfBars.SelectedItem);
             _UNICODE = Form1.Unicode();
 
             // Event handler for option form (reseive)
-            _form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Clicked);
-            _form2DeviceResetButton.Click += new EventHandler(Form2_devicelist_SelectedIndexChanged);
+            //_form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Clicked);
+            //_form2DeviceResetButton.Click += new EventHandler(Form2_devicelist_SelectedIndexChanged);
             _form2NumberOfBars.SelectedIndexChanged += new EventHandler(Form2_NumberOfBarIndexChanged);
             _form2MonoRadio.CheckedChanged += new EventHandler(Form2_MonoRadio_CheckChanged);
             _devicelist.SelectedIndexChanged += new EventHandler(Form2_devicelist_SelectedIndexChanged);
@@ -179,7 +182,7 @@ namespace SpeAnaLED
                 }
                 else
                 {
-                    if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;         // truncate last data
+                    if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;     // truncate last data
                 }
 
                 for (; fftPos < freqValue; fftPos += _channel)                                              // freq band in interreave step
@@ -213,13 +216,14 @@ namespace SpeAnaLED
 
         private void Form2_EnumerateButton_Clicked(object sender, EventArgs e)
         {
-            _form2EnumButton.Enabled = false;
             _devicelist.Enabled = false;
+            _form2DeviceResetButton.Enabled = false;
+            _form2EnumButton.Enabled = false;
+
             _initialized = false;
             Enable = false;
             Free();
 
-            //_devicelist.SelectedIndex = -1;
             _devicelist.Items.Clear();
             BASS_WASAPI_DEVICEINFO device;
             for (int i = 0; i < BassWasapi.BASS_WASAPI_GetDeviceCount(); i++)
@@ -230,41 +234,25 @@ namespace SpeAnaLED
                     _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
                 }
             }
-            if (_devicelist.Items == null) throw new Exception("Error");
+            if (_devicelist.Items == null) throw new Exception("Device Serch Error");
             _devicenumber = Convert.ToInt16(_devicelist.Items[0].ToString().Split(' ')[0]);
             _devicelist.SelectedIndex = 0;
 
-            //try
-            //{
-                _form2DeviceResetButton.Enabled = true;
-                _devicelist.Enabled = true;
-                _form2EnumButton.Enabled = true;
-            /*}
-            catch
-            {
-                _devicelist.Items.Clear();
-                _devicelist.Items.Add("Please Enumrate Devices");
-                _devicelist.SelectedIndex = 0;
-
-                MessageBox.Show("No Output Device found.1\r\n" +
-                    "(May be Device Power-SW off?)\r\n" +
-                    "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
-                    "No Output Device - SpeAnaLED",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-
-                DisplayEnable = false;
-                Enable = false;
-                Free();
-            }*/
+            _form2DeviceResetButton.Enabled = true;
+            _form2EnumButton.Enabled = true;
+            _devicelist.Enabled = true;
         }
 
         private void Form2_devicelist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!inInit/* && _initialized == true*/)
+            if (!inInit)
             {
                 if (_devicenumber == -1) return;
-                
+
+                _form2DeviceResetButton.Enabled = false;
+                _form2EnumButton.Enabled = false;
+                _devicelist.Enabled = false;
+
                 _initialized = false;
                 Enable = false;
                 Free();
@@ -294,7 +282,10 @@ namespace SpeAnaLED
                     if (!result) throw new Exception("Source Device Initialize Error\r\n" + "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString());
                     Enable = true;
                 }
-                
+
+                _form2EnumButton.Enabled = true;
+                _form2DeviceResetButton.Enabled = true;
+                _devicelist.Enabled = true;
             }
         }
 

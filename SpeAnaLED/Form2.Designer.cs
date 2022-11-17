@@ -86,6 +86,7 @@
             // 
             // devicelist
             // 
+            this.devicelist.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.devicelist.FormattingEnabled = true;
             this.devicelist.Location = new System.Drawing.Point(12, 28);
             this.devicelist.Name = "devicelist";
@@ -196,6 +197,7 @@
             this.EnumerateButton.TabIndex = 39;
             this.EnumerateButton.Text = "Enumerate";
             this.EnumerateButton.UseVisualStyleBackColor = true;
+            this.EnumerateButton.Click += new System.EventHandler(this.EnumerateButton_Click);
             // 
             // groupBox2
             // 
@@ -229,12 +231,13 @@
             this.textBox1.Size = new System.Drawing.Size(173, 71);
             this.textBox1.TabIndex = 35;
             this.textBox1.TabStop = false;
-            this.textBox1.Text = "Depending on the number of device (disabled or not), enumerating may take several" +
-    " minute.";
+            this.textBox1.Text = "Depending on the number of device (disabled or not) you have, enumerating may tak" +
+    "e several minute.";
             // 
             // NumberOfBarComboBox
             // 
             this.NumberOfBarComboBox.DisplayMember = "1,2,4,8,16";
+            this.NumberOfBarComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.NumberOfBarComboBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NumberOfBarComboBox.FormattingEnabled = true;
             this.NumberOfBarComboBox.Items.AddRange(new object[] {
@@ -260,6 +263,7 @@
             // 
             // PeakholdTimeComboBox
             // 
+            this.PeakholdTimeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PeakholdTimeComboBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PeakholdTimeComboBox.FormattingEnabled = true;
             this.PeakholdTimeComboBox.Items.AddRange(new object[] {
@@ -593,12 +597,13 @@
             // 
             // DeviceResetButton
             // 
-            this.DeviceResetButton.Location = new System.Drawing.Point(520, 28);
+            this.DeviceResetButton.Location = new System.Drawing.Point(523, 28);
             this.DeviceResetButton.Name = "DeviceResetButton";
             this.DeviceResetButton.Size = new System.Drawing.Size(90, 23);
             this.DeviceResetButton.TabIndex = 52;
             this.DeviceResetButton.Text = "Reset";
             this.DeviceResetButton.UseVisualStyleBackColor = true;
+            this.DeviceResetButton.Click += new System.EventHandler(this.DeviceResetButton_Click);
             // 
             // FrequencyLabel
             // 
@@ -606,9 +611,9 @@
             this.FrequencyLabel.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FrequencyLabel.Location = new System.Drawing.Point(458, 31);
             this.FrequencyLabel.Name = "FrequencyLabel";
-            this.FrequencyLabel.Size = new System.Drawing.Size(56, 15);
+            this.FrequencyLabel.Size = new System.Drawing.Size(59, 15);
             this.FrequencyLabel.TabIndex = 53;
-            this.FrequencyLabel.Text = "- - . - KHz";
+            this.FrequencyLabel.Text = "- - - . - khz";
             // 
             // Form2
             // 

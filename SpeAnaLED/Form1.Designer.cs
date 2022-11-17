@@ -70,7 +70,6 @@
             this.LabelCycle.Size = new System.Drawing.Size(41, 15);
             this.LabelCycle.TabIndex = 1;
             this.LabelCycle.Text = "label1";
-            this.LabelCycle.Click += new System.EventHandler(this.LabelCycle_Click);
             // 
             // Spectrum2
             // 

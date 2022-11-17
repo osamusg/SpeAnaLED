@@ -48,7 +48,7 @@ namespace SpeAnaLED
             if (devicelist.SelectedIndex == -1)
             {
                 devicelist.Items.Clear();
-                devicelist.Items.Add("Please Enumrate Devices");
+                devicelist.Items.Add("Please Enumerate Devices");
                 devicelist.SelectedIndex = 0;
             }
         }
@@ -108,5 +108,16 @@ namespace SpeAnaLED
             System.Diagnostics.Process.Start(gitUri);
         }
 
+        private void EnumerateButton_Click(object sender, EventArgs e)
+        {
+            devicelist.Enabled = false;
+            if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
+        }
+
+        private void DeviceResetButton_Click(object sender, EventArgs e)
+        {
+            devicelist.Enabled = true;
+            if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
+        }
     }
 }
