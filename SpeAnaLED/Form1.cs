@@ -134,7 +134,7 @@ namespace SpeAnaLED
             form2.devicelist.SelectedIndex = 0;
 
             // after param load, make a Analyzer instance.
-            analyzer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.DeviceResetButton, form2.NumberOfBarComboBox, form2.MonoRadio,form2.FrequencyLabel);
+            analyzer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.DeviceResetButton, form2.NumberOfBarComboBox, form2.MonoRadio, form2.FrequencyLabel);
 
             if (devices == null || devices == string.Empty)
             {
@@ -149,7 +149,7 @@ namespace SpeAnaLED
             else
             {
                 analyzer.Enable = true;
-                // analyzer.DisplayEnable = true;       // do nothing
+                // analyzer.DisplayEnable = true;       // do nothing in DisplayEnable
             }
 
             // Event handler for modeless option form (subscribe)
@@ -191,21 +191,14 @@ namespace SpeAnaLED
             peakValue = new int[maxNumberOfBar * channel];
             endPointY = baseSpectrumHeight;
             bgPen = new Pen(Color.FromArgb(29, 29, 29), penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
-            
+
             // default hold time. I don't know why "* cycleMultiplyer * (number..." is necessary. This is due to actual measurements.
             counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * cycleMultiplyer * (numberOfBar * channel / 16.0));
-            
+
             //for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(baseSpectrumWidth, baseSpectrumHeight);
             for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Left[i] = new Label();
             for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Right[i] = new Label();
             
-            // set default color pen
-            colors = prisumColors;
-            positions = prisumPositions[numberOfBar];
-            brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
-                { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
-            myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
-
             // form2 setting
             form2.NumberOfBarComboBox.SelectedIndex = form2.NumberOfBarComboBox.Items.IndexOf(numberOfBar.ToString());
             form2.PeakholdTimeComboBox.SelectedIndex = form2.PeakholdTimeComboBox.Items.IndexOf(peakHoldTimeMsec.ToString());
@@ -230,6 +223,7 @@ namespace SpeAnaLED
                 LabelCycle.Visible = true;
             else
                 LabelCycle.Visible = false;
+            
             if ((form2.PrisumRadio.Checked = prisumChecked) == true)
             {
                 colors = prisumColors;
@@ -259,12 +253,15 @@ namespace SpeAnaLED
                 endPointX = barLeftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - barSpacing;    // Horizontal
                 endPointY = 0;
             }
+            // set Gradient color pen
             if (!form2.RainbowRadio.Checked)
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                     { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
             else
                 brush = new LinearGradientBrush(new Point(endPointX, endPointY), new Point(0, 0), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                     { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+            myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+
             if (form2.LeftFlipRadio.Checked)
             {
                 flipLeft = RotateFlipType.RotateNoneFlipX;
@@ -981,7 +978,7 @@ namespace SpeAnaLED
             //spectrumHeightScale = (float)Spectrum1.Height / baseSpectrumHeight;
             float labelFontSize = (float)Math.Round(baseLabelFontSize * spectrumWidthScale, 1);
             labelFontSize = labelFontSize < 11f ? labelFontSize : 11f;
-            labelFontSize = labelFontSize > 7f ? labelFontSize : 7f;
+            labelFontSize = labelFontSize > 6f ? labelFontSize : 6f;
 
             for (int i = 0; i < maxNumberOfBar; i++)
             {

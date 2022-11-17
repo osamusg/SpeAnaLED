@@ -34,7 +34,7 @@ namespace SpeAnaLED
 
         private void Form2_DoubleClick(object sender, EventArgs e)
         {
-        
+
         }
 
         private void CloseButton_Click(object sender, EventArgs e)
@@ -52,7 +52,7 @@ namespace SpeAnaLED
                 devicelist.SelectedIndex = 0;
             }
         }
-        
+
         private void SensitivityTrackBar_ValueChanged(object sender, EventArgs e)
         {
             SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
@@ -110,13 +110,16 @@ namespace SpeAnaLED
 
         private void EnumerateButton_Click(object sender, EventArgs e)
         {
-            devicelist.Enabled = false;
             if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
         }
 
         private void DeviceResetButton_Click(object sender, EventArgs e)
         {
-            devicelist.Enabled = true;
+            if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
+        }
+
+        private void MonoRadio_CheckedChanged(object sender, EventArgs e)
+        {
             if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
         }
     }

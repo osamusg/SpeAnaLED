@@ -191,11 +191,11 @@
             // EnumerateButton
             // 
             this.EnumerateButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.EnumerateButton.Location = new System.Drawing.Point(567, 72);
+            this.EnumerateButton.Location = new System.Drawing.Point(530, 72);
             this.EnumerateButton.Name = "EnumerateButton";
-            this.EnumerateButton.Size = new System.Drawing.Size(75, 23);
+            this.EnumerateButton.Size = new System.Drawing.Size(112, 23);
             this.EnumerateButton.TabIndex = 39;
-            this.EnumerateButton.Text = "Enumerate";
+            this.EnumerateButton.Text = "Enumerate Devices";
             this.EnumerateButton.UseVisualStyleBackColor = true;
             this.EnumerateButton.Click += new System.EventHandler(this.EnumerateButton_Click);
             // 
@@ -267,14 +267,11 @@
             this.PeakholdTimeComboBox.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PeakholdTimeComboBox.FormattingEnabled = true;
             this.PeakholdTimeComboBox.Items.AddRange(new object[] {
+            "250",
             "500",
             "1000",
             "1500",
-            "2000",
-            "2500",
-            "3000",
-            "3500",
-            "4000"});
+            "2000"});
             this.PeakholdTimeComboBox.Location = new System.Drawing.Point(206, 21);
             this.PeakholdTimeComboBox.Name = "PeakholdTimeComboBox";
             this.PeakholdTimeComboBox.Size = new System.Drawing.Size(58, 24);
@@ -502,6 +499,7 @@
             this.MonoRadio.TabIndex = 33;
             this.MonoRadio.Text = "1: Mono(L+R Mix)";
             this.MonoRadio.UseVisualStyleBackColor = true;
+            this.MonoRadio.CheckedChanged += new System.EventHandler(this.MonoRadio_CheckedChanged);
             // 
             // ShowCounterCheckBox
             // 
@@ -597,11 +595,11 @@
             // 
             // DeviceResetButton
             // 
-            this.DeviceResetButton.Location = new System.Drawing.Point(523, 28);
+            this.DeviceResetButton.Location = new System.Drawing.Point(521, 28);
             this.DeviceResetButton.Name = "DeviceResetButton";
             this.DeviceResetButton.Size = new System.Drawing.Size(90, 23);
             this.DeviceResetButton.TabIndex = 52;
-            this.DeviceResetButton.Text = "Reset";
+            this.DeviceResetButton.Text = "Reload Device";
             this.DeviceResetButton.UseVisualStyleBackColor = true;
             this.DeviceResetButton.Click += new System.EventHandler(this.DeviceResetButton_Click);
             // 

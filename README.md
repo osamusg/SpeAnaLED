@@ -44,8 +44,8 @@
 - You can change form vertical and horizontal size severally. (free aspect-ratio)<br/>
 <img src="./screenshot/screenshot6.png"/>
 
-- So, it can be placed on the desktop in a very small size
-<img src="./screenshot/screenshot8.png" width="280"/>
+- So, it can be placed on the desktop in a very small size<br>
+<img src="./screenshot/screenshot8.png" width="480"/>
   
 
 ## Other features
@@ -74,7 +74,7 @@
   
 
 ## Other precautions
-<p><strong>SpeAnaLED</strong> is simply made to be seen and enjoyed by myself. The frequency displayed is most likely not accurate.</p>
+<p><strong>SpeAnaLED</strong> is simply made to be seen and enjoyed by myself. The values including frequency displayed is most likely not accurate.</p>
 <p>If a problem occurs, first try deleting your configuration file(SpeAnaLED.conf) and restarting <strong>SpeAnaLED</strong>. (After that, enumerate sound device from setting dialog again.)</p>
 <p>Have fun music!</p>
 
@@ -82,3 +82,6 @@
 **SpeAnaLED** itsself, is a [MIT License](./LICENSE.md) software.
 
 Use of each DLL(library) must be in accordance with the respective license.
+  
+## Win32 Executable binaries
+See "Releases" on the right side.

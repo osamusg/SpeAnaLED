@@ -21,14 +21,14 @@ namespace SpeAnaLED
         public List<byte> _spectrumdata;                // spectrum data buffer
         public readonly DispatcherTimer _timer1;        // timer that refreshes the display
         private BASSData _DATAFLAG;                     // for "interreave" format
-        private readonly  BASSData _DATAFLAG_8192;      // for Hi-Reso
-        private readonly BASSData _DATAFLAG_16384;      // for Hi-Reso
+        private BASSData _DATAFLAG_8192;                // for Hi-Reso
+        private BASSData _DATAFLAG_16384;               // for Hi-Reso
         public int _devicenumber;
         private readonly bool _UNICODE;                 // codepage switch
         public readonly ComboBox _devicelist;           // for subscribe
         private readonly Button _form2EnumButton;       // for subscribe
         private readonly Button _form2DeviceResetButton;// for subscribe
-        private readonly ComboBox _form2NumberOfBars;   // for subscribe
+        private readonly ComboBox _form2NumberOfBarsComboBox;   // for subscribe
         private readonly RadioButton _form2MonoRadio;   // for subscribe
         private readonly Label _form2FreqLabel;
         public event EventHandler SpectrumChanged;      // for fire
@@ -41,15 +41,15 @@ namespace SpeAnaLED
         public int _channel;                            // 1: "mix-data"(mono) 2: L+R
         private int _lines;                             // default number of spectrum lines
 
-        public Analyzer(ComboBox devicelist, Button enumButton, Button deviceResetButton, ComboBox numberofbars, RadioButton monoRadio, Label freqLabel)    // Control data for event subscribe
+        public Analyzer(ComboBox devicelist, Button enumButton, Button deviceResetButton, ComboBox numberOfbarsComboBox, RadioButton monoRadio, Label freqLabel)    // Control data for event subscribe
         {
             _devicelist = devicelist;
             _form2EnumButton = enumButton;
             _form2DeviceResetButton = deviceResetButton;
-            _form2NumberOfBars = numberofbars;
+            _form2NumberOfBarsComboBox = numberOfbarsComboBox;
             _form2MonoRadio = monoRadio;
+            _channel = _form2MonoRadio.Checked ? 1 : 2;
             _form2FreqLabel = freqLabel;
-            _channel = monoRadio.Checked ? 1 : 2;
             _fft = new float[16384 * _channel];
             _initialized = false;
             _process = new WASAPIPROC(Process);
@@ -61,15 +61,15 @@ namespace SpeAnaLED
             _devicenumber = Form1.DeviceNumber();
             _DATAFLAG_8192 = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
             _DATAFLAG_16384 = _channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
-            _lines = Convert.ToInt16(_form2NumberOfBars.SelectedItem);
+            _lines = Convert.ToInt16(_form2NumberOfBarsComboBox.SelectedItem);
             _UNICODE = Form1.Unicode();
 
             // Event handler for option form (reseive)
-            //_form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Clicked);
-            //_form2DeviceResetButton.Click += new EventHandler(Form2_devicelist_SelectedIndexChanged);
-            _form2NumberOfBars.SelectedIndexChanged += new EventHandler(Form2_NumberOfBarIndexChanged);
-            _form2MonoRadio.CheckedChanged += new EventHandler(Form2_MonoRadio_CheckChanged);
+            _form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Clicked);
+            _form2DeviceResetButton.Click += new EventHandler(Form2_devicelist_SelectedIndexChanged);
             _devicelist.SelectedIndexChanged += new EventHandler(Form2_devicelist_SelectedIndexChanged);
+            _form2NumberOfBarsComboBox.SelectedIndexChanged += new EventHandler(Form2_NumberOfBarIndexChanged);
+            _form2MonoRadio.CheckedChanged += new EventHandler(Form2_MonoRadio_CheckChanged);
 
             Init();
         }
@@ -171,11 +171,11 @@ namespace SpeAnaLED
                 float[] peak = new float[] { 0f, 0f };      // 0=Left(mono), 1=Right
 
                 if (_channel > 1)
-                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + _freqShift) * _mixfreqMulti);
+                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + _freqShift)  * _mixfreqMulti);
                 else
-                    freqValue = (int)(Math.Pow(2, bandX * 10.0 / (_lines - 1) + _freqShift) / 4 * _mixfreqMulti);   // I don't know why 4...
-
-                if (freqValue <= fftPos) freqValue = fftPos + 1;                                            // if out of range, min. freq. selected
+                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + _freqShift) / 5 * _mixfreqMulti);   // I don't know why 5...
+                                                                                                                      // denominator lager -> shift right
+                if (freqValue <= fftPos) freqValue = fftPos + 1;                            // if out of range, min. freq. selected
                 if (_mixfreq > 96000)
                 {
                     if (freqValue > 16384 * _channel - _channel) freqValue = 16384 * _channel - _channel;
@@ -211,12 +211,12 @@ namespace SpeAnaLED
 
         private void Form2_NumberOfBarIndexChanged(object sender, EventArgs e)
         {
-            _lines = Convert.ToInt16(_form2NumberOfBars.SelectedItem);
+            _lines = Convert.ToInt16(_form2NumberOfBarsComboBox.SelectedItem);
         }
 
         private void Form2_EnumerateButton_Clicked(object sender, EventArgs e)
         {
-            _devicelist.Enabled = false;
+            //_devicelist.Enabled = false;      // loop below is too heavey...
             _form2DeviceResetButton.Enabled = false;
             _form2EnumButton.Enabled = false;
 
@@ -251,7 +251,7 @@ namespace SpeAnaLED
 
                 _form2DeviceResetButton.Enabled = false;
                 _form2EnumButton.Enabled = false;
-                _devicelist.Enabled = false;
+                //_devicelist.Enabled = false;
 
                 _initialized = false;
                 Enable = false;
@@ -298,7 +298,11 @@ namespace SpeAnaLED
             _channel = _form2MonoRadio.Checked ? 1 : 2;
             _fft.Initialize();
             _fft = new float[16384 * _channel];
-            _DATAFLAG = _channel > 1 ? _DATAFLAG_16384 : _DATAFLAG_8192;
+
+            //_DATAFLAG = _channel > 1 ? _DATAFLAG_16384 : _DATAFLAG_8192;
+            _DATAFLAG_8192 = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
+            _DATAFLAG_16384 = _channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
+            _DATAFLAG = _mixfreq > 96000 ? _DATAFLAG_16384 : _DATAFLAG_8192;
 
             bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
             if (!result) throw new Exception("Source Device Initialize Error");
