@@ -21,8 +21,9 @@ namespace SpeAnaLED
         public List<byte> _spectrumdata;                // spectrum data buffer
         public readonly DispatcherTimer _timer1;        // timer that refreshes the display
         private BASSData _DATAFLAG;                     // for "interreave" format
-        private BASSData _DATAFLAG_8192;                // for Hi-Reso
-        private BASSData _DATAFLAG_16384;               // for Hi-Reso
+        //private BASSData _DATAFLAG_4096;                // for < 96000
+        //private BASSData _DATAFLAG_8192;                // reserved
+        //private BASSData _DATAFLAG_16384;               // for Hi-Reso
         public int _devicenumber;
         private readonly bool _UNICODE;                 // codepage switch
         public readonly ComboBox _devicelist;           // for subscribe
@@ -34,12 +35,12 @@ namespace SpeAnaLED
         public event EventHandler SpectrumChanged;      // for fire
         public event EventHandler NumberOfChannelChanged;   // for fire
         private int _mixfreq;
-        private float _mixfreqMulti;
+        private float _mixfreqMultiplyer;
         private readonly float _freqShift = (float)Math.Round(Math.Log(20000/*hz*/, 2) - /*in increments of*/10, 2);
         public bool inInit = true;
 
         public int _channel;                            // 1: "mix-data"(mono) 2: L+R
-        private int _lines;                             // default number of spectrum lines
+        private int _lines;                             // number of spectrum lines
 
         public Analyzer(ComboBox devicelist, Button enumButton, Button deviceResetButton, ComboBox numberOfbarsComboBox, RadioButton monoRadio, Label freqLabel)    // Control data for event subscribe
         {
@@ -59,8 +60,6 @@ namespace SpeAnaLED
             _timer1.IsEnabled = false;
             _spectrumdata = new List<byte>();
             _devicenumber = Form1.DeviceNumber();
-            _DATAFLAG_8192 = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
-            _DATAFLAG_16384 = _channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
             _lines = Convert.ToInt16(_form2NumberOfBarsComboBox.SelectedItem);
             _UNICODE = Form1.Unicode();
 
@@ -88,8 +87,7 @@ namespace SpeAnaLED
                 
                 string itemName = string.Format("{0} - {1}", _devicenumber, device.name);
                 _mixfreq = device.mixfreq;
-                _DATAFLAG = _mixfreq > 96000 ? _DATAFLAG_16384 : _DATAFLAG_8192;
-                _mixfreqMulti = 44100f / _mixfreq * (_mixfreq > 96000 ? 2f : 1f);
+                SetParamFromFreq(_mixfreq);         // set _DATAFLAG and _mixfreqMulti
                 _devicelist.SelectedIndex = _devicelist.Items.IndexOf(itemName);
 
                 Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
@@ -131,7 +129,7 @@ namespace SpeAnaLED
                         else
                         {
                             _initialized = true;
-                            if (_mixfreq != 0f) _form2FreqLabel.Text = (_mixfreq / 1000f).ToString("0.0") + " KHz";
+                            if (_mixfreq != 0f) _form2FreqLabel.Text = (_mixfreq / 1000f).ToString("0.0") + " khz";
                         }
                     }
                     bool startResult = BassWasapi.BASS_WASAPI_Start();
@@ -171,18 +169,22 @@ namespace SpeAnaLED
                 float[] peak = new float[] { 0f, 0f };      // 0=Left(mono), 1=Right
 
                 if (_channel > 1)
-                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + _freqShift)  * _mixfreqMulti);
+                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + _freqShift)  * _mixfreqMultiplyer);
                 else
-                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + _freqShift) / 5 * _mixfreqMulti);   // I don't know why 5...
-                                                                                                                      // denominator lager -> shift right
-                if (freqValue <= fftPos) freqValue = fftPos + 1;                            // if out of range, min. freq. selected
-                if (_mixfreq > 96000)
+                    freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_lines - 1)) + _freqShift) / 5 * _mixfreqMultiplyer);    // I don't know why 5...
+                                                                                                                            // denominator lager -> shift right
+                if (freqValue <= fftPos) freqValue = fftPos + 1;                                            // if out of range, min. freq. selected
+                if (_mixfreq <= 48000)          // 44.1khz, 48khz
+                {
+                    if (freqValue > 4096 * _channel - _channel) freqValue = 4096 * _channel - _channel;     // truncate last data
+                }
+                else if (_mixfreq <= 88200)     // 88.2khz, 96khz
+                {
+                    if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;
+                }
+                else                            // 176.4khz, 192khz, 384khz and above?
                 {
                     if (freqValue > 16384 * _channel - _channel) freqValue = 16384 * _channel - _channel;
-                }
-                else
-                {
-                    if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;     // truncate last data
                 }
 
                 for (; fftPos < freqValue; fftPos += _channel)                                              // freq band in interreave step
@@ -207,6 +209,27 @@ namespace SpeAnaLED
             if (SpectrumChanged != null) SpectrumChanged(this, EventArgs.Empty);
 
             _spectrumdata.Clear();
+        }
+
+        private void SetParamFromFreq(int freq)
+        {
+            // freq is readonly
+
+            if (freq <= 48000 )         // 44.1khz, 48khz
+            {
+                _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT8192 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT4096;
+                _mixfreqMultiplyer = 44100f / freq * 0.5f;
+            }
+            else if (freq <= 88200)     // 88.2khz, 96khz
+            {
+                _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
+                _mixfreqMultiplyer = 44100f / freq;
+            }
+            else                        // 176.4khz, 192khz, 384khz and above?
+            {
+                _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
+                _mixfreqMultiplyer = 44100f / freq * 2f;
+            }
         }
 
         private void Form2_NumberOfBarIndexChanged(object sender, EventArgs e)
@@ -275,8 +298,7 @@ namespace SpeAnaLED
                 else
                 {
                     _mixfreq = device.mixfreq;
-                    _DATAFLAG = _mixfreq > 96000 ? _DATAFLAG_16384 : _DATAFLAG_8192;
-                    _mixfreqMulti = 44100f / _mixfreq * (_mixfreq > 96000 ? 2f : 1f);
+                    SetParamFromFreq(_mixfreq);         // set _DATAFLAG and _mixfreqMulti
 
                     bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);       // need _mixfreq here
                     if (!result) throw new Exception("Source Device Initialize Error\r\n" + "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString());
@@ -299,10 +321,7 @@ namespace SpeAnaLED
             _fft.Initialize();
             _fft = new float[16384 * _channel];
 
-            //_DATAFLAG = _channel > 1 ? _DATAFLAG_16384 : _DATAFLAG_8192;
-            _DATAFLAG_8192 = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
-            _DATAFLAG_16384 = _channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
-            _DATAFLAG = _mixfreq > 96000 ? _DATAFLAG_16384 : _DATAFLAG_8192;
+            SetParamFromFreq(_mixfreq);         // set _DATAFLAG and _mixfreqMulti
 
             bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
             if (!result) throw new Exception("Source Device Initialize Error");

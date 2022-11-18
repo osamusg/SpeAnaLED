@@ -22,8 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        //const int WS_BORDER = 0x00800000;
-
+        private string relText = "Rel." + "22111815";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private int form1Top;                           // for load config
@@ -46,6 +45,8 @@ namespace SpeAnaLED
         private readonly Label[] freqLabel_Left = new Label[maxNumberOfBar];
         private readonly Label[] freqLabel_Right = new Label[maxNumberOfBar];
         private float baseLabelFontSize = 8f;           // not constant for possibility of change in the future
+        private int baseLabelFontWidth = 28;
+        private int baseLabelFontHeight = 12;
         private int barLeftPadding;
         private int counterCycle;
         private int[] peakValue;
@@ -76,8 +77,6 @@ namespace SpeAnaLED
         // constants
         private const int maxNumberOfBar = 16;
         private const float penWidth = (float)30;
-        private const int baseLabelFontWidth = 37;
-        private const int baseLabelFontHeight = 13;
         private const int barSpacing = 10;
         private const int baseSpectrumWidth = 650;
         private const int baseSpectrumHeight = 129;
@@ -166,7 +165,7 @@ namespace SpeAnaLED
             form2.AlwaysOnTopCheckBox.CheckedChanged += Form2_AlwaysOnTopCheckboxCheckChanged;
             form2.VerticalRadio.CheckedChanged += Form2_V_H_RadioCheckChanged;      // V/H dual use
             form2.HorizontalRadio.CheckedChanged += Form2_V_H_RadioCheckChanged;    // V/H dual use
-            form2.ShowCounterCheckBox.CheckedChanged += Form2_ShowCounterCheckChanged;
+            form2.ShowCounterCheckBox.CheckedChanged += Form2_ShowCounterCheckBoxCheckChanged;
             form2.RightFlipRadio.CheckedChanged += Form2_FlipSideRadioCheckChanged; // L/R dual use
             form2.LeftFlipRadio.CheckedChanged += Form2_FlipSideRadioCheckChanged;  // L/R dual use
             form2.NoFlipRadio.CheckedChanged += Form2_FlipSideRadioCheckChanged;
@@ -198,8 +197,9 @@ namespace SpeAnaLED
             //for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(baseSpectrumWidth, baseSpectrumHeight);
             for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Left[i] = new Label();
             for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Right[i] = new Label();
-            
+
             // form2 setting
+            form2.RelLabel.Text = relText;
             form2.NumberOfBarComboBox.SelectedIndex = form2.NumberOfBarComboBox.Items.IndexOf(numberOfBar.ToString());
             form2.PeakholdTimeComboBox.SelectedIndex = form2.PeakholdTimeComboBox.Items.IndexOf(peakHoldTimeMsec.ToString());
             form2.SensitivityTextBox.Text = (form2.SensitivityTrackBar.Value / 10f).ToString("0.0");
@@ -294,8 +294,6 @@ namespace SpeAnaLED
             this.Width = form1Width;        // this calls sizeChanged event (and SetSpectrumLayout)
             this.Height = form1Height;      // this calls sizeChanged event (and SetSpectrumLayout)
             this.WindowState = isMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
-            //form2.Top = form2Top;
-            //form2.Left = form2Left;
 
             // Then, Set Spectrum PictureBox size and location from main form size
             SetSpectrumLayout(this.Width, this.Height);
@@ -721,13 +719,13 @@ namespace SpeAnaLED
         private void Form2_HideTitleCheckBoxCheckChanged(object sender, EventArgs e)
         {
             inLayout = true;
-            if (form2.HideTitleCheckBox.Checked == true)
+            if (form2.HideTitleCheckBox.Checked)
             {
                 borderSize = 0;
                 titleHeight = 0;
                 this.FormBorderStyle = FormBorderStyle.None;
                 SetSpectrumLayout(this.Width, this.Height);
-                //this.Left +=  2;
+                //this.Top +=  titleHeight;
                 form2.ExitAppButton.Enabled = true;
             }
             else
@@ -741,7 +739,7 @@ namespace SpeAnaLED
             inLayout = false;
         }
 
-        private void Form2_ShowCounterCheckChanged(object sender, EventArgs e)
+        private void Form2_ShowCounterCheckBoxCheckChanged(object sender, EventArgs e)
         {
             if (!inInit)
             {
@@ -769,9 +767,8 @@ namespace SpeAnaLED
 
             int bounds;
             int isLeft = 0; // for interreave
-            int dash, dashBG;
-            dash = (int)(penWidth / 10);
-            dashBG = (int)(penWidth / 10);
+            int dash = (int)(penWidth / 10);
+            int dashBG = (int)(penWidth / 10);
 
             var g = new Graphics[2];
             for (int i = 0; i < channel; i++) g[i] = Graphics.FromImage(canvas[i]);
@@ -876,9 +873,9 @@ namespace SpeAnaLED
                 form2.ChannelLayoutGroup.Enabled = true;
             }
 
-            if (!form2.HideFreqCheckBox.Checked)    // cases in requiring labels
+            if (!form2.HideFreqCheckBox.Checked)    // cases in require labels
             {
-                if (form2.HorizontalRadio.Checked)  // H-layout: requiring labels
+                if (form2.HorizontalRadio.Checked)  // H-layout: require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width * channel;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height + labelPadding + baseLabelFontHeight + bottomPadding;
@@ -902,15 +899,15 @@ namespace SpeAnaLED
                         }
                 }
                 }
-                else                                // V-layout: requiring labels
+                else                                // V-layout: require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height * channel + verticalSpacing * (channel - 1) + labelPadding + baseLabelFontHeight + bottomPadding;
                 }
             }
-            else                                    // cases in not requiring labels
+            else                                    // cases in not require labels
             {
-                if (form2.HorizontalRadio.Checked)  // H-layout: not requiring labels
+                if (form2.HorizontalRadio.Checked)  // H-layout: not require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width * channel;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height;
@@ -932,7 +929,7 @@ namespace SpeAnaLED
                     }
 
                 }
-                else                                // V-layout: not requiring Labels
+                else                                // V-layout: not require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height * channel + verticalSpacing * (channel - 1);
@@ -975,15 +972,18 @@ namespace SpeAnaLED
             SuspendLayout();
 
             spectrumWidthScale = (float)Spectrum1.Width / baseSpectrumWidth * (maxNumberOfBar / numberOfBar);
-            //spectrumHeightScale = (float)Spectrum1.Height / baseSpectrumHeight;
+            if (!inInit)
+            {
+                baseLabelFontWidth = freqLabel[0].Width;
+                baseLabelFontHeight = freqLabel[0].Height;
+            }
             float labelFontSize = (float)Math.Round(baseLabelFontSize * spectrumWidthScale, 1);
             labelFontSize = labelFontSize < 11f ? labelFontSize : 11f;
-            labelFontSize = labelFontSize > 6f ? labelFontSize : 6f;
+            labelFontSize = labelFontSize > 7f ? labelFontSize : 7f;
 
             for (int i = 0; i < maxNumberOfBar; i++)
             {
                 string labelText;
-                
                 int freqvalues = (int)(Math.Round(Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.29), 0));    // 4.29=Round(Log(20000hz, 2) - (in increments of)10, 2);
                 if (freqvalues > 10000)
                     labelText = (freqvalues / 1000).ToString("0") + "khz";
@@ -996,18 +996,17 @@ namespace SpeAnaLED
                 
                 if (i < numberOfBar)        // Only Bar exists
                 {
-                    freqLabel[i].Width = baseLabelFontWidth;        // I don't know why this need. (in first time only)
-                    freqLabel[i].Height = baseLabelFontHeight;
+                    freqLabel[i].Height = freqLabel[i].Font.Height;
                     freqLabel[i].AutoSize = true;
                     freqLabel[i].Font = new Font("Arial", labelFontSize, FontStyle.Bold);
                     freqLabel[j].Text = labelText;
-                    int labelPos = (int)(spectrum.Left + (float)(25 + i * 40) / (float)(10 + numberOfBar * 40) * spectrum.Width) - freqLabel[i].Width / 2;
+                    int labelPos = (int)(spectrum.Left + (float)(barLeftPadding + i * (penWidth + barSpacing)) / (float)(barSpacing + numberOfBar * (penWidth + barSpacing)) * spectrum.Width) - baseLabelFontWidth/*freqLabel[i].Width*/ / 2;
                     freqLabel[i].Left = labelPos;
                     freqLabel[i].Name = "freqlabel" + (j + 1).ToString();
-                    freqLabel[i].Top = spectrum.Bottom + labelPadding * (numberOfBar / maxNumberOfBar);
+                    freqLabel[i].Top = spectrum.Bottom + (labelPadding + bottomPadding) /2 - freqLabel[i].Font.Height / 2;
                     freqLabel[i].TextAlign = ContentAlignment.TopCenter;
                     freqLabel[i].Visible = true;
-                    freqLabel[i].ForeColor = Color.LightGray;
+                    freqLabel[i].ForeColor = Color.LightGray; 
                     freqLabel[i].BackColor = Color.Transparent;
                 }
                 else    // Bar not exists
@@ -1018,13 +1017,13 @@ namespace SpeAnaLED
             }
             if ((!isFlip && freqLabel[numberOfBar - 2].Right > freqLabel[numberOfBar - 1].Left ||
                 isFlip && freqLabel[1].Left < freqLabel[0].Right) && freqLabel[numberOfBar - 1].Left != 0)
-            {
+            {           // 2 lines
                 int j = isFlip ? -1 : 0;
-                for (int i = 1; i < maxNumberOfBar; i += 2) freqLabel[i + j].Top += freqLabel[0].Height;
-                if (!isFlip) freqLabel[numberOfBar - 1].Left -= freqLabel[numberOfBar - 1].Width / 10;
-                else freqLabel[0].Left += freqLabel[0].Width / 8;
+                for (int i = 1; i < maxNumberOfBar; i += 2) freqLabel[i + j].Top += (int)(freqLabel[0].Height * 0.9);        // lower line
+                if (!isFlip) freqLabel[numberOfBar - 1].Left -= baseLabelFontWidth / 10;
+                else freqLabel[0].Left += freqLabel[0].Width / 10;
             }
-            else
+            else        // 1 line
                 for (int i = 0; i < maxNumberOfBar; i++) freqLabel[i].Top += freqLabel[0].Height / 2;
             
             this.Controls.AddRange(freqLabel);
@@ -1077,11 +1076,6 @@ namespace SpeAnaLED
             form2.LeftFlipRadio.Checked = confReader.GetValue("flipLeft", false);
             form2.HideFreqCheckBox.Checked = confReader.GetValue("hideFreq", false);
             form2.HideTitleCheckBox.Checked = confReader.GetValue("hideTitle", false);
-
-            //penWidth = confReader.GetValue("penWidth",30f);
-            //barSpacing = confReader.GetValue("barSpacing", 10);
-            baseLabelFontSize = confReader.GetValue("baseLabelFontSize", 8f);
-            labelPadding = confReader.GetValue("labelPadding", 6);
 
             if ((prisumChecked = confReader.GetValue("LED", true)) == false)
                 if ((classicChecked = confReader.GetValue("classic", false)) == false)
@@ -1178,7 +1172,7 @@ namespace SpeAnaLED
 
             confWriter.AddValue("peakHoldTimeMsec", peakHoldTimeMsec);
             confWriter.AddValue("sensitivity", form2.SensitivityTrackBar.Value);
-            confWriter.AddValue("peakDescentSpeed", form2.PeakholdDescentSpeedTrackBar.Value);
+            confWriter.AddValue("peakholdDescentSpeed", form2.PeakholdDescentSpeedTrackBar.Value);
 
             confWriter.AddValue("peakhold", form2.PeakholdCheckBox.Checked);
             confWriter.AddValue("alwaysOnTop", form2.AlwaysOnTopCheckBox.Checked);
@@ -1197,9 +1191,6 @@ namespace SpeAnaLED
             confWriter.AddValue("hideTitle", form2.HideTitleCheckBox.Checked);
             confWriter.AddValue("mono", form2.MonoRadio.Checked);
             confWriter.AddValue("stereo", form2.StereoRadio.Checked);
-
-            confWriter.AddValue("baseLabelFontSize", baseLabelFontSize);
-            confWriter.AddValue("labelPadding", labelPadding);
 
             string strColors = "";
             for (int i = 0; i < classicColors.Length; i++)

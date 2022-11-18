@@ -8,6 +8,7 @@
     - Simply use a PC sound card or device to play music on your favorite player, for example, foobar2000, Youtube or Amazon Music in various browsers, AppleMusic (iTunes), Spotify desktop app, etc., **SpeAnaLED** should intercept sounds and work.
 - **SpeAnaLED** can be re-sized, so you can reside on your PC desktop by putting it on your "Startup" folder.
 - **SpeAnaLED** is a tiny program. Its size of executable file is about 64KB itsdelf, about 900KB including dlls. In the case of my 8 years old PC, CPU load is 0.1% or less, uses about 90MB process memory. No use of DirextX 2D, only GDI/GDI+ Win32API(System.Drawing(.Drawing2D)) is used.
+- Yes, this is a one of "Reinventing the wheel" project.
 
 ## Requirements
 - Windows PC with WASAPI (Vista or later)
@@ -75,7 +76,7 @@
 
 ## Other precautions
 <p><strong>SpeAnaLED</strong> is simply made to be seen and enjoyed by myself. The values including frequency displayed is most likely not accurate.</p>
-<p>If a problem occurs, first try deleting your configuration file(SpeAnaLED.conf) and restarting <strong>SpeAnaLED</strong>. (After that, enumerate sound device from setting dialog again.)</p>
+<p>If a problem occurs, first try deleting your configuration file(SpeAnaLED.conf) and restart <strong>SpeAnaLED</strong>. (After that, enumerate sound device from setting dialog again.)</p>
 <p>Have fun music!</p>
 
 ## License

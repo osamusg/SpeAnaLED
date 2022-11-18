@@ -74,6 +74,7 @@
             this.FreqMultiplyerTextBox = new System.Windows.Forms.TextBox();
             this.DeviceResetButton = new System.Windows.Forms.Button();
             this.FrequencyLabel = new System.Windows.Forms.Label();
+            this.RelLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -613,12 +614,23 @@
             this.FrequencyLabel.TabIndex = 53;
             this.FrequencyLabel.Text = "- - - . - khz";
             // 
+            // RelLabel
+            // 
+            this.RelLabel.AutoSize = true;
+            this.RelLabel.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RelLabel.Location = new System.Drawing.Point(210, 440);
+            this.RelLabel.Name = "RelLabel";
+            this.RelLabel.Size = new System.Drawing.Size(29, 15);
+            this.RelLabel.TabIndex = 54;
+            this.RelLabel.Text = "Rel.";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(654, 486);
+            this.ClientSize = new System.Drawing.Size(668, 519);
             this.ControlBox = false;
+            this.Controls.Add(this.RelLabel);
             this.Controls.Add(this.FrequencyLabel);
             this.Controls.Add(this.DeviceResetButton);
             this.Controls.Add(this.FreqMultiplyerTextBox);
@@ -642,6 +654,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.CloseButton);
             this.Controls.Add(this.devicelist);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
@@ -716,5 +729,6 @@
         protected internal System.Windows.Forms.TextBox FreqMultiplyerTextBox;
         protected internal System.Windows.Forms.Button DeviceResetButton;
         protected internal System.Windows.Forms.Label FrequencyLabel;
+        protected internal System.Windows.Forms.Label RelLabel;
     }
 }
