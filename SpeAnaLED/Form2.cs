@@ -14,7 +14,6 @@ namespace SpeAnaLED
         // event handler
         public event EventHandler ClearSpectrum;
 
-        //public static float freqMultiplyer;
         private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
 
         public Form2()

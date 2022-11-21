@@ -70,11 +70,10 @@
             this.LinkLabel1 = new System.Windows.Forms.LinkLabel();
             this.ExitAppButton = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.FreqMultiplyerLabel = new System.Windows.Forms.Label();
-            this.FreqMultiplyerTextBox = new System.Windows.Forms.TextBox();
             this.DeviceResetButton = new System.Windows.Forms.Button();
             this.FrequencyLabel = new System.Windows.Forms.Label();
             this.RelLabel = new System.Windows.Forms.Label();
+            this.HideSpectrumWindowCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -513,6 +512,7 @@
             this.ShowCounterCheckBox.TabStop = false;
             this.ShowCounterCheckBox.Text = "Show Counter (debug)";
             this.ShowCounterCheckBox.UseVisualStyleBackColor = true;
+            this.ShowCounterCheckBox.Visible = false;
             // 
             // HideFreqCheckBox
             // 
@@ -572,28 +572,6 @@
             this.textBox2.TabStop = false;
             this.textBox2.Text = "If checked, the form can be moved but cannot be resized.";
             // 
-            // FreqMultiplyerLabel
-            // 
-            this.FreqMultiplyerLabel.AutoSize = true;
-            this.FreqMultiplyerLabel.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FreqMultiplyerLabel.Location = new System.Drawing.Point(26, 443);
-            this.FreqMultiplyerLabel.Name = "FreqMultiplyerLabel";
-            this.FreqMultiplyerLabel.Size = new System.Drawing.Size(83, 14);
-            this.FreqMultiplyerLabel.TabIndex = 50;
-            this.FreqMultiplyerLabel.Text = "Freq. Multiplyer:";
-            this.FreqMultiplyerLabel.Visible = false;
-            // 
-            // FreqMultiplyerTextBox
-            // 
-            this.FreqMultiplyerTextBox.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FreqMultiplyerTextBox.Location = new System.Drawing.Point(115, 440);
-            this.FreqMultiplyerTextBox.Name = "FreqMultiplyerTextBox";
-            this.FreqMultiplyerTextBox.Size = new System.Drawing.Size(29, 20);
-            this.FreqMultiplyerTextBox.TabIndex = 51;
-            this.FreqMultiplyerTextBox.Text = "1.00";
-            this.FreqMultiplyerTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.FreqMultiplyerTextBox.Visible = false;
-            // 
             // DeviceResetButton
             // 
             this.DeviceResetButton.Location = new System.Drawing.Point(521, 28);
@@ -624,17 +602,28 @@
             this.RelLabel.TabIndex = 54;
             this.RelLabel.Text = "Rel.";
             // 
+            // HideSpectrumWindowCheckBox
+            // 
+            this.HideSpectrumWindowCheckBox.AutoSize = true;
+            this.HideSpectrumWindowCheckBox.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HideSpectrumWindowCheckBox.Location = new System.Drawing.Point(29, 442);
+            this.HideSpectrumWindowCheckBox.Name = "HideSpectrumWindowCheckBox";
+            this.HideSpectrumWindowCheckBox.Size = new System.Drawing.Size(139, 18);
+            this.HideSpectrumWindowCheckBox.TabIndex = 55;
+            this.HideSpectrumWindowCheckBox.Text = "Hide Spectrum Window";
+            this.HideSpectrumWindowCheckBox.UseVisualStyleBackColor = true;
+            this.HideSpectrumWindowCheckBox.Visible = false;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 519);
             this.ControlBox = false;
+            this.Controls.Add(this.HideSpectrumWindowCheckBox);
             this.Controls.Add(this.RelLabel);
             this.Controls.Add(this.FrequencyLabel);
             this.Controls.Add(this.DeviceResetButton);
-            this.Controls.Add(this.FreqMultiplyerTextBox);
-            this.Controls.Add(this.FreqMultiplyerLabel);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.ExitAppButton);
@@ -684,7 +673,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.GroupBox groupBox1;
         public System.Windows.Forms.Button EnumerateButton;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -725,10 +713,10 @@
         private System.Windows.Forms.Label label4;
         protected internal System.Windows.Forms.GroupBox ChannelLayoutGroup;
         private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Label FreqMultiplyerLabel;
-        protected internal System.Windows.Forms.TextBox FreqMultiplyerTextBox;
         protected internal System.Windows.Forms.Button DeviceResetButton;
         protected internal System.Windows.Forms.Label FrequencyLabel;
         protected internal System.Windows.Forms.Label RelLabel;
+        protected internal System.Windows.Forms.CheckBox HideSpectrumWindowCheckBox;
+        protected internal System.Windows.Forms.Button CloseButton;
     }
 }

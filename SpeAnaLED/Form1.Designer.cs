@@ -95,6 +95,7 @@
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "label1";
+            this.label1.Visible = false;
             // 
             // Form1
             // 
@@ -114,6 +115,7 @@
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
+            this.VisibleChanged += new System.EventHandler(this.Form1_VisibleChanged);
             this.DoubleClick += new System.EventHandler(this.Form1_DoubleClick);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             ((System.ComponentModel.ISupportInitialize)(this.Spectrum1)).EndInit();

@@ -21,10 +21,11 @@ namespace SpeAnaLED
         public List<byte> _spectrumdata;                // spectrum data buffer
         public readonly DispatcherTimer _timer1;        // timer that refreshes the display
         private BASSData _DATAFLAG;                     // for "interreave" format
-        //private BASSData _DATAFLAG_4096;                // for < 96000
-        //private BASSData _DATAFLAG_8192;                // reserved
-        //private BASSData _DATAFLAG_16384;               // for Hi-Reso
-        public int _devicenumber;
+        public int _devicenumber;                       // device number
+        //public int _l, _r;                              // progressbars for left and right channel intensity
+        public int[] _level;                            // progressbars for left and right channel intensity
+        private int _lastlevel;                         // last output level
+        private int _hangcontrol;                            // last output level counter
         private readonly bool _UNICODE;                 // codepage switch
         public readonly ComboBox _devicelist;           // for subscribe
         private readonly Button _form2EnumButton;       // for subscribe
@@ -41,6 +42,7 @@ namespace SpeAnaLED
 
         public int _channel;                            // 1: "mix-data"(mono) 2: L+R
         private int _lines;                             // number of spectrum lines
+        private readonly int _form3PictureBoxWidth = 390;
 
         public Analyzer(ComboBox devicelist, Button enumButton, Button deviceResetButton, ComboBox numberOfbarsComboBox, RadioButton monoRadio, Label freqLabel)    // Control data for event subscribe
         {
@@ -61,6 +63,7 @@ namespace SpeAnaLED
             _spectrumdata = new List<byte>();
             _devicenumber = Form1.DeviceNumber();
             _lines = Convert.ToInt16(_form2NumberOfBarsComboBox.SelectedItem);
+            _level = new int[2];
             _UNICODE = Form1.Unicode();
 
             // Event handler for option form (reseive)
@@ -70,43 +73,8 @@ namespace SpeAnaLED
             _form2NumberOfBarsComboBox.SelectedIndexChanged += new EventHandler(Form2_NumberOfBarIndexChanged);
             _form2MonoRadio.CheckedChanged += new EventHandler(Form2_MonoRadio_CheckChanged);
 
+            Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UNICODE, _UNICODE);
             Init();
-        }
-
-        // flag for display enable
-        public bool DisplayEnable { get; set; }
-
-        // initialization
-        private void Init()     // Analyzer class initialization. DO NOT call twice or more.
-        {
-            try
-            {
-                if (_devicenumber == -1) throw new InvalidOperationException("no device");
-                Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UNICODE, _UNICODE);
-                var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(_devicenumber);
-                
-                string itemName = string.Format("{0} - {1}", _devicenumber, device.name);
-                _mixfreq = device.mixfreq;
-                SetParamFromFreq(_mixfreq);         // set _DATAFLAG and _mixfreqMulti
-                _devicelist.SelectedIndex = _devicelist.Items.IndexOf(itemName);
-
-                Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
-                bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);   // "no sound" device for Bass.dll
-                if (!result) MessageBox.Show("Valid device not found.\r\n" +
-                    "(May be Device Power-SW off? or\r\n" +
-                    "device not selected in Windows?)\r\n" +
-                    "Please re-select valid device from \"setting\" dialog.\r\n" +
-                    "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
-                    "Valid Device Not Found - SpeAnaLED",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation); ;
-            }
-            catch
-            {
-                _devicelist.SelectedIndex = -1;
-            }
-            
-            inInit = false;
         }
 
         // flag for enabling and disabling program functionality
@@ -146,6 +114,38 @@ namespace SpeAnaLED
             }
         }
 
+        // initialization
+        private void Init()     // Analyzer class initialization. DO NOT call twice or more.
+        {
+            try
+            {
+                if (_devicenumber == -1) throw new InvalidOperationException("no device");
+                var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(_devicenumber);
+                
+                string itemName = string.Format("{0} - {1}", _devicenumber, device.name);
+                _mixfreq = device.mixfreq;
+                SetParamFromFreq(_mixfreq);         // set _DATAFLAG and _mixfreqMulti
+                _devicelist.SelectedIndex = _devicelist.Items.IndexOf(itemName);
+
+                Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
+                bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);   // "no sound" device for Bass.dll
+                if (!result) MessageBox.Show("Valid device not found.\r\n" +
+                    "(May be Device Power-SW off? or\r\n" +
+                    "device not selected in Windows?)\r\n" +
+                    "Please re-select valid device from \"setting\" dialog.\r\n" +
+                    "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
+                    "Valid Device Not Found - SpeAnaLED",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation); ;
+            }
+            catch
+            {
+                _devicelist.SelectedIndex = -1;
+            }
+            
+            inInit = false;
+        }
+
         // WASAPI callback, required for continuous recording
         private int Process(IntPtr buffer, int length, IntPtr user)
         {
@@ -162,6 +162,7 @@ namespace SpeAnaLED
             int fftPos = 0;     // buffer data position
             int freqValue = 1;
 
+            //_level = new int[2];
 
             // computes the spectrum data, the code is taken from a bass_wasapi sample.
             for (bandX = 0; bandX < _lines; bandX++)
@@ -209,6 +210,27 @@ namespace SpeAnaLED
             if (SpectrumChanged != null) SpectrumChanged(this, EventArgs.Empty);
 
             _spectrumdata.Clear();
+
+            int level = BassWasapi.BASS_WASAPI_GetLevel();
+            _level[0] = (int)(Math.Sqrt(Utils.LowWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);        // 0 - 390 (13LEDs * (24+6)px)
+            _level[1] = (int)(Math.Sqrt(Utils.HighWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);       // 0 - 390
+
+            if (level == _lastlevel && level != 0) _hangcontrol++;
+            _lastlevel = level;
+
+            //Required, because some programs hang the output. If the output hangs for a 75ms
+            //this piece of code re initializes the output so it doesn't make a gliched sound for long.
+            if (_hangcontrol > 3)
+            {
+                _hangcontrol = 0;
+                _level[0] = (0);
+                _level[1] = (0);
+                Form2_devicelist_SelectedIndexChanged(this, EventArgs.Empty);
+                //Free();
+                //Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+                //_initialized = false;
+                //Enable = true;
+            }
         }
 
         private void SetParamFromFreq(int freq)
@@ -291,7 +313,6 @@ namespace SpeAnaLED
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
 
-                    DisplayEnable = false;
                     Enable = false;
                     Free();
                 }
