@@ -22,10 +22,9 @@ namespace SpeAnaLED
         public readonly DispatcherTimer _timer1;        // timer that refreshes the display
         private BASSData _DATAFLAG;                     // for "interreave" format
         public int _devicenumber;                       // device number
-        //public int _l, _r;                              // progressbars for left and right channel intensity
         public int[] _level;                            // progressbars for left and right channel intensity
         private int _lastlevel;                         // last output level
-        private int _hangcontrol;                            // last output level counter
+        private int _hangcontrol;                       // last output level counter
         private readonly bool _UNICODE;                 // codepage switch
         public readonly ComboBox _devicelist;           // for subscribe
         private readonly Button _form2EnumButton;       // for subscribe
@@ -211,10 +210,23 @@ namespace SpeAnaLED
 
             _spectrumdata.Clear();
 
-            int level = BassWasapi.BASS_WASAPI_GetLevel();
-            _level[0] = (int)(Math.Sqrt(Utils.LowWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);        // 0 - 390 (13LEDs * (24+6)px)
-            _level[1] = (int)(Math.Sqrt(Utils.HighWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);       // 0 - 390
+            // meter bar
+            int l_temp, r_temp;
+            float multiplyer = 1.2f;
 
+            int level = BassWasapi.BASS_WASAPI_GetLevel();
+            l_temp = (int)(Math.Sqrt(Utils.LowWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13 * multiplyer);        // 0 - 390 (13LEDs * (24+6)px)
+            r_temp = (int)(Math.Sqrt(Utils.HighWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13 * multiplyer);       // 0 - 390
+
+            if (l_temp > 390 * multiplyer || r_temp > 390 * multiplyer) _level[0] = _level[1] = 0;
+            else
+            {
+                if (l_temp > 390) _level[0] = 390;
+                else _level[0] = l_temp;
+                if (r_temp > 390) _level[1] = 390;
+                else _level[1] = r_temp;
+            }
+            
             if (level == _lastlevel && level != 0) _hangcontrol++;
             _lastlevel = level;
 
@@ -223,13 +235,13 @@ namespace SpeAnaLED
             if (_hangcontrol > 3)
             {
                 _hangcontrol = 0;
-                _level[0] = (0);
-                _level[1] = (0);
+                /*_level[0] = 0;
+                _level[1] = 0;
                 Form2_devicelist_SelectedIndexChanged(this, EventArgs.Empty);
-                //Free();
-                //Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-                //_initialized = false;
-                //Enable = true;
+                Free();
+                Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+                _initialized = false;
+                Enable = true;*/
             }
         }
 

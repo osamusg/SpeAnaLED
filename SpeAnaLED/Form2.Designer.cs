@@ -74,6 +74,7 @@
             this.FrequencyLabel = new System.Windows.Forms.Label();
             this.RelLabel = new System.Windows.Forms.Label();
             this.HideSpectrumWindowCheckBox = new System.Windows.Forms.CheckBox();
+            this.PeakMeterCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -186,14 +187,14 @@
             this.groupBox1.Size = new System.Drawing.Size(185, 133);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Style";
+            this.groupBox1.Text = "Spectrum Style";
             // 
             // EnumerateButton
             // 
-            this.EnumerateButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.EnumerateButton.Location = new System.Drawing.Point(530, 72);
+            this.EnumerateButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.EnumerateButton.Location = new System.Drawing.Point(513, 72);
             this.EnumerateButton.Name = "EnumerateButton";
-            this.EnumerateButton.Size = new System.Drawing.Size(112, 23);
+            this.EnumerateButton.Size = new System.Drawing.Size(129, 23);
             this.EnumerateButton.TabIndex = 39;
             this.EnumerateButton.Text = "Enumerate Devices";
             this.EnumerateButton.UseVisualStyleBackColor = true;
@@ -204,12 +205,12 @@
             this.groupBox2.Controls.Add(this.SensitivityTrackBar);
             this.groupBox2.Controls.Add(this.SensitivityTextBox);
             this.groupBox2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(12, 363);
+            this.groupBox2.Location = new System.Drawing.Point(12, 369);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(386, 71);
+            this.groupBox2.Size = new System.Drawing.Size(386, 65);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Sensitivity (1.0 - 9.9)";
+            this.groupBox2.Text = "Spectrum Sensitivity (1.0 - 9.9)";
             // 
             // label1
             // 
@@ -217,9 +218,9 @@
             this.label1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 15);
+            this.label1.Size = new System.Drawing.Size(91, 15);
             this.label1.TabIndex = 13;
-            this.label1.Text = "Device";
+            this.label1.Text = "WASAPI Device";
             // 
             // textBox1
             // 
@@ -321,12 +322,12 @@
             this.groupBox3.Controls.Add(this.LabelPeakhold);
             this.groupBox3.Controls.Add(this.LabelMsec);
             this.groupBox3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(12, 230);
+            this.groupBox3.Location = new System.Drawing.Point(12, 246);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(386, 127);
+            this.groupBox3.Size = new System.Drawing.Size(386, 117);
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Peakhold";
+            this.groupBox3.Text = "Spectrum Peakhold";
             // 
             // label4
             // 
@@ -379,7 +380,7 @@
             this.ChannelLayoutGroup.Size = new System.Drawing.Size(207, 178);
             this.ChannelLayoutGroup.TabIndex = 24;
             this.ChannelLayoutGroup.TabStop = false;
-            this.ChannelLayoutGroup.Text = "Channel Layout";
+            this.ChannelLayoutGroup.Text = "Spectrum Channel Layout";
             // 
             // FlipGroup
             // 
@@ -564,19 +565,21 @@
             this.textBox2.BackColor = System.Drawing.SystemColors.Control;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox2.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(212, 194);
+            this.textBox2.Location = new System.Drawing.Point(11, 197);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(186, 30);
             this.textBox2.TabIndex = 37;
             this.textBox2.TabStop = false;
             this.textBox2.Text = "If checked, the form can be moved but cannot be resized.";
+            this.textBox2.Visible = false;
             // 
             // DeviceResetButton
             // 
+            this.DeviceResetButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DeviceResetButton.Location = new System.Drawing.Point(521, 28);
             this.DeviceResetButton.Name = "DeviceResetButton";
-            this.DeviceResetButton.Size = new System.Drawing.Size(90, 23);
+            this.DeviceResetButton.Size = new System.Drawing.Size(107, 23);
             this.DeviceResetButton.TabIndex = 52;
             this.DeviceResetButton.Text = "Reload Device";
             this.DeviceResetButton.UseVisualStyleBackColor = true;
@@ -605,8 +608,9 @@
             // HideSpectrumWindowCheckBox
             // 
             this.HideSpectrumWindowCheckBox.AutoSize = true;
-            this.HideSpectrumWindowCheckBox.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HideSpectrumWindowCheckBox.Location = new System.Drawing.Point(29, 442);
+            this.HideSpectrumWindowCheckBox.Enabled = false;
+            this.HideSpectrumWindowCheckBox.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HideSpectrumWindowCheckBox.Location = new System.Drawing.Point(226, 217);
             this.HideSpectrumWindowCheckBox.Name = "HideSpectrumWindowCheckBox";
             this.HideSpectrumWindowCheckBox.Size = new System.Drawing.Size(139, 18);
             this.HideSpectrumWindowCheckBox.TabIndex = 55;
@@ -614,12 +618,24 @@
             this.HideSpectrumWindowCheckBox.UseVisualStyleBackColor = true;
             this.HideSpectrumWindowCheckBox.Visible = false;
             // 
+            // PeakMeterCheckBox
+            // 
+            this.PeakMeterCheckBox.AutoSize = true;
+            this.PeakMeterCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PeakMeterCheckBox.Location = new System.Drawing.Point(208, 200);
+            this.PeakMeterCheckBox.Name = "PeakMeterCheckBox";
+            this.PeakMeterCheckBox.Size = new System.Drawing.Size(88, 19);
+            this.PeakMeterCheckBox.TabIndex = 56;
+            this.PeakMeterCheckBox.Text = "Level Meter";
+            this.PeakMeterCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 519);
             this.ControlBox = false;
+            this.Controls.Add(this.PeakMeterCheckBox);
             this.Controls.Add(this.HideSpectrumWindowCheckBox);
             this.Controls.Add(this.RelLabel);
             this.Controls.Add(this.FrequencyLabel);
@@ -718,5 +734,6 @@
         protected internal System.Windows.Forms.Label RelLabel;
         protected internal System.Windows.Forms.CheckBox HideSpectrumWindowCheckBox;
         protected internal System.Windows.Forms.Button CloseButton;
+        protected internal System.Windows.Forms.CheckBox PeakMeterCheckBox;
     }
 }
