@@ -80,7 +80,7 @@
 <p>Have fun music!</p>
 
 ## License
-**SpeAnaLED** itsself, is a [MIT License](./LICENSE.md) software.
+**SpeAnaLED** itself, is a [MIT License](./LICENSE.md) software.
 
 Use of each DLL(library) must be in accordance with the respective license.
   

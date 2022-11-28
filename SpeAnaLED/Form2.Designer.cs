@@ -75,6 +75,7 @@
             this.RelLabel = new System.Windows.Forms.Label();
             this.HideSpectrumWindowCheckBox = new System.Windows.Forms.CheckBox();
             this.PeakMeterCheckBox = new System.Windows.Forms.CheckBox();
+            this.AutoReloadCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -192,7 +193,7 @@
             // EnumerateButton
             // 
             this.EnumerateButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EnumerateButton.Location = new System.Drawing.Point(513, 72);
+            this.EnumerateButton.Location = new System.Drawing.Point(513, 92);
             this.EnumerateButton.Name = "EnumerateButton";
             this.EnumerateButton.Size = new System.Drawing.Size(129, 23);
             this.EnumerateButton.TabIndex = 39;
@@ -226,7 +227,7 @@
             // 
             this.textBox1.BackColor = System.Drawing.SystemColors.Control;
             this.textBox1.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(469, 101);
+            this.textBox1.Location = new System.Drawing.Point(469, 122);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(173, 71);
@@ -375,7 +376,7 @@
             this.ChannelLayoutGroup.Controls.Add(this.HorizontalRadio);
             this.ChannelLayoutGroup.Controls.Add(this.VerticalRadio);
             this.ChannelLayoutGroup.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ChannelLayoutGroup.Location = new System.Drawing.Point(6, 62);
+            this.ChannelLayoutGroup.Location = new System.Drawing.Point(6, 44);
             this.ChannelLayoutGroup.Name = "ChannelLayoutGroup";
             this.ChannelLayoutGroup.Size = new System.Drawing.Size(207, 178);
             this.ChannelLayoutGroup.TabIndex = 24;
@@ -472,9 +473,9 @@
             this.groupBox5.Controls.Add(this.MonoRadio);
             this.groupBox5.Controls.Add(this.ChannelLayoutGroup);
             this.groupBox5.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox5.Location = new System.Drawing.Point(422, 188);
+            this.groupBox5.Location = new System.Drawing.Point(422, 204);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(220, 246);
+            this.groupBox5.Size = new System.Drawing.Size(220, 228);
             this.groupBox5.TabIndex = 32;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Number of Channels";
@@ -629,12 +630,24 @@
             this.PeakMeterCheckBox.Text = "Level Meter";
             this.PeakMeterCheckBox.UseVisualStyleBackColor = true;
             // 
+            // AutoReloadCheckBox
+            // 
+            this.AutoReloadCheckBox.AutoSize = true;
+            this.AutoReloadCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AutoReloadCheckBox.Location = new System.Drawing.Point(535, 57);
+            this.AutoReloadCheckBox.Name = "AutoReloadCheckBox";
+            this.AutoReloadCheckBox.Size = new System.Drawing.Size(93, 19);
+            this.AutoReloadCheckBox.TabIndex = 57;
+            this.AutoReloadCheckBox.Text = "Auto Reload";
+            this.AutoReloadCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 519);
             this.ControlBox = false;
+            this.Controls.Add(this.AutoReloadCheckBox);
             this.Controls.Add(this.PeakMeterCheckBox);
             this.Controls.Add(this.HideSpectrumWindowCheckBox);
             this.Controls.Add(this.RelLabel);
@@ -735,5 +748,6 @@
         protected internal System.Windows.Forms.CheckBox HideSpectrumWindowCheckBox;
         protected internal System.Windows.Forms.Button CloseButton;
         protected internal System.Windows.Forms.CheckBox PeakMeterCheckBox;
+        protected internal System.Windows.Forms.CheckBox AutoReloadCheckBox;
     }
 }
