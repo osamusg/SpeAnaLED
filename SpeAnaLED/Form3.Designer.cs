@@ -95,9 +95,9 @@
             this.Controls.Add(this.LeftValueLabel);
             this.Controls.Add(this.FormPictureBox);
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Form3";
             this.ShowInTaskbar = false;
             this.Text = "Level Meter - SpeAnaLED";

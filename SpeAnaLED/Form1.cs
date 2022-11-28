@@ -27,7 +27,7 @@ namespace SpeAnaLED
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
         private int form1Top, form1Left;                    // for load config
-        private int form1Width ,form1Height;                // for load config to not call SizeChanged Event
+        private int form1Width, form1Height;                // for load config to not call SizeChanged Event
         //private readonly bool isMaximized;                  // for load config
         private string devices;                             // for load config. conf can't store arrays length unknown
         public int numberOfBar;
@@ -42,7 +42,7 @@ namespace SpeAnaLED
         private readonly Pen form3_GreenPen, form3_RedPen;
         public readonly Pen form3_bgPen;
         private LinearGradientBrush brush;
-        private int endPointX , endPointY;                  // default gradient direction, from upward to downward
+        private int endPointX, endPointY;                  // default gradient direction, from upward to downward
         private readonly Label[] freqLabel_Left, freqLabel_Right;
         private int counterCycle;
         private int[] peakValue;
@@ -52,7 +52,7 @@ namespace SpeAnaLED
         private float sensitivity;
         private float sensitivityRatio;
         private int displayOffCounter;
-        private RotateFlipType flipLeft ,flipRight;
+        private RotateFlipType flipLeft, flipRight;
         private bool inInit = false;
         private bool inLayout = false;
         private bool inFormSizeChange;
@@ -80,6 +80,7 @@ namespace SpeAnaLED
         //private float spectrumHeightScale;
 
         // constants
+        public const int WS_BORDER = 0x00800000;
         private const int maxNumberOfBar = 16;
         private const float penWidth = (float)30;
         private const int barSpacing = 10;
@@ -114,7 +115,7 @@ namespace SpeAnaLED
             InitializeComponent();
 
             inInit = true;
-            
+
             form2 = new Form2() { Owner = this };
 
             string configFileName = @".\" + ProductName + @".conf";
@@ -134,7 +135,7 @@ namespace SpeAnaLED
             }
 
             form3 = new Form3(this, form2.HideFreqCheckBox.Checked) { Owner = this };
-            
+
             // before analizer birth...
             string[] deviceItems = devices.Split(',');
             for (int i = 0; i < deviceItems.Length; i++) form2.devicelist.Items.Add(deviceItems[i].TrimStart());
@@ -294,14 +295,14 @@ namespace SpeAnaLED
             // set Gradient color pen
             if (!form2.RainbowRadio.Checked)
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
-                    { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
             else
                 brush = new LinearGradientBrush(new Point(endPointX, endPointY), new Point(0, 0), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
-                    { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
             myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
 
-            form3_GreenPen = new Pen(Color.FromArgb(144, 144, 238, 144), 8f) { DashPattern = new float[] { 3f, 0.75f} };    // 8*3=24, 8*0.75=6
-            form3_RedPen = new Pen(Color.FromArgb(144,255, 0, 0), 8f) { DashPattern = new float[] { 3f, 0.75f } };
+            form3_GreenPen = new Pen(Color.FromArgb(144, 144, 238, 144), 8f) { DashPattern = new float[] { 3f, 0.75f } };    // 8*3=24, 8*0.75=6
+            form3_RedPen = new Pen(Color.FromArgb(144, 255, 0, 0), 8f) { DashPattern = new float[] { 3f, 0.75f } };
             form3_bgPen = new Pen(Color.FromArgb(29, 29, 29), 8f) { DashPattern = new float[] { 3f, 0.75f } };
 
             if (form2.LeftFlipRadio.Checked)
@@ -326,7 +327,7 @@ namespace SpeAnaLED
         private void Form1_Load(object sender, EventArgs e)
         {
             inInit = true;
-            inLayout= true;
+            inLayout = true;
 
             //if (form2.HideFreqCheckBox.Checked) Form2_HideFreqCheckBoxCheckChanged(sender, EventArgs.Empty);
 
@@ -340,7 +341,7 @@ namespace SpeAnaLED
             // Then, Set Spectrum PictureBox size and location from main form size
             SetSpectrumLayout(this.Width, this.Height);
             ClearSpectrum(this, EventArgs.Empty);       // draw background image
-            
+
             inLayout = false;
             inInit = false;
         }
@@ -542,16 +543,16 @@ namespace SpeAnaLED
                 }
                 else if (this.Cursor == Cursors.SizeNS)
                 {
-                    if (e.Y < Spectrum1.Top)
+                    /*if (e.Y < Spectrum1.Top)        //これは常にfalse？
                     {
                         this.Height -= e.Y - mousePoint.Y;
                         if (this.Height < minHeight) this.Height = minHeight;
                         else this.Top += e.Y - mousePoint.Y;
                     }
-                    else if (form2.HorizontalRadio.Checked && form2.HideFreqCheckBox.Checked)
+                    else*/ if (form2.HorizontalRadio.Checked && form2.HideFreqCheckBox.Checked)
                     {
 
-                        if (e.Y < 8)
+                        if (e.Y < Spectrum1.Height / 2)// 8)
                         {
                             this.Height -= e.Y - mousePoint.Y;
                             if (this.Height < minHeight) this.Height = minHeight;
@@ -1534,6 +1535,7 @@ namespace SpeAnaLED
             form2.LeftFlipRadio.Checked = confReader.GetValue("flipLeft", false);
             form2.HideFreqCheckBox.Checked = confReader.GetValue("hideFreq", false);
             form2.HideTitleCheckBox.Checked = confReader.GetValue("hideTitle", false);
+            form2.AutoReloadCheckBox.Checked = confReader.GetValue("AutoReload", true);
 
             if ((prisumChecked = confReader.GetValue("LED", true)) == false)
                 if ((classicChecked = confReader.GetValue("classic", false)) == false)
@@ -1645,6 +1647,7 @@ namespace SpeAnaLED
             confWriter.AddValue("alwaysOnTop", form2.AlwaysOnTopCheckBox.Checked);
             confWriter.AddValue("preventSSaver", form2.SSaverCheckBox.Checked);
             confWriter.AddValue("hideFreq", form2.HideFreqCheckBox.Checked);
+            confWriter.AddValue("AutoReload", form2.AutoReloadCheckBox.Checked);
 
             confWriter.AddValue("LED", form2.PrisumRadio.Checked);
             confWriter.AddValue("classic", form2.ClassicRadio.Checked);

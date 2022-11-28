@@ -10,7 +10,7 @@ namespace SpeAnaLED
     {
         // go public controls for Analyzer class
         public ComboBox Devicelist { get { return devicelist; } }
-
+       
         // event handler
         public event EventHandler ClearSpectrum;
 
@@ -20,6 +20,8 @@ namespace SpeAnaLED
         {
             InitializeComponent();
         }
+
+        public static bool AutoReloadCheckBoxChecked { get { return AutoReloadCheckBoxChecked; } }
 
         private void Form2_KeyDown(object sender, KeyEventArgs e)
         {

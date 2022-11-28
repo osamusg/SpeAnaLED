@@ -87,7 +87,7 @@ namespace SpeAnaLED
                 {
                     if (!_initialized)
                     {
-                        bool result = BassWasapi.BASS_WASAPI_Init(_devicenumber, _mixfreq, 0, BASSWASAPIInit.BASS_WASAPI_BUFFER, 1f, 0.05f, _process, IntPtr.Zero);
+                        bool result = BassWasapi.BASS_WASAPI_Init(_devicenumber, 0, 0, BASSWASAPIInit.BASS_WASAPI_BUFFER, 1f, 0.05f, _process, IntPtr.Zero);
                         if (!result)
                         {
                             var error = Bass.BASS_ErrorGetCode();
@@ -235,13 +235,16 @@ namespace SpeAnaLED
             if (_hangcontrol > 3)
             {
                 _hangcontrol = 0;
-                /*_level[0] = 0;
-                _level[1] = 0;
-                Form2_devicelist_SelectedIndexChanged(this, EventArgs.Empty);
-                Free();
-                Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-                _initialized = false;
-                Enable = true;*/
+                if (Form2.AutoReloadCheckBoxChecked)
+                {
+                    _level[0] = 0;
+                    _level[1] = 0;
+                    Form2_devicelist_SelectedIndexChanged(this, EventArgs.Empty);
+                    Free();
+                    Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+                    _initialized = false;
+                    Enable = true;
+                }
             }
         }
 
