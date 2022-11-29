@@ -235,7 +235,7 @@ namespace SpeAnaLED
             if (_hangcontrol > 3)
             {
                 _hangcontrol = 0;
-                if (Form2.AutoReloadCheckBoxChecked)
+                if (Form2.AutoReloadChecked)
                 {
                     _level[0] = 0;
                     _level[1] = 0;

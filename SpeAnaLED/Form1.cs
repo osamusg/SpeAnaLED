@@ -80,7 +80,6 @@ namespace SpeAnaLED
         //private float spectrumHeightScale;
 
         // constants
-        public const int WS_BORDER = 0x00800000;
         private const int maxNumberOfBar = 16;
         private const float penWidth = (float)30;
         private const int barSpacing = 10;
@@ -126,7 +125,7 @@ namespace SpeAnaLED
             catch
             {
                 MessageBox.Show("Opps! Config file seems something wrong...\r\n" +
-                    "Delete file and use default parameters.",
+                    "Delete config file and use default parameters.",
                     "Config file error - " + ProductName,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
@@ -181,7 +180,6 @@ namespace SpeAnaLED
             form2.HideTitleCheckBox.CheckedChanged += Form2_HideTitleCheckBoxCheckChanged;
             form2.ExitAppButton.Click += Form2_ExitAppButtonClicked;
             form2.ClearSpectrum += ClearSpectrum;
-            //form2.DoubleClick += Form2_FormDoubleClicked;
             form2.HideSpectrumWindowCheckBox.CheckedChanged += Form2_HideSpectrumWindowCheckChanged;
             form2.PeakMeterCheckBox.CheckedChanged += Form2_PeakMeterCheckBoxCheckChanged;
 
@@ -543,13 +541,7 @@ namespace SpeAnaLED
                 }
                 else if (this.Cursor == Cursors.SizeNS)
                 {
-                    /*if (e.Y < Spectrum1.Top)        //これは常にfalse？
-                    {
-                        this.Height -= e.Y - mousePoint.Y;
-                        if (this.Height < minHeight) this.Height = minHeight;
-                        else this.Top += e.Y - mousePoint.Y;
-                    }
-                    else*/ if (form2.HorizontalRadio.Checked && form2.HideFreqCheckBox.Checked)
+                    if (form2.HorizontalRadio.Checked && form2.HideFreqCheckBox.Checked)
                     {
 
                         if (e.Y < Spectrum1.Height / 2)// 8)
@@ -973,7 +965,6 @@ namespace SpeAnaLED
                 // shift Setting dialog location
                 if (form2.Top < this.Bottom &&
                     form2.Right > this.Left &&
-                    //form2.Left < this.Right &&
                     this.Bottom < Screen.FromControl(this).Bounds.Height - 50) form2.Top = this.Bottom + 30;
             }
 
@@ -1234,7 +1225,7 @@ namespace SpeAnaLED
                 var posX = barLeftPadding + (i - isLeft) / channel * (penWidth + barSpacing);           // horizontal position
                 var powY = (int)(analyzer._spectrumdata[i] / sensitivityRatio);                         // calculate drawing vertical length
                 g[isLeft].DrawLine(bgPen, posX, 0, posX, canvas[0].Height);                             // first, draw BG from top to bottom
-                powY = ((powY - dash) / dashUnit + 1) * dashUnit;                         // align LEDs
+                powY = ((powY - dash) / dashUnit + 1) * dashUnit;                                       // calculate LED bounds
                 if (powY > 6)                                                                           // _spectrumdata 0x00 is powY = 6
                     g[isLeft].DrawLine(myPen, posX, canvas[0].Height, posX, canvas[0].Height - powY);   // from bottom to top direction
 
@@ -1365,7 +1356,6 @@ namespace SpeAnaLED
                 if (form2.SSaverCheckBox.Checked)
                 {
                     SetThreadExecutionState(
-                        //EXECUTION_STATE.ES_CONTINUOUS |
                         EXECUTION_STATE.ES_DISPLAY_REQUIRED |
                         EXECUTION_STATE.ES_SYSTEM_REQUIRED);
                 }

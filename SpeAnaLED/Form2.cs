@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace SpeAnaLED
@@ -15,13 +14,14 @@ namespace SpeAnaLED
         public event EventHandler ClearSpectrum;
 
         private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
+        private static bool autoReloadChecked;
 
         public Form2()
         {
             InitializeComponent();
         }
 
-        public static bool AutoReloadCheckBoxChecked { get { return AutoReloadCheckBoxChecked; } }
+        public static bool AutoReloadChecked { get { return autoReloadChecked; } }
 
         private void Form2_KeyDown(object sender, KeyEventArgs e)
         {
@@ -122,6 +122,14 @@ namespace SpeAnaLED
         private void MonoRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ClearSpectrum != null) ClearSpectrum(this, EventArgs.Empty);
+        }
+
+        private void AutoReloadCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (AutoReloadCheckBox.Checked)
+                autoReloadChecked = true;
+            else
+                autoReloadChecked = false;
         }
     }
 }

@@ -640,6 +640,7 @@
             this.AutoReloadCheckBox.TabIndex = 57;
             this.AutoReloadCheckBox.Text = "Auto Reload";
             this.AutoReloadCheckBox.UseVisualStyleBackColor = true;
+            this.AutoReloadCheckBox.CheckedChanged += new System.EventHandler(this.AutoReloadCheckBox_CheckedChanged);
             // 
             // Form2
             // 
