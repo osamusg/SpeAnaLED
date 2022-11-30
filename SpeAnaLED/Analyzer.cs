@@ -252,12 +252,12 @@ namespace SpeAnaLED
         {
             // freq is readonly
 
-            if (freq <= 48000 )         // 44.1khz, 48khz
+            if (freq <= 48000)          // 44.1khz, 48khz
             {
                 _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT8192 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT4096;
                 _mixfreqMultiplyer = 44100f / freq * 0.5f;
             }
-            else if (freq <= 88200)     // 88.2khz, 96khz
+            else if (freq <= 96000)     // 88.2khz, 96khz
             {
                 _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
                 _mixfreqMultiplyer = 44100f / freq;

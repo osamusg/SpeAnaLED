@@ -119,15 +119,15 @@ namespace SpeAnaLED
                 }
                 else if (this.Cursor == Cursors.SizeNS)
                 {
-                    if (e.Y < this.Height / 2)
+                    if (e.Y < this.Height / 3)
                     {
                         this.Height -= (e.Y - mousePoint.Y) / 15;
                         if (this.Height < minHeight) this.Height = minHeight;
                         else this.Top += (e.Y - mousePoint.Y) / 15;
                     }
-                    else if (e.Y > this.Height * 2 / 3)
+                    else if (e.Y > this.Height * 1 / 2)
                     {
-                        this.Height += (e.Y - mousePoint.Y) / 20;
+                        this.Height += (e.Y - mousePoint.Y) / 25;
                         if (this.Height < minHeight) this.Height = minHeight;
                     }
                 }
