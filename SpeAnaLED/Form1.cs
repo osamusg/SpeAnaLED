@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        private readonly string relText = "Rel." + "22112818";
+        private readonly string relText = "Rel." + "22120101";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -544,7 +544,7 @@ namespace SpeAnaLED
                     if (form2.HorizontalRadio.Checked && form2.HideFreqCheckBox.Checked)
                     {
 
-                        if (e.Y < Spectrum1.Height / 2)// 8)
+                        if (e.Y < Spectrum1.Height / 3)
                         {
                             this.Height -= e.Y - mousePoint.Y;
                             if (this.Height < minHeight) this.Height = minHeight;
@@ -637,7 +637,7 @@ namespace SpeAnaLED
                             if (this.Height < minHeight) this.Height = minHeight;
                             else this.Top += e.Y - mousePoint.Y;
                         }
-                        else if (e.Y < Spectrum2.Height / 2)
+                        else if (e.Y < Spectrum2.Height / 3)
                         {
                             this.Height -= (e.Y - mousePoint.Y) / 25;
                             if (this.Height < minHeight) this.Height = minHeight;
@@ -1525,7 +1525,7 @@ namespace SpeAnaLED
             form2.LeftFlipRadio.Checked = confReader.GetValue("flipLeft", false);
             form2.HideFreqCheckBox.Checked = confReader.GetValue("hideFreq", false);
             form2.HideTitleCheckBox.Checked = confReader.GetValue("hideTitle", false);
-            form2.AutoReloadCheckBox.Checked = confReader.GetValue("AutoReload", true);
+            form2.AutoReloadCheckBox.Checked = confReader.GetValue("AutoReload", false);
 
             if ((prisumChecked = confReader.GetValue("LED", true)) == false)
                 if ((classicChecked = confReader.GetValue("classic", false)) == false)
