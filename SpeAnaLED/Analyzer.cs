@@ -31,26 +31,37 @@ namespace SpeAnaLED
         private readonly Button _form2DeviceResetButton;// for subscribe
         private readonly ComboBox _form2NumberOfBarsComboBox;   // for subscribe
         private readonly RadioButton _form2MonoRadio;   // for subscribe
+        private readonly RadioButton _form2RefreshFastRadio;  // for subscribe
         private readonly Label _form2FreqLabel;
         public event EventHandler SpectrumChanged;      // for fire
         public event EventHandler NumberOfChannelChanged;   // for fire
         private int _mixfreq;
         private float _mixfreqMultiplyer;
-        private readonly float _freqShift = (float)Math.Round(Math.Log(20000/*hz*/, 2) - /*in increments of*/10, 2);
+        private int _refreshMode;
+        private readonly float _freqShift = (float)Math.Round(Math.Log(20000/*hz*/, 2) - 10/*difference to 20hz*/, 2);    // constant 4.29
         public bool inInit = true;
 
         public int _channel;                            // 1: "mix-data"(mono) 2: L+R
         private int _lines;                             // number of spectrum lines
         private readonly int _form3PictureBoxWidth = 390;
 
-        public Analyzer(ComboBox devicelist, Button enumButton, Button deviceResetButton, ComboBox numberOfbarsComboBox, RadioButton monoRadio, Label freqLabel)    // Control data for event subscribe
+        public Analyzer(
+            ComboBox devicelist,
+            Button enumButton,
+            Button deviceResetButton,
+            ComboBox numberOfbarsComboBox,
+            RadioButton monoRadio,
+            Label freqLabel,
+            RadioButton refreshFastRadio)    // Control data for event subscribe
         {
             _devicelist = devicelist;
             _form2EnumButton = enumButton;
             _form2DeviceResetButton = deviceResetButton;
             _form2NumberOfBarsComboBox = numberOfbarsComboBox;
             _form2MonoRadio = monoRadio;
+            _form2RefreshFastRadio = refreshFastRadio;
             _channel = _form2MonoRadio.Checked ? 1 : 2;
+            _refreshMode = _form2RefreshFastRadio.Checked ? 1 : 2;
             _form2FreqLabel = freqLabel;
             _fft = new float[16384 * _channel];
             _initialized = false;
@@ -65,12 +76,13 @@ namespace SpeAnaLED
             _level = new int[2];
             _UNICODE = Form1.Unicode();
 
-            // Event handler for option form (reseive)
+            // Event handler for option form (subscribe)
             _form2EnumButton.Click += new EventHandler(Form2_EnumerateButton_Clicked);
             _form2DeviceResetButton.Click += new EventHandler(Form2_devicelist_SelectedIndexChanged);
             _devicelist.SelectedIndexChanged += new EventHandler(Form2_devicelist_SelectedIndexChanged);
             _form2NumberOfBarsComboBox.SelectedIndexChanged += new EventHandler(Form2_NumberOfBarIndexChanged);
             _form2MonoRadio.CheckedChanged += new EventHandler(Form2_MonoRadio_CheckChanged);
+            _form2RefreshFastRadio.CheckedChanged += new EventHandler(Form2_RefreshFastRadio_CheckCHanged);
 
             Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UNICODE, _UNICODE);
             Init();
@@ -131,7 +143,7 @@ namespace SpeAnaLED
                 if (!result) MessageBox.Show("Valid device not found.\r\n" +
                     "(May be Device Power-SW off? or\r\n" +
                     "device not selected in Windows?)\r\n" +
-                    "Please re-select valid device from \"setting\" dialog.\r\n" +
+                    //"Please re-select valid device from \"setting\" dialog.\r\n" +
                     "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
                     "Valid Device Not Found - SpeAnaLED",
                     MessageBoxButtons.OK,
@@ -141,7 +153,7 @@ namespace SpeAnaLED
             {
                 _devicelist.SelectedIndex = -1;
             }
-            
+
             inInit = false;
         }
 
@@ -252,17 +264,22 @@ namespace SpeAnaLED
         {
             // freq is readonly
 
-            if (freq <= 48000)          // 44.1khz, 48khz
+            if (freq <= 48000 / _refreshMode)          // 44.1khz, 48khz
+            {
+                _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT4096 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT2048;
+                _mixfreqMultiplyer = 44100f / freq * 0.25f;
+            }
+            else if (freq <= 96000 / _refreshMode)          // 88.2khz, 96khz
             {
                 _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT8192 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT4096;
                 _mixfreqMultiplyer = 44100f / freq * 0.5f;
             }
-            else if (freq <= 96000)     // 88.2khz, 96khz
+            else if (freq <= 192000 / _refreshMode)     // 176.4khz, 192khz
             {
                 _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT16384 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT8192;
                 _mixfreqMultiplyer = 44100f / freq;
             }
-            else                        // 176.4khz, 192khz, 384khz and above?
+            else                        // 384khz and above?
             {
                 _DATAFLAG = _channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
                 _mixfreqMultiplyer = 44100f / freq * 2f;
@@ -294,13 +311,32 @@ namespace SpeAnaLED
                     _devicelist.Items.Add(string.Format("{0} - {1}", i, device.name));
                 }
             }
-            if (_devicelist.Items == null) throw new Exception("Device Serch Error");
-            _devicenumber = Convert.ToInt16(_devicelist.Items[0].ToString().Split(' ')[0]);
-            _devicelist.SelectedIndex = 0;
+            if (_devicelist.Items.Count == 0) //throw new Exception("Device Serch Error");
+            {
+                MessageBox.Show("No output device found.\r\n" +
+                    "(May be Device Power-SW off? or)\r\n" +
+                    "device not selected in Windows?)\r\n" +
+                    "ERROR CODE: No Device(Enumerate)",
+                    "No Output Device - SpeAnaLED",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                inInit = true;
+                _devicelist.Items.Add("Please Enumerate Devices");
+                _devicelist.SelectedIndex = 0;
 
-            _form2DeviceResetButton.Enabled = true;
-            _form2EnumButton.Enabled = true;
-            _devicelist.Enabled = true;
+                Enable = false;
+                Free();
+                inInit = false;
+            }
+            else
+            {
+                _devicenumber = Convert.ToInt16(_devicelist.Items[0].ToString().Split(' ')[0]);
+                _devicelist.SelectedIndex = 0;
+
+                _form2DeviceResetButton.Enabled = true;
+                _form2EnumButton.Enabled = true;
+                _devicelist.Enabled = true;
+            }
         }
 
         private void Form2_devicelist_SelectedIndexChanged(object sender, EventArgs e)
@@ -317,30 +353,46 @@ namespace SpeAnaLED
                 Enable = false;
                 Free();
 
-                _devicenumber = Convert.ToInt16(_devicelist.SelectedItem.ToString().Split(' ')[0]);
-                var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(_devicenumber);
-                if (!device.IsEnabled)
+                try
+                {
+                    _devicenumber = Convert.ToInt16(_devicelist.SelectedItem.ToString().Split(' ')[0]);
+                    var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(_devicenumber);
+                    if (!device.IsEnabled)
+                    {
+                        MessageBox.Show("No (saveed) output device found.\r\n" +
+                        "(May be Device Power-SW off? or)\r\n" +
+                        "device not selected in Windows?)\r\n" +
+                        "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
+                        "No Output Device - SpeAnaLED",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+
+                        Enable = false;
+                        Free();
+                    }
+                    else
+                    {
+                        _mixfreq = device.mixfreq;
+                        SetParamFromFreq(_mixfreq);         // set _DATAFLAG and _mixfreqMulti
+
+                        bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);       // need _mixfreq here
+                        if (!result) throw new Exception("Source Device Initialize Error\r\n" + "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString());
+                        Enable = true;
+                    }
+                }
+                catch
                 {
                     MessageBox.Show("No (saveed) output device found.\r\n" +
-                    "(May be Device Power-SW off?)\r\n" +
-                    "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
-                    "No Output Device - SpeAnaLED",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                        "(May be Device Power-SW off? or)\r\n" +
+                        "device not selected in Windows?)\r\n" +
+                        "ERROR CODE: No Device(Select Device)",
+                        "No Output Device - SpeAnaLED",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
 
                     Enable = false;
                     Free();
                 }
-                else
-                {
-                    _mixfreq = device.mixfreq;
-                    SetParamFromFreq(_mixfreq);         // set _DATAFLAG and _mixfreqMulti
-
-                    bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);       // need _mixfreq here
-                    if (!result) throw new Exception("Source Device Initialize Error\r\n" + "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString());
-                    Enable = true;
-                }
-
                 _form2EnumButton.Enabled = true;
                 _form2DeviceResetButton.Enabled = true;
                 _devicelist.Enabled = true;
@@ -365,6 +417,13 @@ namespace SpeAnaLED
 
             // fire channel change event to form1
             if (NumberOfChannelChanged != null) NumberOfChannelChanged(this, EventArgs.Empty);
+        }
+
+        private void Form2_RefreshFastRadio_CheckCHanged(object sender, EventArgs e)
+        {
+            _refreshMode = _form2RefreshFastRadio.Checked ? 1 : 2;
+            if (!inInit)
+                Form2_devicelist_SelectedIndexChanged(this, EventArgs.Empty);
         }
 
         // cleanup

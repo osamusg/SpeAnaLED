@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Runtime.Remoting.Channels;
 using System.Windows.Forms;
-using System.Windows.Media;
 //using System.Windows.Media;
 
 namespace SpeAnaLED
@@ -19,6 +17,9 @@ namespace SpeAnaLED
         public readonly Bitmap[] canvas = new Bitmap[2];
         private bool inFormSizeChange;
         private readonly string panelFontName = "Levenim MT Bold";
+
+        // event handler (Fire)
+        public event EventHandler Form3_Closed;
 
         public Form3(Form1 parent,bool hidetitle)
         {
@@ -84,6 +85,7 @@ namespace SpeAnaLED
         private void Form3_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (!myParent.Visible) myParent.Visible = true;
+            if (Form3_Closed != null) Form3_Closed(sender, e);
         }
 
         private void LevelPictureBox_MouseDown(object sender, MouseEventArgs e)

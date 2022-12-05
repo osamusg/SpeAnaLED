@@ -69,13 +69,15 @@
             this.HideTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.LinkLabel1 = new System.Windows.Forms.LinkLabel();
             this.ExitAppButton = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.DeviceResetButton = new System.Windows.Forms.Button();
             this.FrequencyLabel = new System.Windows.Forms.Label();
             this.RelLabel = new System.Windows.Forms.Label();
             this.HideSpectrumWindowCheckBox = new System.Windows.Forms.CheckBox();
-            this.PeakMeterCheckBox = new System.Windows.Forms.CheckBox();
+            this.LevelMeterCheckBox = new System.Windows.Forms.CheckBox();
             this.AutoReloadCheckBox = new System.Windows.Forms.CheckBox();
+            this.RefreshModeGroupBox = new System.Windows.Forms.GroupBox();
+            this.RefreshNormalRadioButton = new System.Windows.Forms.RadioButton();
+            this.RefreshFastRadioButton = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -84,6 +86,7 @@
             this.ChannelLayoutGroup.SuspendLayout();
             this.FlipGroup.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            this.RefreshModeGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // devicelist
@@ -363,7 +366,7 @@
             // 
             this.SSaverCheckBox.AutoSize = true;
             this.SSaverCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SSaverCheckBox.Location = new System.Drawing.Point(208, 122);
+            this.SSaverCheckBox.Location = new System.Drawing.Point(206, 106);
             this.SSaverCheckBox.Name = "SSaverCheckBox";
             this.SSaverCheckBox.Size = new System.Drawing.Size(143, 19);
             this.SSaverCheckBox.TabIndex = 9;
@@ -460,7 +463,7 @@
             // 
             this.AlwaysOnTopCheckBox.AutoSize = true;
             this.AlwaysOnTopCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AlwaysOnTopCheckBox.Location = new System.Drawing.Point(208, 96);
+            this.AlwaysOnTopCheckBox.Location = new System.Drawing.Point(206, 81);
             this.AlwaysOnTopCheckBox.Name = "AlwaysOnTopCheckBox";
             this.AlwaysOnTopCheckBox.Size = new System.Drawing.Size(104, 19);
             this.AlwaysOnTopCheckBox.TabIndex = 8;
@@ -520,7 +523,7 @@
             // 
             this.HideFreqCheckBox.AutoSize = true;
             this.HideFreqCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HideFreqCheckBox.Location = new System.Drawing.Point(208, 149);
+            this.HideFreqCheckBox.Location = new System.Drawing.Point(206, 131);
             this.HideFreqCheckBox.Name = "HideFreqCheckBox";
             this.HideFreqCheckBox.Size = new System.Drawing.Size(117, 19);
             this.HideFreqCheckBox.TabIndex = 10;
@@ -531,7 +534,7 @@
             // 
             this.HideTitleCheckBox.AutoSize = true;
             this.HideTitleCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HideTitleCheckBox.Location = new System.Drawing.Point(208, 174);
+            this.HideTitleCheckBox.Location = new System.Drawing.Point(206, 156);
             this.HideTitleCheckBox.Name = "HideTitleCheckBox";
             this.HideTitleCheckBox.Size = new System.Drawing.Size(96, 19);
             this.HideTitleCheckBox.TabIndex = 11;
@@ -554,26 +557,12 @@
             // 
             this.ExitAppButton.Enabled = false;
             this.ExitAppButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ExitAppButton.Location = new System.Drawing.Point(310, 171);
+            this.ExitAppButton.Location = new System.Drawing.Point(308, 153);
             this.ExitAppButton.Name = "ExitAppButton";
             this.ExitAppButton.Size = new System.Drawing.Size(88, 23);
             this.ExitAppButton.TabIndex = 37;
             this.ExitAppButton.Text = "Exit This App.";
             this.ExitAppButton.UseVisualStyleBackColor = true;
-            // 
-            // textBox2
-            // 
-            this.textBox2.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(11, 197);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(186, 30);
-            this.textBox2.TabIndex = 37;
-            this.textBox2.TabStop = false;
-            this.textBox2.Text = "If checked, the form can be moved but cannot be resized.";
-            this.textBox2.Visible = false;
             // 
             // DeviceResetButton
             // 
@@ -584,6 +573,7 @@
             this.DeviceResetButton.TabIndex = 52;
             this.DeviceResetButton.Text = "Reload Device";
             this.DeviceResetButton.UseVisualStyleBackColor = true;
+            this.DeviceResetButton.EnabledChanged += new System.EventHandler(this.DeviceResetButton_EnabledChanged);
             this.DeviceResetButton.Click += new System.EventHandler(this.DeviceResetButton_Click);
             // 
             // FrequencyLabel
@@ -609,26 +599,27 @@
             // HideSpectrumWindowCheckBox
             // 
             this.HideSpectrumWindowCheckBox.AutoSize = true;
+            this.HideSpectrumWindowCheckBox.Checked = true;
+            this.HideSpectrumWindowCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.HideSpectrumWindowCheckBox.Enabled = false;
             this.HideSpectrumWindowCheckBox.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HideSpectrumWindowCheckBox.Location = new System.Drawing.Point(226, 217);
+            this.HideSpectrumWindowCheckBox.Location = new System.Drawing.Point(221, 200);
             this.HideSpectrumWindowCheckBox.Name = "HideSpectrumWindowCheckBox";
             this.HideSpectrumWindowCheckBox.Size = new System.Drawing.Size(139, 18);
             this.HideSpectrumWindowCheckBox.TabIndex = 55;
             this.HideSpectrumWindowCheckBox.Text = "Hide Spectrum Window";
             this.HideSpectrumWindowCheckBox.UseVisualStyleBackColor = true;
-            this.HideSpectrumWindowCheckBox.Visible = false;
             // 
-            // PeakMeterCheckBox
+            // LevelMeterCheckBox
             // 
-            this.PeakMeterCheckBox.AutoSize = true;
-            this.PeakMeterCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PeakMeterCheckBox.Location = new System.Drawing.Point(208, 200);
-            this.PeakMeterCheckBox.Name = "PeakMeterCheckBox";
-            this.PeakMeterCheckBox.Size = new System.Drawing.Size(88, 19);
-            this.PeakMeterCheckBox.TabIndex = 56;
-            this.PeakMeterCheckBox.Text = "Level Meter";
-            this.PeakMeterCheckBox.UseVisualStyleBackColor = true;
+            this.LevelMeterCheckBox.AutoSize = true;
+            this.LevelMeterCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LevelMeterCheckBox.Location = new System.Drawing.Point(206, 181);
+            this.LevelMeterCheckBox.Name = "LevelMeterCheckBox";
+            this.LevelMeterCheckBox.Size = new System.Drawing.Size(88, 19);
+            this.LevelMeterCheckBox.TabIndex = 56;
+            this.LevelMeterCheckBox.Text = "Level Meter";
+            this.LevelMeterCheckBox.UseVisualStyleBackColor = true;
             // 
             // AutoReloadCheckBox
             // 
@@ -642,19 +633,55 @@
             this.AutoReloadCheckBox.UseVisualStyleBackColor = true;
             this.AutoReloadCheckBox.CheckedChanged += new System.EventHandler(this.AutoReloadCheckBox_CheckedChanged);
             // 
+            // RefreshModeGroupBox
+            // 
+            this.RefreshModeGroupBox.Controls.Add(this.RefreshFastRadioButton);
+            this.RefreshModeGroupBox.Controls.Add(this.RefreshNormalRadioButton);
+            this.RefreshModeGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RefreshModeGroupBox.Location = new System.Drawing.Point(12, 194);
+            this.RefreshModeGroupBox.Name = "RefreshModeGroupBox";
+            this.RefreshModeGroupBox.Size = new System.Drawing.Size(182, 49);
+            this.RefreshModeGroupBox.TabIndex = 58;
+            this.RefreshModeGroupBox.TabStop = false;
+            this.RefreshModeGroupBox.Text = "Refresh Mode";
+            // 
+            // RefreshNormalRadioButton
+            // 
+            this.RefreshNormalRadioButton.AutoSize = true;
+            this.RefreshNormalRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RefreshNormalRadioButton.Location = new System.Drawing.Point(17, 20);
+            this.RefreshNormalRadioButton.Name = "RefreshNormalRadioButton";
+            this.RefreshNormalRadioButton.Size = new System.Drawing.Size(66, 19);
+            this.RefreshNormalRadioButton.TabIndex = 0;
+            this.RefreshNormalRadioButton.TabStop = true;
+            this.RefreshNormalRadioButton.Text = "Normal";
+            this.RefreshNormalRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // RefreshFastRadioButton
+            // 
+            this.RefreshFastRadioButton.AutoSize = true;
+            this.RefreshFastRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RefreshFastRadioButton.Location = new System.Drawing.Point(89, 20);
+            this.RefreshFastRadioButton.Name = "RefreshFastRadioButton";
+            this.RefreshFastRadioButton.Size = new System.Drawing.Size(82, 19);
+            this.RefreshFastRadioButton.TabIndex = 1;
+            this.RefreshFastRadioButton.TabStop = true;
+            this.RefreshFastRadioButton.Text = "More Busy";
+            this.RefreshFastRadioButton.UseVisualStyleBackColor = true;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 519);
             this.ControlBox = false;
+            this.Controls.Add(this.RefreshModeGroupBox);
             this.Controls.Add(this.AutoReloadCheckBox);
-            this.Controls.Add(this.PeakMeterCheckBox);
+            this.Controls.Add(this.LevelMeterCheckBox);
             this.Controls.Add(this.HideSpectrumWindowCheckBox);
             this.Controls.Add(this.RelLabel);
             this.Controls.Add(this.FrequencyLabel);
             this.Controls.Add(this.DeviceResetButton);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.ExitAppButton);
             this.Controls.Add(this.LinkLabel1);
@@ -697,6 +724,8 @@
             this.FlipGroup.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            this.RefreshModeGroupBox.ResumeLayout(false);
+            this.RefreshModeGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -742,13 +771,15 @@
         protected internal System.Windows.Forms.Button ExitAppButton;
         private System.Windows.Forms.Label label4;
         protected internal System.Windows.Forms.GroupBox ChannelLayoutGroup;
-        private System.Windows.Forms.TextBox textBox2;
         protected internal System.Windows.Forms.Button DeviceResetButton;
         protected internal System.Windows.Forms.Label FrequencyLabel;
         protected internal System.Windows.Forms.Label RelLabel;
         protected internal System.Windows.Forms.CheckBox HideSpectrumWindowCheckBox;
         protected internal System.Windows.Forms.Button CloseButton;
-        protected internal System.Windows.Forms.CheckBox PeakMeterCheckBox;
+        protected internal System.Windows.Forms.CheckBox LevelMeterCheckBox;
         protected internal System.Windows.Forms.CheckBox AutoReloadCheckBox;
+        private System.Windows.Forms.GroupBox RefreshModeGroupBox;
+        protected internal System.Windows.Forms.RadioButton RefreshFastRadioButton;
+        protected internal System.Windows.Forms.RadioButton RefreshNormalRadioButton;
     }
 }

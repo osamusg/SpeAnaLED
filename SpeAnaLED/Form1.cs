@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        private readonly string relText = "Rel." + "22120101";
+        private readonly string relText = "Rel." + "22120313";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -68,9 +68,10 @@ namespace SpeAnaLED
         private float labelFontSize;
         private int baseLabelWidth, baseLabelHeight;
         private int barLeftPadding;
-
-        private int titleHeight;
         private int borderSize;
+        private int titleHeight;
+        private readonly int defaultBorderSize;
+        private readonly int defaultTitleHeight;
         private int labelPadding;
         private int leftPadding;
         private int topPadding;
@@ -141,7 +142,15 @@ namespace SpeAnaLED
             form2.devicelist.SelectedIndex = 0;
 
             // after param load, make a Analyzer instance.
-            analyzer = new Analyzer(form2.devicelist, form2.EnumerateButton, form2.DeviceResetButton, form2.NumberOfBarComboBox, form2.MonoRadio, form2.FrequencyLabel);
+            analyzer = new Analyzer(
+                form2.devicelist,
+                form2.EnumerateButton,
+                form2.DeviceResetButton,
+                form2.NumberOfBarComboBox,
+                form2.MonoRadio,
+                form2.FrequencyLabel,
+                form2.RefreshFastRadioButton
+                );
 
             if (devices == null || devices == string.Empty)
             {
@@ -181,7 +190,9 @@ namespace SpeAnaLED
             form2.ExitAppButton.Click += Form2_ExitAppButtonClicked;
             form2.ClearSpectrum += ClearSpectrum;
             form2.HideSpectrumWindowCheckBox.CheckedChanged += Form2_HideSpectrumWindowCheckChanged;
-            form2.PeakMeterCheckBox.CheckedChanged += Form2_PeakMeterCheckBoxCheckChanged;
+            form2.LevelMeterCheckBox.CheckedChanged += Form2_LevelMeterCheckBoxCheckChanged;
+
+            form3.Form3_Closed += Form3_Closed;
 
             // Other Event handler (subscribe)
             analyzer.SpectrumChanged += Analyzer_ReceiveSpectrumData;
@@ -194,8 +205,8 @@ namespace SpeAnaLED
             spectrumWidthScale = Spectrum1.Width / (float)baseSpectrumWidth;        // depens on number of bars
             //spectrumHeightScale = Spectrum1.Height / (float)baseSpectrumHeght;    // haven't used this one
             canvasWidth = barLeftPadding + numberOfBar * ((int)penWidth + barSpacing) - (barLeftPadding - barSpacing);  // Calculate size per number of bars to enlarge
-            borderSize = (this.Width - this.ClientSize.Width) / 2;
-            titleHeight = this.Height - this.ClientSize.Height - borderSize * 2;
+            borderSize = defaultBorderSize =(this.Width - this.ClientSize.Width) / 2;
+            titleHeight = defaultTitleHeight =this.Height - this.ClientSize.Height - borderSize * 2;
             canvas = new Bitmap[channel];
             freqLabel_Left = new Label[maxNumberOfBar];
             freqLabel_Right = new Label[maxNumberOfBar];
@@ -218,17 +229,18 @@ namespace SpeAnaLED
             form2.PeakholdTimeComboBox.SelectedIndex = form2.PeakholdTimeComboBox.Items.IndexOf(peakHoldTimeMsec.ToString());
             form2.SensitivityTextBox.Text = (form2.SensitivityTrackBar.Value / 10f).ToString("0.0");
             form2.PeakholdDescentSpeedTextBox.Text = form2.PeakholdDescentSpeedTrackBar.Value.ToString();
-            if (form3Visible) form2.PeakMeterCheckBox.Checked = true;
+            if (form3Visible) form2.LevelMeterCheckBox.Checked = true;
+            if (!form2.RefreshNormalRadioButton.Checked) form2.RefreshFastRadioButton.Checked = true;
             if (!form2.PeakholdCheckBox.Checked) form2.LabelPeakhold.Enabled = form2.LabelMsec.Enabled = form2.PeakholdTimeComboBox.Enabled = false;
             if (form2.VerticalRadio.Checked) form2.FlipGroup.Enabled = false;
             if (channel < 2) form2.ChannelLayoutGroup.Enabled = false;
 
             // form3 settings
-            form3.Visible = form3Visible;
-            form3.Width = form3Width;
-            form3.Height = form3Height;
+            form3.Width = form3Width - (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0);
+            form3.Height = form3Height - (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0);
             form3.Top = form3Top;
             form3.Left = form3Left;
+            form3.Visible = form3Visible;
             form3_canvas = new Bitmap(Form3.baseClientWidth, Form3.baseClientHeight);
             form3.LevelPictureBox.Width = form3.ClientSize.Width;
             form3.LevelPictureBox.Height = form3.ClientSize.Height;
@@ -327,15 +339,13 @@ namespace SpeAnaLED
             inInit = true;
             inLayout = true;
 
-            //if (form2.HideFreqCheckBox.Checked) Form2_HideFreqCheckBoxCheckChanged(sender, EventArgs.Empty);
-
+            
             // Now, Set main form layout
             this.Top = form1Top;
             this.Left = form1Left;
             this.Width = form1Width;        // this calls sizeChanged event (and SetSpectrumLayout)
             this.Height = form1Height;      // this calls sizeChanged event (and SetSpectrumLayout)
-            //this.WindowState = isMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
-
+            
             // Then, Set Spectrum PictureBox size and location from main form size
             SetSpectrumLayout(this.Width, this.Height);
             ClearSpectrum(this, EventArgs.Empty);       // draw background image
@@ -715,8 +725,8 @@ namespace SpeAnaLED
                     form3.Show(this);
                 }
 
-                form3.Width = form3Width + (form2.HideTitleCheckBox.Checked ? borderSize * 2 : 0);
-                form3.Height = form3Height + (form2.HideTitleCheckBox.Checked ? titleHeight + borderSize * 2 : 0);
+                //form3.Width = form3Width + (form2.HideTitleCheckBox.Checked ? borderSize * 2 : 0) ;
+                //form3.Height = form3Height + (form2.HideTitleCheckBox.Checked ? titleHeight + borderSize * 2 : 0);
                 form3.Top = form3Top;
                 form3.Left = form3Left;
                 form3.LevelPictureBox.Width = form3.ClientSize.Width;
@@ -1063,9 +1073,9 @@ namespace SpeAnaLED
             }
         }
 
-        private void Form2_PeakMeterCheckBoxCheckChanged(object sender, EventArgs e)
+        private void Form2_LevelMeterCheckBoxCheckChanged(object sender, EventArgs e)
         {
-            if (form2.PeakMeterCheckBox.Checked)
+            if (form2.LevelMeterCheckBox.Checked)
             {
                 try
                 {
@@ -1077,20 +1087,21 @@ namespace SpeAnaLED
                     form3.Show(this);
                 }
 
-                form3.Width = form3Width + (form2.HideTitleCheckBox.Checked ? borderSize * 2 : 0);
-                form3.Height = form3Height + (form2.HideTitleCheckBox.Checked ? titleHeight + borderSize * 2 : 0);
+                if (form2.HideTitleCheckBox.Checked)
+                    form3.FormBorderStyle = FormBorderStyle.None;
+                else
+                    form3.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+
+                form3.Width = form3Width - (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0);
+                form3.Height = form3Height - (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0);
                 form3.Top = form3Top;
                 form3.Left = form3Left;
                 form3.LevelPictureBox.Width = form3.ClientSize.Width;
                 form3.LevelPictureBox.Height = form3.ClientSize.Height;
                 form3.LevelPictureBox.Left = 0;
                 form3.LevelPictureBox.Top = 0;
-                if (form2.HideTitleCheckBox.Checked)
-                    form3.FormBorderStyle = FormBorderStyle.None;
-                else
-                    form3.FormBorderStyle = FormBorderStyle.SizableToolWindow;
-
                 form2.HideSpectrumWindowCheckBox.Enabled = true;
+                form3Visible= true;
             }
             else
             {
@@ -1104,6 +1115,11 @@ namespace SpeAnaLED
             Application.Exit();
         }
 
+        private void Form3_Closed(object sender, EventArgs e)
+        {
+            form2.LevelMeterCheckBox.Checked = false;
+        }
+
         private void Analyzer_NumberOfChannelsChanged(object sender, EventArgs e)
         {
             inInit = true;
@@ -1112,7 +1128,7 @@ namespace SpeAnaLED
             // reset parameters
             channel = analyzer._channel;
             peakValue = new int[maxNumberOfBar * channel];
-            counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * cycleMultiplyer * (numberOfBar * channel / 16.0));
+            counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * cycleMultiplyer * (numberOfBar * channel / maxNumberOfBar));
             peakHoldDescentCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;       // Inverse the value so that the direction of
             for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(Spectrum1.Width, Spectrum1.Height);        //  speed and value increase/decrease match.
             for (int i = 0; i < analyzer._spectrumdata.Count; i++) analyzer._spectrumdata[i] = 0x00;
@@ -1429,11 +1445,11 @@ namespace SpeAnaLED
                 string labelText;
                 int freqvalues = (int)(Math.Round(Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.29), 0));    // 4.29=Round(Log(20000hz, 2) - (in increments of)10, 2);
                 if (freqvalues > 10000)
-                    labelText = (freqvalues / 1000).ToString("0") + "k";// "khz";
+                    labelText = (freqvalues / 1000).ToString("0") + "k";    // "khz";
                 else if (freqvalues > 1000)
-                    labelText = (freqvalues / 100 * 100 / 1000f).ToString("0.0") + "k";// "khz";
+                    labelText = (freqvalues / 100 * 100 / 1000f).ToString("0.0") + "k";
                 else
-                    labelText = (freqvalues / 10 * 10).ToString("0");// + "hz";    // round -1
+                    labelText = (freqvalues / 10 * 10).ToString("0");       // round -1
 
                 int j = isFlip ? numberOfBar - 1 - i : i;
                 
@@ -1526,6 +1542,7 @@ namespace SpeAnaLED
             form2.HideFreqCheckBox.Checked = confReader.GetValue("hideFreq", false);
             form2.HideTitleCheckBox.Checked = confReader.GetValue("hideTitle", false);
             form2.AutoReloadCheckBox.Checked = confReader.GetValue("AutoReload", false);
+            form2.RefreshNormalRadioButton.Checked = confReader.GetValue("RefreshNormal", true);
 
             if ((prisumChecked = confReader.GetValue("LED", true)) == false)
                 if ((classicChecked = confReader.GetValue("classic", false)) == false)
@@ -1638,6 +1655,7 @@ namespace SpeAnaLED
             confWriter.AddValue("preventSSaver", form2.SSaverCheckBox.Checked);
             confWriter.AddValue("hideFreq", form2.HideFreqCheckBox.Checked);
             confWriter.AddValue("AutoReload", form2.AutoReloadCheckBox.Checked);
+            confWriter.AddValue("RefreshNormal", form2.RefreshNormalRadioButton.Checked);
 
             confWriter.AddValue("LED", form2.PrisumRadio.Checked);
             confWriter.AddValue("classic", form2.ClassicRadio.Checked);
@@ -1725,9 +1743,9 @@ namespace SpeAnaLED
 
             confWriter.AddValue("form3Top", form3.Top);
             confWriter.AddValue("form3Left", form3.Left);
-            confWriter.AddValue("form3Width", form3.Width);
-            confWriter.AddValue("form3Height", form3.Height);
-            confWriter.AddValue("form3Visible", form2.HideSpectrumWindowCheckBox.Enabled);
+            confWriter.AddValue("form3Width", form3.Width + (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0));
+            confWriter.AddValue("form3Height", form3.Height + (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0));
+            confWriter.AddValue("form3Visible", form3Visible);
             
 
             // add "unicode=false" in config file to change cause codepage to ANSI (not saved)

@@ -7,7 +7,7 @@
     - You don't need line cables,
     - Simply use a PC sound card or device to play music on your favorite player, for example, foobar2000, Youtube or Amazon Music in various browsers, AppleMusic (iTunes), Spotify desktop app, etc., **SpeAnaLED** should intercept sounds and work.
 - **SpeAnaLED** can be re-sized, so you can reside on your PC desktop by putting it on your "Startup" folder.
-- **SpeAnaLED** is a tiny program. Its size of executable file is about 80KB itsdelf, about 900KB including dlls. In the case of my 8 years old PC, CPU load is 0.1% or less, uses about 90MB process memory. No use of DirextX 2D, only GDI/GDI+ Win32API(System.Drawing(.Drawing2D)) is used.
+- **SpeAnaLED** is a tiny program. Its size of executable file is about 80KB itself, about 900KB including dlls. In the case of my 8 years old PC, CPU load is 0.1% or less, uses about 90MB process memory. No use of DirextX 2D, only GDI/GDI+ Win32API(System.Drawing(.Drawing2D)) is used.
 - Yes, this is a one of "Reinventing the wheel" project.
 
 ## Requirements

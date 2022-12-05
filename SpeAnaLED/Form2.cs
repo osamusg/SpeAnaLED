@@ -10,7 +10,7 @@ namespace SpeAnaLED
         // go public controls for Analyzer class
         public ComboBox Devicelist { get { return devicelist; } }
        
-        // event handler
+        // event handler (Fire)
         public event EventHandler ClearSpectrum;
 
         private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
@@ -126,10 +126,12 @@ namespace SpeAnaLED
 
         private void AutoReloadCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (AutoReloadCheckBox.Checked)
-                autoReloadChecked = true;
-            else
-                autoReloadChecked = false;
+            autoReloadChecked = AutoReloadCheckBox.Checked;
+        }
+
+        private void DeviceResetButton_EnabledChanged(object sender, EventArgs e)
+        {
+            AutoReloadCheckBox.Enabled = DeviceResetButton.Enabled;
         }
     }
 }
