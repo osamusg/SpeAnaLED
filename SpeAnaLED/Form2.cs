@@ -103,6 +103,11 @@ namespace SpeAnaLED
 
         }
 
+        private void LevelSensitivityTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
+        }
+        
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             LinkLabel1.LinkVisited = true;

@@ -22,13 +22,12 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        private readonly string relText = "Rel." + "22120313";
+        private readonly string relText = "Rel." + "23012021";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
         private int form1Top, form1Left;                    // for load config
         private int form1Width, form1Height;                // for load config to not call SizeChanged Event
-        //private readonly bool isMaximized;                  // for load config
         private string devices;                             // for load config. conf can't store arrays length unknown
         public int numberOfBar;
         private int channel;
@@ -51,6 +50,7 @@ namespace SpeAnaLED
         private int peakHoldDescentCycle;   // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)
         private float sensitivity;
         private float sensitivityRatio;
+        private float levelMeterSensitivity;
         private int displayOffCounter;
         private RotateFlipType flipLeft, flipRight;
         private bool inInit = false;
@@ -170,6 +170,7 @@ namespace SpeAnaLED
             // Event handler for modeless option form (subscribe)
             form2.SensitivityTrackBar.ValueChanged += Form2_SensitivityTrackBar_ValueChanged;
             form2.PeakholdDescentSpeedTrackBar.ValueChanged += Form2_PeakholdDescentSpeedTrackBar_ValueChanged;
+            form2.LevelSensitivityTrackBar.ValueChanged += Form2_LevelSensitivityTrackBar_ValueChanged;
             form2.ClassicRadio.CheckedChanged += Form2_ClassicRadio_CheckChanged;
             form2.PrisumRadio.CheckedChanged += Form2_PrisumRadio_CheckChanged;
             form2.SimpleRadio.CheckedChanged += Form2_SimpleRadio_CheckChanged;
@@ -229,6 +230,7 @@ namespace SpeAnaLED
             form2.PeakholdTimeComboBox.SelectedIndex = form2.PeakholdTimeComboBox.Items.IndexOf(peakHoldTimeMsec.ToString());
             form2.SensitivityTextBox.Text = (form2.SensitivityTrackBar.Value / 10f).ToString("0.0");
             form2.PeakholdDescentSpeedTextBox.Text = form2.PeakholdDescentSpeedTrackBar.Value.ToString();
+            form2.LevelSensitivityTextBox.Text = (form2.LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
             if (form3Visible) form2.LevelMeterCheckBox.Checked = true;
             if (!form2.RefreshNormalRadioButton.Checked) form2.RefreshFastRadioButton.Checked = true;
             if (!form2.PeakholdCheckBox.Checked) form2.LabelPeakhold.Enabled = form2.LabelMsec.Enabled = form2.PeakholdTimeComboBox.Enabled = false;
@@ -259,6 +261,7 @@ namespace SpeAnaLED
             // from form2
             sensitivity = form2.SensitivityTrackBar.Value / 10f;
             sensitivityRatio = (float)(0xff / baseSpectrumHeight) * (10f - sensitivity);
+            levelMeterSensitivity = (float)form2.LevelSensitivityTrackBar.Value / 10f;
             TopMost = form2.AlwaysOnTopCheckBox.Checked;
             peakHoldDescentCycle = form2.PeakholdDescentSpeedTrackBar.Value;
             if (form2.ShowCounterCheckBox.Checked)
@@ -770,6 +773,14 @@ namespace SpeAnaLED
             // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)            //  speed and value increase/decrease match.
         }
 
+        private void Form2_LevelSensitivityTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            //if(!inInit)
+            //{
+                levelMeterSensitivity = form2.LevelSensitivityTrackBar.Value / 10f;
+            //}
+        }
+
         private void Form2_NumberOfBarComboBox_SelectedItemChanged(object sender, EventArgs e)
         {
             if (!inInit)
@@ -1085,6 +1096,8 @@ namespace SpeAnaLED
                 {
                     form3 = new Form3(this, form2.HideTitleCheckBox.Checked) { Owner = this };
                     form3.Show(this);
+
+                    form3.Form3_Closed += Form3_Closed;
                 }
 
                 if (form2.HideTitleCheckBox.Checked)
@@ -1105,7 +1118,7 @@ namespace SpeAnaLED
             }
             else
             {
-                form3.Visible = false;
+                form3.Visible = form3Visible = false;
                 form2.HideSpectrumWindowCheckBox.Enabled = false;
             }
         }
@@ -1240,7 +1253,7 @@ namespace SpeAnaLED
 
                 var posX = barLeftPadding + (i - isLeft) / channel * (penWidth + barSpacing);           // horizontal position
                 var powY = (int)(analyzer._spectrumdata[i] / sensitivityRatio);                         // calculate drawing vertical length
-                g[isLeft].DrawLine(bgPen, posX, 0, posX, canvas[0].Height);                             // first, draw BG from top to bottom
+                g[isLeft].DrawLine(bgPen, posX, canvas[0].Height, posX, 0);                             // first, draw BG from bottom to top
                 powY = ((powY - dash) / dashUnit + 1) * dashUnit;                                       // calculate LED bounds
                 if (powY > 6)                                                                           // _spectrumdata 0x00 is powY = 6
                     g[isLeft].DrawLine(myPen, posX, canvas[0].Height, posX, canvas[0].Height - powY);   // from bottom to top direction
@@ -1299,7 +1312,9 @@ namespace SpeAnaLED
                 int redzone = 240;
                 for (int i = 0; i < channel; i++)
                 {
-                    level[i] = ((analyzer._level[i] + 1) / dottedline) * dottedline;                    // analyzer input point and calculate bounds
+                    level[i] = (int)((analyzer._level[i] * levelMeterSensitivity + 1) / dottedline) * dottedline;       // analyzer input point and calculate bounds
+                    if (level[i] > 390) level[i] = 390;
+                    
                     form3_g.DrawLine(form3_bgPen, leftPadding, leftBarTop + i * rightChPadding, form3_canvas.Width - rightPadding, leftBarTop + i * rightChPadding);  // 38= 42 - 8 / 2
                     if (level[i] >= redzone)
                     {
@@ -1354,8 +1369,8 @@ namespace SpeAnaLED
                 form3.LevelPictureBox.Image = form3_canvas;
                 form3.LevelPictureBox.BringToFront();
 
-                //form3.LeftValueLabel.Text = analyzer._level[0].ToString("0");
-                //form3.RightValueLabel.Text = analyzer._level[1].ToString("0");
+                form3.LeftValueLabel.Text = level[0].ToString("0");
+                form3.RightValueLabel.Text = level[1].ToString("0");
             }
 
             if (peakCounter >= counterCycle)    // if peakhold=false, counter is used screen saver preventing, so add the counter
@@ -1431,11 +1446,6 @@ namespace SpeAnaLED
             
             SuspendLayout();
             
-            /*if (!inInit)
-            {
-                baseLabelWidth = freqLabel[0].Width; 
-                baseLabelHeight = freqLabel[0].Height;
-            }*/
             labelFontSize = (float)Math.Round(baseLabelFontSize * spectrumWidthScale, 1);
             labelFontSize = labelFontSize < 11f ? labelFontSize : 11f;
             labelFontSize = labelFontSize > 7f ? labelFontSize : 7f;
@@ -1459,7 +1469,7 @@ namespace SpeAnaLED
                     freqLabel[i].AutoSize = true;
                     freqLabel[i].Font = new Font("Arial", labelFontSize, FontStyle.Bold);
                     freqLabel[j].Text = labelText;
-                    int labelPos = (int)(spectrum.Left + (float)(barLeftPadding + i * (penWidth + barSpacing)) / (float)(barSpacing + numberOfBar * (penWidth + barSpacing)) * spectrum.Width) - (int)(baseLabelWidth /* spectrumWidthScale*/ / 2);
+                    int labelPos = (int)(spectrum.Left + (float)(barLeftPadding + i * (penWidth + barSpacing)) / (float)(barSpacing + numberOfBar * (penWidth + barSpacing)) * spectrum.Width) - (int)(baseLabelWidth / 2);
                     freqLabel[i].Left = labelPos;
                     freqLabel[i].Name = "freqlabel" + (j + 1).ToString();
                     freqLabel[i].Top = spectrum.Bottom + (labelPadding + bottomPadding) /2 - freqLabel[i].Font.Height / 2;
@@ -1474,6 +1484,9 @@ namespace SpeAnaLED
                     freqLabel[i].Visible = false;
                 }
             }
+            this.Controls.AddRange(freqLabel);
+            ResumeLayout(false);
+
             if ((!isFlip && freqLabel[numberOfBar - 2].Right > freqLabel[numberOfBar - 1].Left ||
                 isFlip && freqLabel[1].Left < freqLabel[0].Right) && freqLabel[numberOfBar - 1].Left != 0)
             {           // 2 lines
@@ -1487,10 +1500,6 @@ namespace SpeAnaLED
             else        // 1 line
                 for (int i = 0; i < maxNumberOfBar; i++) freqLabel[i].Top += freqLabel[0].Height / 2;
             if (freqLabel[0].Left < spectrum.Left) freqLabel[0].Left= spectrum.Left;
-
-
-            this.Controls.AddRange(freqLabel);
-            ResumeLayout(false);
         }
 
         private void LoadConfigParams()
@@ -1531,6 +1540,8 @@ namespace SpeAnaLED
             peakHoldTimeMsec = confReader.GetValue("peakHoldTimeMsec", 500);
             form2.SensitivityTrackBar.Value = confReader.GetValue("sensitivity", 80);
             form2.PeakholdDescentSpeedTrackBar.Value = confReader.GetValue("peakholdDescentSpeed", 12);
+            form2.LevelSensitivityTrackBar.Value = confReader.GetValue("levelmeterSensitivity", 10);
+
             form2.PeakholdCheckBox.Checked = confReader.GetValue("peakhold", true);
             form2.AlwaysOnTopCheckBox.Checked = confReader.GetValue("alwaysOnTop", false);
             form2.SSaverCheckBox.Checked = confReader.GetValue("preventSSaver", true);
@@ -1541,8 +1552,8 @@ namespace SpeAnaLED
             form2.LeftFlipRadio.Checked = confReader.GetValue("flipLeft", false);
             form2.HideFreqCheckBox.Checked = confReader.GetValue("hideFreq", false);
             form2.HideTitleCheckBox.Checked = confReader.GetValue("hideTitle", false);
-            form2.AutoReloadCheckBox.Checked = confReader.GetValue("AutoReload", false);
-            form2.RefreshNormalRadioButton.Checked = confReader.GetValue("RefreshNormal", true);
+            form2.AutoReloadCheckBox.Checked = confReader.GetValue("autoReload", false);
+            form2.RefreshNormalRadioButton.Checked = confReader.GetValue("refreshNormal", true);
 
             if ((prisumChecked = confReader.GetValue("LED", true)) == false)
                 if ((classicChecked = confReader.GetValue("classic", false)) == false)
@@ -1609,7 +1620,6 @@ namespace SpeAnaLED
             form1Height = confReader.GetValue("form1Height", 192);
             form1Top = confReader.GetValue("form1Top", 130);
             form1Left = confReader.GetValue("form1Left", 130);
-            //isMaximized = confReader.GetValue("maximized", false);
             form2.Top = confReader.GetValue("form2Top", form1Top + form1Height + topPadding);
             form2.Left = confReader.GetValue("form2Left", form1Left);
 
@@ -1649,13 +1659,14 @@ namespace SpeAnaLED
             confWriter.AddValue("peakHoldTimeMsec", peakHoldTimeMsec);
             confWriter.AddValue("sensitivity", form2.SensitivityTrackBar.Value);
             confWriter.AddValue("peakholdDescentSpeed", form2.PeakholdDescentSpeedTrackBar.Value);
+            confWriter.AddValue("levelmeterSensitivity", form2.LevelSensitivityTrackBar.Value);
 
             confWriter.AddValue("peakhold", form2.PeakholdCheckBox.Checked);
             confWriter.AddValue("alwaysOnTop", form2.AlwaysOnTopCheckBox.Checked);
             confWriter.AddValue("preventSSaver", form2.SSaverCheckBox.Checked);
             confWriter.AddValue("hideFreq", form2.HideFreqCheckBox.Checked);
-            confWriter.AddValue("AutoReload", form2.AutoReloadCheckBox.Checked);
-            confWriter.AddValue("RefreshNormal", form2.RefreshNormalRadioButton.Checked);
+            confWriter.AddValue("autoReload", form2.AutoReloadCheckBox.Checked);
+            confWriter.AddValue("refreshNormal", form2.RefreshNormalRadioButton.Checked);
 
             confWriter.AddValue("LED", form2.PrisumRadio.Checked);
             confWriter.AddValue("classic", form2.ClassicRadio.Checked);

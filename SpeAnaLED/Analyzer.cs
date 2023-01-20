@@ -217,28 +217,20 @@ namespace SpeAnaLED
                 }
             }
 
-            //  fire draw event to form1
-            if (SpectrumChanged != null) SpectrumChanged(this, EventArgs.Empty);
-
-            _spectrumdata.Clear();
-
             // meter bar
             int l_temp, r_temp;
-            float multiplyer = 1.2f;
-
-            int level = BassWasapi.BASS_WASAPI_GetLevel();
-            l_temp = (int)(Math.Sqrt(Utils.LowWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13 * multiplyer);        // 0 - 390 (13LEDs * (24+6)px)
-            r_temp = (int)(Math.Sqrt(Utils.HighWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13 * multiplyer);       // 0 - 390
-
-            if (l_temp > 390 * multiplyer || r_temp > 390 * multiplyer) _level[0] = _level[1] = 0;
-            else
-            {
-                if (l_temp > 390) _level[0] = 390;
-                else _level[0] = l_temp;
-                if (r_temp > 390) _level[1] = 390;
-                else _level[1] = r_temp;
-            }
             
+            int level = BassWasapi.BASS_WASAPI_GetLevel();
+            l_temp = (int)(Math.Sqrt(Utils.LowWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);        // 0 - 390 (13LEDs * (24+6)px)
+            r_temp = (int)(Math.Sqrt(Utils.HighWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);       // 0 - 390
+
+            _level[0] = l_temp;
+            _level[1] = r_temp;
+
+            //  fire draw event to form1
+            if (SpectrumChanged != null) SpectrumChanged(this, EventArgs.Empty);
+            _spectrumdata.Clear();
+
             if (level == _lastlevel && level != 0) _hangcontrol++;
             _lastlevel = level;
 
