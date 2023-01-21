@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        private readonly string relText = "Rel." + "23012021";
+        private readonly string relText = "Rel." + "23012112";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -62,6 +62,7 @@ namespace SpeAnaLED
         private int form3Top, form3Left;                            // for load config
         private int form3Width, form3Height;                        // for load config to not call SizeChanged Event
         private bool form3Visible;
+        private bool inExiting = false;
         private readonly int[] meterPeakValue;
 
         private readonly float baseLabelFontSize = 8f;              // not constant for possibility of change in the future
@@ -726,6 +727,8 @@ namespace SpeAnaLED
                 {
                     form3 = new Form3(this, form2.HideTitleCheckBox.Checked) { Owner = this };
                     form3.Show(this);
+
+                    form3.Form3_Closed += Form3_Closed;
                 }
 
                 //form3.Width = form3Width + (form2.HideTitleCheckBox.Checked ? borderSize * 2 : 0) ;
@@ -775,10 +778,7 @@ namespace SpeAnaLED
 
         private void Form2_LevelSensitivityTrackBar_ValueChanged(object sender, EventArgs e)
         {
-            //if(!inInit)
-            //{
-                levelMeterSensitivity = form2.LevelSensitivityTrackBar.Value / 10f;
-            //}
+            levelMeterSensitivity = form2.LevelSensitivityTrackBar.Value / 10f;
         }
 
         private void Form2_NumberOfBarComboBox_SelectedItemChanged(object sender, EventArgs e)
@@ -1125,12 +1125,14 @@ namespace SpeAnaLED
 
         private void Form2_ExitAppButtonClicked(object sender, EventArgs e)
         {
+            inExiting = true;
             Application.Exit();
         }
 
         private void Form3_Closed(object sender, EventArgs e)
         {
-            form2.LevelMeterCheckBox.Checked = false;
+            if(!inExiting)
+                form2.LevelMeterCheckBox.Checked = false;
         }
 
         private void Analyzer_NumberOfChannelsChanged(object sender, EventArgs e)
@@ -1369,8 +1371,8 @@ namespace SpeAnaLED
                 form3.LevelPictureBox.Image = form3_canvas;
                 form3.LevelPictureBox.BringToFront();
 
-                form3.LeftValueLabel.Text = level[0].ToString("0");
-                form3.RightValueLabel.Text = level[1].ToString("0");
+                //form3.LeftValueLabel.Text = level[0].ToString("0");
+                //form3.RightValueLabel.Text = level[1].ToString("0");
             }
 
             if (peakCounter >= counterCycle)    // if peakhold=false, counter is used screen saver preventing, so add the counter
