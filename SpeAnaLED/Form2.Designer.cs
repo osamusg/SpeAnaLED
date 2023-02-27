@@ -707,6 +707,7 @@
             this.LevelSensitivityTextBox.Size = new System.Drawing.Size(43, 21);
             this.LevelSensitivityTextBox.TabIndex = 16;
             this.LevelSensitivityTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.LevelSensitivityTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LevelSensitivityTextBox_KeyDown);
             // 
             // Form2
             // 

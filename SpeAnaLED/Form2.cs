@@ -107,6 +107,25 @@ namespace SpeAnaLED
         {
             LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
         }
+
+        private void LevelSensitivityTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+            {
+                e.SuppressKeyPress = true;
+                try
+                {
+                    int LevelSensitivityChangeValue = Convert.ToInt16(float.Parse(LevelSensitivityTextBox.Text) * 10f);
+                    if (LevelSensitivityChangeValue >= 10 && LevelSensitivityChangeValue <= 20)
+                        LevelSensitivityTrackBar.Value = LevelSensitivityChangeValue;
+                    LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
+                }
+                catch
+                {
+                    LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
+                }
+            }
+        }
         
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
