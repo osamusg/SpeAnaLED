@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace SpeAnaLED
@@ -18,9 +17,10 @@ namespace SpeAnaLED
         private readonly string panelFontName = "Levenim MT Bold";
 
         // event handler (Fire)
-        public event EventHandler Form3_Closed;
+        public event FormClosedEventHandler Form_Closed;
+        public event MouseEventHandler PictureBox_MouseDown;
 
-        public Form3(Form1 parent,bool hidetitle)
+        public Form3(Form1 parent, bool hidetitle)
         {
             InitializeComponent();
 
@@ -46,9 +46,9 @@ namespace SpeAnaLED
             FormPictureBox.Size = new Size(ClientSize.Width, ClientSize.Height);
             Bitmap form3ClientCanvas = new Bitmap(baseClientWidth, baseClientHeight);
             Graphics g_client = Graphics.FromImage(form3ClientCanvas);
-            System.Drawing.Brush greenBrush = new SolidBrush(System.Drawing.Color.FromArgb(96, 194, 96));
-            System.Drawing.Brush redBrush = new SolidBrush(System.Drawing.Color.FromArgb(160, 0, 0));
-            g_client.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            Brush greenBrush = new SolidBrush(Color.FromArgb(96, 194, 96));
+            Brush redBrush = new SolidBrush(Color.FromArgb(160, 0, 0));
+            g_client.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             g_client.DrawString("-        -20   -15    -10    -7      -5     -3     -1", panelFont, greenBrush, 30, 24);
             g_client.DrawString("0     +1     +3     +5    +8", panelFont, redBrush, 276, 24);
             g_client.DrawString("L", panelFont, greenBrush, 10, 11);
@@ -62,7 +62,7 @@ namespace SpeAnaLED
             float infinityFontWidth = g_Infinity.MeasureString("8", new Font(panelFontName, 11f, FontStyle.Bold)).Width;
             g_Infinity.TranslateTransform(0, infinityFontWidth);
             g_Infinity.RotateTransform(-90f);
-            var brush = new SolidBrush(System.Drawing.Color.FromArgb(96, 194, 96));        //System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(255,144, 238, 144))
+            var brush = new SolidBrush(Color.FromArgb(96, 194, 96));
             g_Infinity.DrawString("8", new Font(panelFontName, 12f, FontStyle.Bold), brush, 0, 0);
             g_Infinity.Dispose();
 
@@ -84,13 +84,15 @@ namespace SpeAnaLED
         private void Form3_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (!myParent.Visible) myParent.Visible = true;
-            if (Form3_Closed != null) Form3_Closed(sender, e);
+            Form_Closed?.Invoke(sender, e);
         }
 
         private void LevelPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
                 mousePoint = new Point(e.X, e.Y);
+            else if (e.Button == MouseButtons.Right)
+                PictureBox_MouseDown?.Invoke(this, e);
             if (this.Cursor != Cursors.Default)
                 inFormSizeChange = true;
             else

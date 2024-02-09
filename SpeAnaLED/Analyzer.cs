@@ -7,8 +7,6 @@ using Un4seen.BassWasapi;
 
 namespace SpeAnaLED
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1005:デリゲート呼び出しを簡素化できます。", Justification = "<保留中>")]
-
     //
     // based on h0uri's Analyzer.cs (https://www.instructables.com/Audio-Spectrum-Software-C/) 
     //
@@ -140,10 +138,10 @@ namespace SpeAnaLED
 
                 Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
                 bool result = Bass.BASS_Init(0, _mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);   // "no sound" device for Bass.dll
-                if (!result) MessageBox.Show("Valid device not found.\r\n" +
+                if (!result) MessageBox.Show(
+                    "Valid device not found.\r\n" +
                     "(May be Device Power-SW off? or\r\n" +
                     "device not selected in Windows?)\r\n" +
-                    //"Please re-select valid device from \"setting\" dialog.\r\n" +
                     "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
                     "Valid Device Not Found - SpeAnaLED",
                     MessageBoxButtons.OK,
@@ -173,8 +171,6 @@ namespace SpeAnaLED
             int fftPos = 0;     // buffer data position
             int freqValue = 1;
 
-            //_level = new int[2];
-
             // computes the spectrum data, the code is taken from a bass_wasapi sample.
             for (bandX = 0; bandX < _lines; bandX++)
             {
@@ -190,11 +186,11 @@ namespace SpeAnaLED
                 {
                     if (freqValue > 4096 * _channel - _channel) freqValue = 4096 * _channel - _channel;     // truncate last data
                 }
-                else if (_mixfreq <= 88200)     // 88.2khz, 96khz
+                else if (_mixfreq <= 88200)     // 88.2khz
                 {
                     if (freqValue > 8192 * _channel - _channel) freqValue = 8192 * _channel - _channel;
                 }
-                else                            // 176.4khz, 192khz, 384khz and above?
+                else                            // 96khz, 176.4khz, 192khz, 384khz and above?
                 {
                     if (freqValue > 16384 * _channel - _channel) freqValue = 16384 * _channel - _channel;
                 }
@@ -218,17 +214,12 @@ namespace SpeAnaLED
             }
 
             // meter bar
-            int l_temp, r_temp;
-            
             int level = BassWasapi.BASS_WASAPI_GetLevel();
-            l_temp = (int)(Math.Sqrt(Utils.LowWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);        // 0 - 390 (13LEDs * (24+6)px)
-            r_temp = (int)(Math.Sqrt(Utils.HighWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);       // 0 - 390
-
-            _level[0] = l_temp;
-            _level[1] = r_temp;
+            _level[0] = (int)(Math.Sqrt(Utils.LowWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);        // 0 - 390 (13LEDs * (24+6)px)
+            _level[1] = (int)(Math.Sqrt(Utils.HighWord32(level) / (Int16.MaxValue / 2f) * _form3PictureBoxWidth) * 13);       // 0 - 390
 
             //  fire draw event to form1
-            if (SpectrumChanged != null) SpectrumChanged(this, EventArgs.Empty);
+            SpectrumChanged?.Invoke(this, EventArgs.Empty);
             _spectrumdata.Clear();
 
             if (level == _lastlevel && level != 0) _hangcontrol++;
@@ -305,7 +296,8 @@ namespace SpeAnaLED
             }
             if (_devicelist.Items.Count == 0) //throw new Exception("Device Serch Error");
             {
-                MessageBox.Show("No output device found.\r\n" +
+                MessageBox.Show(
+                    "No output device found.\r\n" +
                     "(May be Device Power-SW off? or)\r\n" +
                     "device not selected in Windows?)\r\n" +
                     "ERROR CODE: No Device(Enumerate)",
@@ -374,7 +366,8 @@ namespace SpeAnaLED
                 }
                 catch
                 {
-                    MessageBox.Show("No (saveed) output device found.\r\n" +
+                    MessageBox.Show(
+                        "No (saveed) output device found.\r\n" +
                         "(May be Device Power-SW off? or)\r\n" +
                         "device not selected in Windows?)\r\n" +
                         "ERROR CODE: No Device(Select Device)",
@@ -408,7 +401,7 @@ namespace SpeAnaLED
             Enable = true;
 
             // fire channel change event to form1
-            if (NumberOfChannelChanged != null) NumberOfChannelChanged(this, EventArgs.Empty);
+            NumberOfChannelChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void Form2_RefreshFastRadio_CheckCHanged(object sender, EventArgs e)
@@ -427,5 +420,6 @@ namespace SpeAnaLED
                 Bass.BASS_Free();
             }
         }
+
     }
 }

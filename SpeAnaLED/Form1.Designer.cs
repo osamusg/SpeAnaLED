@@ -71,6 +71,7 @@
             this.LabelCycle.Size = new System.Drawing.Size(41, 15);
             this.LabelCycle.TabIndex = 1;
             this.LabelCycle.Text = "label1";
+            this.LabelCycle.Visible = false;
             // 
             // Spectrum2
             // 
@@ -105,15 +106,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(789, 439);
+            this.Controls.Add(this.LabelCycle);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Spectrum2);
-            this.Controls.Add(this.LabelCycle);
             this.Controls.Add(this.Spectrum1);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
+            this.MinimumSize = new System.Drawing.Size(144, 64);
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);

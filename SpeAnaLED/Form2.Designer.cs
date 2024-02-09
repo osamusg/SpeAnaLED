@@ -38,6 +38,7 @@
             this.SimpleRadio = new System.Windows.Forms.RadioButton();
             this.RainbowRadio = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.RainbowFlipCheckBox = new System.Windows.Forms.CheckBox();
             this.EnumerateButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -49,7 +50,7 @@
             this.LabelMsec = new System.Windows.Forms.Label();
             this.PeakholdDescentSpeedTrackBar = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.PeakholdDescentSpeedLabel = new System.Windows.Forms.Label();
             this.PeakholdDescentSpeedTextBox = new System.Windows.Forms.TextBox();
             this.PeakholdCheckBox = new System.Windows.Forms.CheckBox();
             this.SSaverCheckBox = new System.Windows.Forms.CheckBox();
@@ -76,11 +77,18 @@
             this.LevelMeterCheckBox = new System.Windows.Forms.CheckBox();
             this.AutoReloadCheckBox = new System.Windows.Forms.CheckBox();
             this.RefreshModeGroupBox = new System.Windows.Forms.GroupBox();
-            this.RefreshFastRadioButton = new System.Windows.Forms.RadioButton();
-            this.RefreshNormalRadioButton = new System.Windows.Forms.RadioButton();
+            this.RefreshFastRadio = new System.Windows.Forms.RadioButton();
+            this.RefreshNormalRadio = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.LevelSensitivityTrackBar = new System.Windows.Forms.TrackBar();
             this.LevelSensitivityTextBox = new System.Windows.Forms.TextBox();
+            this.LevelStreamCheckBox = new System.Windows.Forms.CheckBox();
+            this.LevelStreamPanel = new System.Windows.Forms.Panel();
+            this.CombineStreamRadio = new System.Windows.Forms.RadioButton();
+            this.SeparateStreamRadio = new System.Windows.Forms.RadioButton();
+            this.StreamColorButton = new System.Windows.Forms.Button();
+            this.AlfaTextBox = new System.Windows.Forms.TextBox();
+            this.AlfaLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -92,6 +100,7 @@
             this.RefreshModeGroupBox.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LevelSensitivityTrackBar)).BeginInit();
+            this.LevelStreamPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // devicelist
@@ -106,7 +115,7 @@
             // CloseButton
             // 
             this.CloseButton.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CloseButton.Location = new System.Drawing.Point(567, 466);
+            this.CloseButton.Location = new System.Drawing.Point(567, 520);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
             this.CloseButton.TabIndex = 1;
@@ -118,7 +127,7 @@
             // 
             this.SensitivityTrackBar.AutoSize = false;
             this.SensitivityTrackBar.LargeChange = 10;
-            this.SensitivityTrackBar.Location = new System.Drawing.Point(6, 18);
+            this.SensitivityTrackBar.Location = new System.Drawing.Point(6, 29);
             this.SensitivityTrackBar.Maximum = 99;
             this.SensitivityTrackBar.Minimum = 10;
             this.SensitivityTrackBar.Name = "SensitivityTrackBar";
@@ -130,12 +139,13 @@
             // SensitivityTextBox
             // 
             this.SensitivityTextBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SensitivityTextBox.Location = new System.Drawing.Point(330, 14);
+            this.SensitivityTextBox.Location = new System.Drawing.Point(330, 26);
             this.SensitivityTextBox.Name = "SensitivityTextBox";
             this.SensitivityTextBox.Size = new System.Drawing.Size(43, 21);
             this.SensitivityTextBox.TabIndex = 16;
             this.SensitivityTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.SensitivityTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SensitivityTextBox_KeyDown);
+            this.SensitivityTextBox.Leave += new System.EventHandler(this.SensitivityTextBox_Leave);
             // 
             // ClassicRadio
             // 
@@ -187,6 +197,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.RainbowFlipCheckBox);
             this.groupBox1.Controls.Add(this.ClassicRadio);
             this.groupBox1.Controls.Add(this.RainbowRadio);
             this.groupBox1.Controls.Add(this.PrisumRadio);
@@ -194,10 +205,20 @@
             this.groupBox1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 54);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(185, 133);
+            this.groupBox1.Size = new System.Drawing.Size(185, 147);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Spectrum Style";
+            this.groupBox1.Text = "Spectrum Color Scheme";
+            // 
+            // RainbowFlipCheckBox
+            // 
+            this.RainbowFlipCheckBox.AutoSize = true;
+            this.RainbowFlipCheckBox.Location = new System.Drawing.Point(36, 117);
+            this.RainbowFlipCheckBox.Name = "RainbowFlipCheckBox";
+            this.RainbowFlipCheckBox.Size = new System.Drawing.Size(79, 19);
+            this.RainbowFlipCheckBox.TabIndex = 7;
+            this.RainbowFlipCheckBox.Text = "Flip Color";
+            this.RainbowFlipCheckBox.UseVisualStyleBackColor = true;
             // 
             // EnumerateButton
             // 
@@ -215,9 +236,9 @@
             this.groupBox2.Controls.Add(this.SensitivityTrackBar);
             this.groupBox2.Controls.Add(this.SensitivityTextBox);
             this.groupBox2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(12, 349);
+            this.groupBox2.Location = new System.Drawing.Point(15, 394);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(386, 45);
+            this.groupBox2.Size = new System.Drawing.Size(386, 59);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Spectrum Sensitivity (1.0 - 9.9)";
@@ -283,7 +304,7 @@
             "1000",
             "1500",
             "2000"});
-            this.PeakholdTimeComboBox.Location = new System.Drawing.Point(206, 21);
+            this.PeakholdTimeComboBox.Location = new System.Drawing.Point(197, 14);
             this.PeakholdTimeComboBox.Name = "PeakholdTimeComboBox";
             this.PeakholdTimeComboBox.Size = new System.Drawing.Size(58, 24);
             this.PeakholdTimeComboBox.TabIndex = 20;
@@ -292,7 +313,7 @@
             // 
             this.LabelPeakhold.AutoSize = true;
             this.LabelPeakhold.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelPeakhold.Location = new System.Drawing.Point(104, 25);
+            this.LabelPeakhold.Location = new System.Drawing.Point(95, 18);
             this.LabelPeakhold.Name = "LabelPeakhold";
             this.LabelPeakhold.Size = new System.Drawing.Size(96, 15);
             this.LabelPeakhold.TabIndex = 19;
@@ -302,7 +323,7 @@
             // 
             this.LabelMsec.AutoSize = true;
             this.LabelMsec.Font = new System.Drawing.Font("Arial", 9F);
-            this.LabelMsec.Location = new System.Drawing.Point(270, 25);
+            this.LabelMsec.Location = new System.Drawing.Point(261, 18);
             this.LabelMsec.Name = "LabelMsec";
             this.LabelMsec.Size = new System.Drawing.Size(41, 15);
             this.LabelMsec.TabIndex = 20;
@@ -312,7 +333,7 @@
             // 
             this.PeakholdDescentSpeedTrackBar.AutoSize = false;
             this.PeakholdDescentSpeedTrackBar.LargeChange = 4;
-            this.PeakholdDescentSpeedTrackBar.Location = new System.Drawing.Point(6, 68);
+            this.PeakholdDescentSpeedTrackBar.Location = new System.Drawing.Point(6, 69);
             this.PeakholdDescentSpeedTrackBar.Maximum = 20;
             this.PeakholdDescentSpeedTrackBar.Minimum = 4;
             this.PeakholdDescentSpeedTrackBar.Name = "PeakholdDescentSpeedTrackBar";
@@ -325,7 +346,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Controls.Add(this.PeakholdDescentSpeedLabel);
             this.groupBox3.Controls.Add(this.PeakholdDescentSpeedTextBox);
             this.groupBox3.Controls.Add(this.PeakholdDescentSpeedTrackBar);
             this.groupBox3.Controls.Add(this.PeakholdCheckBox);
@@ -333,40 +354,41 @@
             this.groupBox3.Controls.Add(this.LabelPeakhold);
             this.groupBox3.Controls.Add(this.LabelMsec);
             this.groupBox3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(12, 246);
+            this.groupBox3.Location = new System.Drawing.Point(12, 283);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(386, 97);
+            this.groupBox3.Size = new System.Drawing.Size(390, 103);
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Spectrum Peakhold";
             // 
-            // label4
+            // PeakholdDescentSpeedLabel
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 50);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(134, 15);
-            this.label4.TabIndex = 21;
-            this.label4.Text = "Descent Speed (4 - 20)";
+            this.PeakholdDescentSpeedLabel.AutoSize = true;
+            this.PeakholdDescentSpeedLabel.Location = new System.Drawing.Point(6, 40);
+            this.PeakholdDescentSpeedLabel.Name = "PeakholdDescentSpeedLabel";
+            this.PeakholdDescentSpeedLabel.Size = new System.Drawing.Size(134, 15);
+            this.PeakholdDescentSpeedLabel.TabIndex = 21;
+            this.PeakholdDescentSpeedLabel.Text = "Descent Speed (4 - 20)";
             // 
             // PeakholdDescentSpeedTextBox
             // 
-            this.PeakholdDescentSpeedTextBox.Location = new System.Drawing.Point(330, 64);
+            this.PeakholdDescentSpeedTextBox.Location = new System.Drawing.Point(333, 66);
             this.PeakholdDescentSpeedTextBox.Name = "PeakholdDescentSpeedTextBox";
             this.PeakholdDescentSpeedTextBox.Size = new System.Drawing.Size(43, 21);
             this.PeakholdDescentSpeedTextBox.TabIndex = 23;
             this.PeakholdDescentSpeedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.PeakholdDescentSpeedTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PeakholdDescentSpeedTextBox_KeyDown);
+            this.PeakholdDescentSpeedTextBox.Leave += new System.EventHandler(this.PeakholdDescentSpeedTextBox_Leave);
             // 
             // PeakholdCheckBox
             // 
             this.PeakholdCheckBox.AutoSize = true;
             this.PeakholdCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PeakholdCheckBox.Location = new System.Drawing.Point(17, 24);
+            this.PeakholdCheckBox.Location = new System.Drawing.Point(17, 18);
             this.PeakholdCheckBox.Name = "PeakholdCheckBox";
-            this.PeakholdCheckBox.Size = new System.Drawing.Size(72, 19);
+            this.PeakholdCheckBox.Size = new System.Drawing.Size(65, 19);
             this.PeakholdCheckBox.TabIndex = 18;
-            this.PeakholdCheckBox.Text = "Enabled";
+            this.PeakholdCheckBox.Text = "Enable";
             this.PeakholdCheckBox.UseVisualStyleBackColor = true;
             // 
             // SSaverCheckBox
@@ -488,7 +510,7 @@
             this.groupBox5.Size = new System.Drawing.Size(220, 228);
             this.groupBox5.TabIndex = 32;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Number of Channels";
+            this.groupBox5.Text = "Number of Channels (Spectrum)";
             // 
             // StereoRadio
             // 
@@ -517,7 +539,7 @@
             // 
             this.ShowCounterCheckBox.AutoSize = true;
             this.ShowCounterCheckBox.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ShowCounterCheckBox.Location = new System.Drawing.Point(29, 481);
+            this.ShowCounterCheckBox.Location = new System.Drawing.Point(21, 528);
             this.ShowCounterCheckBox.Name = "ShowCounterCheckBox";
             this.ShowCounterCheckBox.Size = new System.Drawing.Size(137, 18);
             this.ShowCounterCheckBox.TabIndex = 49;
@@ -552,7 +574,7 @@
             // 
             this.LinkLabel1.AutoSize = true;
             this.LinkLabel1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LinkLabel1.Location = new System.Drawing.Point(172, 474);
+            this.LinkLabel1.Location = new System.Drawing.Point(172, 528);
             this.LinkLabel1.Name = "LinkLabel1";
             this.LinkLabel1.Size = new System.Drawing.Size(230, 15);
             this.LinkLabel1.TabIndex = 36;
@@ -597,7 +619,7 @@
             // 
             this.RelLabel.AutoSize = true;
             this.RelLabel.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RelLabel.Location = new System.Drawing.Point(408, 474);
+            this.RelLabel.Location = new System.Drawing.Point(408, 528);
             this.RelLabel.Name = "RelLabel";
             this.RelLabel.Size = new System.Drawing.Size(29, 15);
             this.RelLabel.TabIndex = 54;
@@ -640,48 +662,48 @@
             // 
             // RefreshModeGroupBox
             // 
-            this.RefreshModeGroupBox.Controls.Add(this.RefreshFastRadioButton);
-            this.RefreshModeGroupBox.Controls.Add(this.RefreshNormalRadioButton);
+            this.RefreshModeGroupBox.Controls.Add(this.RefreshFastRadio);
+            this.RefreshModeGroupBox.Controls.Add(this.RefreshNormalRadio);
             this.RefreshModeGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RefreshModeGroupBox.Location = new System.Drawing.Point(12, 194);
+            this.RefreshModeGroupBox.Location = new System.Drawing.Point(12, 207);
             this.RefreshModeGroupBox.Name = "RefreshModeGroupBox";
-            this.RefreshModeGroupBox.Size = new System.Drawing.Size(182, 49);
+            this.RefreshModeGroupBox.Size = new System.Drawing.Size(185, 49);
             this.RefreshModeGroupBox.TabIndex = 58;
             this.RefreshModeGroupBox.TabStop = false;
             this.RefreshModeGroupBox.Text = "Refresh Mode";
             // 
-            // RefreshFastRadioButton
+            // RefreshFastRadio
             // 
-            this.RefreshFastRadioButton.AutoSize = true;
-            this.RefreshFastRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RefreshFastRadioButton.Location = new System.Drawing.Point(89, 20);
-            this.RefreshFastRadioButton.Name = "RefreshFastRadioButton";
-            this.RefreshFastRadioButton.Size = new System.Drawing.Size(82, 19);
-            this.RefreshFastRadioButton.TabIndex = 1;
-            this.RefreshFastRadioButton.TabStop = true;
-            this.RefreshFastRadioButton.Text = "More Busy";
-            this.RefreshFastRadioButton.UseVisualStyleBackColor = true;
+            this.RefreshFastRadio.AutoSize = true;
+            this.RefreshFastRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RefreshFastRadio.Location = new System.Drawing.Point(89, 20);
+            this.RefreshFastRadio.Name = "RefreshFastRadio";
+            this.RefreshFastRadio.Size = new System.Drawing.Size(82, 19);
+            this.RefreshFastRadio.TabIndex = 1;
+            this.RefreshFastRadio.TabStop = true;
+            this.RefreshFastRadio.Text = "More Busy";
+            this.RefreshFastRadio.UseVisualStyleBackColor = true;
             // 
-            // RefreshNormalRadioButton
+            // RefreshNormalRadio
             // 
-            this.RefreshNormalRadioButton.AutoSize = true;
-            this.RefreshNormalRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RefreshNormalRadioButton.Location = new System.Drawing.Point(17, 20);
-            this.RefreshNormalRadioButton.Name = "RefreshNormalRadioButton";
-            this.RefreshNormalRadioButton.Size = new System.Drawing.Size(66, 19);
-            this.RefreshNormalRadioButton.TabIndex = 0;
-            this.RefreshNormalRadioButton.TabStop = true;
-            this.RefreshNormalRadioButton.Text = "Normal";
-            this.RefreshNormalRadioButton.UseVisualStyleBackColor = true;
+            this.RefreshNormalRadio.AutoSize = true;
+            this.RefreshNormalRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RefreshNormalRadio.Location = new System.Drawing.Point(17, 20);
+            this.RefreshNormalRadio.Name = "RefreshNormalRadio";
+            this.RefreshNormalRadio.Size = new System.Drawing.Size(66, 19);
+            this.RefreshNormalRadio.TabIndex = 0;
+            this.RefreshNormalRadio.TabStop = true;
+            this.RefreshNormalRadio.Text = "Normal";
+            this.RefreshNormalRadio.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.LevelSensitivityTrackBar);
             this.groupBox4.Controls.Add(this.LevelSensitivityTextBox);
             this.groupBox4.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox4.Location = new System.Drawing.Point(12, 400);
+            this.groupBox4.Location = new System.Drawing.Point(16, 459);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(386, 45);
+            this.groupBox4.Size = new System.Drawing.Size(386, 56);
             this.groupBox4.TabIndex = 59;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Level Meter Sensitivity (1.0 - 2.0)";
@@ -690,7 +712,7 @@
             // 
             this.LevelSensitivityTrackBar.AutoSize = false;
             this.LevelSensitivityTrackBar.LargeChange = 2;
-            this.LevelSensitivityTrackBar.Location = new System.Drawing.Point(6, 18);
+            this.LevelSensitivityTrackBar.Location = new System.Drawing.Point(6, 29);
             this.LevelSensitivityTrackBar.Maximum = 20;
             this.LevelSensitivityTrackBar.Minimum = 10;
             this.LevelSensitivityTrackBar.Name = "LevelSensitivityTrackBar";
@@ -702,19 +724,98 @@
             // LevelSensitivityTextBox
             // 
             this.LevelSensitivityTextBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LevelSensitivityTextBox.Location = new System.Drawing.Point(330, 14);
+            this.LevelSensitivityTextBox.Location = new System.Drawing.Point(330, 26);
             this.LevelSensitivityTextBox.Name = "LevelSensitivityTextBox";
             this.LevelSensitivityTextBox.Size = new System.Drawing.Size(43, 21);
             this.LevelSensitivityTextBox.TabIndex = 16;
             this.LevelSensitivityTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.LevelSensitivityTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LevelSensitivityTextBox_KeyDown);
+            this.LevelSensitivityTextBox.Leave += new System.EventHandler(this.LevelSensitivityTextBox_Leave);
+            // 
+            // LevelStreamCheckBox
+            // 
+            this.LevelStreamCheckBox.AutoSize = true;
+            this.LevelStreamCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LevelStreamCheckBox.Location = new System.Drawing.Point(206, 216);
+            this.LevelStreamCheckBox.Name = "LevelStreamCheckBox";
+            this.LevelStreamCheckBox.Size = new System.Drawing.Size(98, 19);
+            this.LevelStreamCheckBox.TabIndex = 60;
+            this.LevelStreamCheckBox.Text = "Level Stream";
+            this.LevelStreamCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // LevelStreamPanel
+            // 
+            this.LevelStreamPanel.Controls.Add(this.CombineStreamRadio);
+            this.LevelStreamPanel.Controls.Add(this.SeparateStreamRadio);
+            this.LevelStreamPanel.Location = new System.Drawing.Point(217, 232);
+            this.LevelStreamPanel.Name = "LevelStreamPanel";
+            this.LevelStreamPanel.Size = new System.Drawing.Size(179, 22);
+            this.LevelStreamPanel.TabIndex = 61;
+            // 
+            // CombineStreamRadio
+            // 
+            this.CombineStreamRadio.AutoSize = true;
+            this.CombineStreamRadio.Font = new System.Drawing.Font("Arial", 8F);
+            this.CombineStreamRadio.Location = new System.Drawing.Point(78, 1);
+            this.CombineStreamRadio.Name = "CombineStreamRadio";
+            this.CombineStreamRadio.Size = new System.Drawing.Size(66, 18);
+            this.CombineStreamRadio.TabIndex = 1;
+            this.CombineStreamRadio.Text = "Combine";
+            this.CombineStreamRadio.UseVisualStyleBackColor = true;
+            // 
+            // SeparateStreamRadio
+            // 
+            this.SeparateStreamRadio.AutoSize = true;
+            this.SeparateStreamRadio.Font = new System.Drawing.Font("Arial", 8F);
+            this.SeparateStreamRadio.Location = new System.Drawing.Point(4, 1);
+            this.SeparateStreamRadio.Name = "SeparateStreamRadio";
+            this.SeparateStreamRadio.Size = new System.Drawing.Size(69, 18);
+            this.SeparateStreamRadio.TabIndex = 0;
+            this.SeparateStreamRadio.Text = "Separate";
+            this.SeparateStreamRadio.UseVisualStyleBackColor = true;
+            // 
+            // StreamColorButton
+            // 
+            this.StreamColorButton.Font = new System.Drawing.Font("Arial", 8F);
+            this.StreamColorButton.Location = new System.Drawing.Point(221, 252);
+            this.StreamColorButton.Name = "StreamColorButton";
+            this.StreamColorButton.Size = new System.Drawing.Size(65, 19);
+            this.StreamColorButton.TabIndex = 62;
+            this.StreamColorButton.Text = "Fore Color";
+            this.StreamColorButton.UseVisualStyleBackColor = true;
+            // 
+            // AlfaTextBox
+            // 
+            this.AlfaTextBox.Font = new System.Drawing.Font("Arial", 8F);
+            this.AlfaTextBox.Location = new System.Drawing.Point(365, 252);
+            this.AlfaTextBox.Name = "AlfaTextBox";
+            this.AlfaTextBox.Size = new System.Drawing.Size(37, 20);
+            this.AlfaTextBox.TabIndex = 63;
+            this.AlfaTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.AlfaTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AlfaTextBox_KeyDown);
+            this.AlfaTextBox.Leave += new System.EventHandler(this.AlfaTextBox_Leave);
+            // 
+            // AlfaLabel
+            // 
+            this.AlfaLabel.AutoSize = true;
+            this.AlfaLabel.Font = new System.Drawing.Font("Arial", 8F);
+            this.AlfaLabel.Location = new System.Drawing.Point(292, 254);
+            this.AlfaLabel.Name = "AlfaLabel";
+            this.AlfaLabel.Size = new System.Drawing.Size(72, 14);
+            this.AlfaLabel.TabIndex = 64;
+            this.AlfaLabel.Text = "Alfa (0 - 255)";
             // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(668, 535);
+            this.ClientSize = new System.Drawing.Size(668, 590);
             this.ControlBox = false;
+            this.Controls.Add(this.AlfaLabel);
+            this.Controls.Add(this.AlfaTextBox);
+            this.Controls.Add(this.StreamColorButton);
+            this.Controls.Add(this.LevelStreamPanel);
+            this.Controls.Add(this.LevelStreamCheckBox);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.RefreshModeGroupBox);
             this.Controls.Add(this.AutoReloadCheckBox);
@@ -748,7 +849,7 @@
             this.MinimizeBox = false;
             this.Name = "Form2";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Setting - SpeAnaLED";
+            this.Text = "Config - SpeAnaLED";
             this.DoubleClick += new System.EventHandler(this.Form2_DoubleClick);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form2_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).EndInit();
@@ -770,6 +871,8 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LevelSensitivityTrackBar)).EndInit();
+            this.LevelStreamPanel.ResumeLayout(false);
+            this.LevelStreamPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -813,7 +916,6 @@
         protected internal System.Windows.Forms.LinkLabel LinkLabel1;
         protected internal System.Windows.Forms.CheckBox HideTitleCheckBox;
         protected internal System.Windows.Forms.Button ExitAppButton;
-        private System.Windows.Forms.Label label4;
         protected internal System.Windows.Forms.GroupBox ChannelLayoutGroup;
         protected internal System.Windows.Forms.Button DeviceResetButton;
         protected internal System.Windows.Forms.Label FrequencyLabel;
@@ -823,10 +925,19 @@
         protected internal System.Windows.Forms.CheckBox LevelMeterCheckBox;
         protected internal System.Windows.Forms.CheckBox AutoReloadCheckBox;
         private System.Windows.Forms.GroupBox RefreshModeGroupBox;
-        protected internal System.Windows.Forms.RadioButton RefreshFastRadioButton;
-        protected internal System.Windows.Forms.RadioButton RefreshNormalRadioButton;
+        protected internal System.Windows.Forms.RadioButton RefreshFastRadio;
+        protected internal System.Windows.Forms.RadioButton RefreshNormalRadio;
         private System.Windows.Forms.GroupBox groupBox4;
         protected internal System.Windows.Forms.TrackBar LevelSensitivityTrackBar;
         protected internal System.Windows.Forms.TextBox LevelSensitivityTextBox;
+        protected internal System.Windows.Forms.CheckBox LevelStreamCheckBox;
+        protected internal System.Windows.Forms.RadioButton CombineStreamRadio;
+        protected internal System.Windows.Forms.RadioButton SeparateStreamRadio;
+        protected internal System.Windows.Forms.Button StreamColorButton;
+        protected internal System.Windows.Forms.CheckBox RainbowFlipCheckBox;
+        protected internal System.Windows.Forms.Panel LevelStreamPanel;
+        protected internal System.Windows.Forms.TextBox AlfaTextBox;
+        protected internal System.Windows.Forms.Label AlfaLabel;
+        protected internal System.Windows.Forms.Label PeakholdDescentSpeedLabel;
     }
 }

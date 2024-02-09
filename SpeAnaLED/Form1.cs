@@ -22,15 +22,16 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        private readonly string relText = "Rel." + "23012112";
+        private readonly string relText = "Rel." + "24020915";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
+        private Form4 form4 = null;
         private int form1Top, form1Left;                    // for load config
         private int form1Width, form1Height;                // for load config to not call SizeChanged Event
         private string devices;                             // for load config. conf can't store arrays length unknown
         public int numberOfBar;
-        private int channel;
+        public int channel;
         private readonly Bitmap[] canvas;
         private readonly Bitmap form3_canvas;
         private int canvasWidth;
@@ -42,6 +43,7 @@ namespace SpeAnaLED
         public readonly Pen form3_bgPen;
         private LinearGradientBrush brush;
         private int endPointX, endPointY;                  // default gradient direction, from upward to downward
+        private bool rainbowFlip;
         private readonly Label[] freqLabel_Left, freqLabel_Right;
         private int counterCycle;
         private int[] peakValue;
@@ -59,11 +61,6 @@ namespace SpeAnaLED
         private Point mousePoint = new Point(0, 0);
         public static int deviceNumber;
         public static bool UNICODE;
-        private int form3Top, form3Left;                            // for load config
-        private int form3Width, form3Height;                        // for load config to not call SizeChanged Event
-        private bool form3Visible;
-        private bool inExiting = false;
-        private readonly int[] meterPeakValue;
 
         private readonly float baseLabelFontSize = 8f;              // not constant for possibility of change in the future
         private float labelFontSize;
@@ -81,6 +78,28 @@ namespace SpeAnaLED
         private float spectrumWidthScale;
         //private float spectrumHeightScale;
 
+        private bool form2Separate;
+        private bool form2Combine;
+
+        private int form3Top, form3Left;                            // for load config
+        private int form3Width, form3Height;                        // for load config to not call SizeChanged Event
+        private bool form3Visible;
+        private readonly int[] meterPeakValue;
+
+        // form4
+        private int form4Top, form4Left;                            // for load config
+        private int form4Width, form4Height;                        // for load config to not call SizeChanged Event
+        private bool form4Visible;
+        private Bitmap previousBitmap = new Bitmap(1, 1);
+        public int[] streamBaseLine = { 0, 0 };
+        public int streamCombineMode;                               // combine:1 separate:2
+        private int streamScrollUnit = 1;                           // 1 2 4?, For test
+        private int streamChannelSpacing = 0;
+        private float pow;
+        private Pen streamPen = new Pen(new SolidBrush(Color.FromArgb(192, 0, 255, 255)), 1f);
+        private Color streamColor = Color.FromArgb(192, 0, 255, 255);
+        private int streamColorAlfa;
+
         // constants
         private const int maxNumberOfBar = 16;
         private const float penWidth = (float)30;
@@ -88,6 +107,7 @@ namespace SpeAnaLED
         private const int baseSpectrumWidth = 650;
         private const int baseSpectrumHeight = 129;
         private const int cycleMultiplyer = 50;
+        private const int maxChannel = 2;
 
         // color settings
         //
@@ -126,16 +146,21 @@ namespace SpeAnaLED
             }
             catch
             {
-                MessageBox.Show("Opps! Config file seems something wrong...\r\n" +
-                    "Delete config file and use default parameters.",
+                MessageBox.Show(
+                    "Opps! Config file seems something wrong...\r\n" +
+                    "Backup config file and use default parameters.\r\n" +
+                    "When exiting the application,\r\n" +
+                    "new config file will be created.",
                     "Config file error - " + ProductName,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
-                System.IO.File.Delete(configFileName);
+                if (File.Exists(configFileName + @".bad")) File.Delete(configFileName + @".\bad");
+                File.Move(configFileName, configFileName + @".bad");
                 LoadConfigParams();
             }
 
-            form3 = new Form3(this, form2.HideFreqCheckBox.Checked) { Owner = this };
+            form3 = new Form3(this, form2.HideTitleCheckBox.Checked) { Owner = this };
+            form4 = new Form4(this, form2.HideTitleCheckBox.Checked) { Owner = this };
 
             // before analizer birth...
             string[] deviceItems = devices.Split(',');
@@ -150,7 +175,7 @@ namespace SpeAnaLED
                 form2.NumberOfBarComboBox,
                 form2.MonoRadio,
                 form2.FrequencyLabel,
-                form2.RefreshFastRadioButton
+                form2.RefreshFastRadio
                 );
 
             if (devices == null || devices == string.Empty)
@@ -178,23 +203,35 @@ namespace SpeAnaLED
             form2.RainbowRadio.CheckedChanged += Form2_RainbowRadio_CheckChanged;
             form2.NumberOfBarComboBox.SelectedIndexChanged += Form2_NumberOfBarComboBox_SelectedItemChanged;
             form2.PeakholdTimeComboBox.SelectedIndexChanged += Form2_PeakholdTimeComboBox_SelectedItemChanged;
-            form2.SSaverCheckBox.CheckedChanged += Form2_SSaverCheckboxCheckedChanged;
-            form2.PeakholdCheckBox.CheckedChanged += Form2_PeakholdCheckboxCheckedChanged;
-            form2.AlwaysOnTopCheckBox.CheckedChanged += Form2_AlwaysOnTopCheckboxCheckChanged;
-            form2.VerticalRadio.CheckedChanged += Form2_V_H_RadioCheckChanged;      // V/H dual use
-            form2.HorizontalRadio.CheckedChanged += Form2_V_H_RadioCheckChanged;    // V/H dual use
-            form2.ShowCounterCheckBox.CheckedChanged += Form2_ShowCounterCheckBoxCheckChanged;
-            form2.RightFlipRadio.CheckedChanged += Form2_FlipSideRadioCheckChanged; // L/R dual use
-            form2.LeftFlipRadio.CheckedChanged += Form2_FlipSideRadioCheckChanged;  // L/R dual use
-            form2.NoFlipRadio.CheckedChanged += Form2_FlipSideRadioCheckChanged;
-            form2.HideFreqCheckBox.CheckedChanged += Form2_HideFreqCheckBoxCheckChanged;
-            form2.HideTitleCheckBox.CheckedChanged += Form2_HideTitleCheckBoxCheckChanged;
-            form2.ExitAppButton.Click += Form2_ExitAppButtonClicked;
+            form2.SSaverCheckBox.CheckedChanged += Form2_SSaverCheckbox_CheckedChanged;
+            form2.PeakholdCheckBox.CheckedChanged += Form2_PeakholdCheckbox_CheckedChanged;
+            form2.AlwaysOnTopCheckBox.CheckedChanged += Form2_AlwaysOnTopCheckbox_CheckChanged;
+            form2.VerticalRadio.CheckedChanged += Form2_V_H_Radio_CheckChanged;      // V/H dual use
+            form2.HorizontalRadio.CheckedChanged += Form2_V_H_Radio_CheckChanged;    // V/H dual use
+            form2.ShowCounterCheckBox.CheckedChanged += Form2_ShowCounterCheckBox_CheckChanged;
+            form2.RightFlipRadio.CheckedChanged += Form2_FlipSideRadio_CheckChanged; // L/R dual use
+            form2.LeftFlipRadio.CheckedChanged += Form2_FlipSideRadio_CheckChanged;  // L/R dual use
+            form2.NoFlipRadio.CheckedChanged += Form2_FlipSideRadio_CheckChanged;
+            form2.HideFreqCheckBox.CheckedChanged += Form2_HideFreqCheckBox_CheckChanged;
+            form2.HideTitleCheckBox.CheckedChanged += Form2_HideTitleCheckBox_CheckChanged;
+            form2.ExitAppButton.Click += Form2_ExitAppButton_Click;
             form2.ClearSpectrum += ClearSpectrum;
-            form2.HideSpectrumWindowCheckBox.CheckedChanged += Form2_HideSpectrumWindowCheckChanged;
-            form2.LevelMeterCheckBox.CheckedChanged += Form2_LevelMeterCheckBoxCheckChanged;
+            form2.HideSpectrumWindowCheckBox.CheckedChanged += Form2_HideSpectrumWindow_CheckChanged;
+            form2.LevelMeterCheckBox.CheckedChanged += Form2_LevelMeterCheckBox_CheckChanged;
+            form2.LevelStreamCheckBox.CheckedChanged += Form2_LevelStreamCheckBox_CheckChanged;
+            form2.SeparateStreamRadio.CheckedChanged += Form2_SeparateStreamCheckBox_CheckChanged;
+            form2.CombineStreamRadio.CheckedChanged += Form2_CombineStreamCheckBox_CheckChanged;
+            form2.StreamColorButton.Click += Form2_StreamColorButton_Click;
+            form2.AlfaChannelChanged += Form2_AlfaChannelChanged;
+            form2.RainbowFlipCheckBox.CheckedChanged += Form2_RainbowFlipCheckBox_CheckChanged;
+            form2.Form_DoubleClick += Form2_Form_DoubleClick;
 
-            form3.Form3_Closed += Form3_Closed;
+            form3.Form_Closed += Form3_Closed;
+            form3.PictureBox_MouseDown += Spectrum1_MouseDown;
+
+            form4.Form_SizeChanged += Form4_Form_SizeChanged;
+            form4.Form_Closed += Form4_Closed;
+            form4.PictureBox_MouseDown += Spectrum1_MouseDown;
 
             // Other Event handler (subscribe)
             analyzer.SpectrumChanged += Analyzer_ReceiveSpectrumData;
@@ -209,11 +246,11 @@ namespace SpeAnaLED
             canvasWidth = barLeftPadding + numberOfBar * ((int)penWidth + barSpacing) - (barLeftPadding - barSpacing);  // Calculate size per number of bars to enlarge
             borderSize = defaultBorderSize =(this.Width - this.ClientSize.Width) / 2;
             titleHeight = defaultTitleHeight =this.Height - this.ClientSize.Height - borderSize * 2;
-            canvas = new Bitmap[channel];
+            canvas = new Bitmap[maxChannel];
             freqLabel_Left = new Label[maxNumberOfBar];
             freqLabel_Right = new Label[maxNumberOfBar];
-            peakValue = new int[maxNumberOfBar * channel];
-            meterPeakValue = new int[channel];
+            peakValue = new int[maxNumberOfBar * maxChannel];
+            meterPeakValue = new int[maxChannel];
             endPointX = 0;
             endPointY = baseSpectrumHeight;
             bgPen = new Pen(Color.FromArgb(29, 29, 29), penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
@@ -232,11 +269,29 @@ namespace SpeAnaLED
             form2.SensitivityTextBox.Text = (form2.SensitivityTrackBar.Value / 10f).ToString("0.0");
             form2.PeakholdDescentSpeedTextBox.Text = form2.PeakholdDescentSpeedTrackBar.Value.ToString();
             form2.LevelSensitivityTextBox.Text = (form2.LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
-            if (form3Visible) form2.LevelMeterCheckBox.Checked = true;
-            if (!form2.RefreshNormalRadioButton.Checked) form2.RefreshFastRadioButton.Checked = true;
+            if (!form2.RefreshNormalRadio.Checked) form2.RefreshFastRadio.Checked = true;
             if (!form2.PeakholdCheckBox.Checked) form2.LabelPeakhold.Enabled = form2.LabelMsec.Enabled = form2.PeakholdTimeComboBox.Enabled = false;
             if (form2.VerticalRadio.Checked) form2.FlipGroup.Enabled = false;
             if (channel < 2) form2.ChannelLayoutGroup.Enabled = false;
+            form2.SeparateStreamRadio.Checked = form2Separate;
+            form2.CombineStreamRadio.Checked = form2Combine;
+            form2.AlfaTextBox.Text = (form2.currentAlfaChannel = streamColorAlfa = streamColor.A).ToString();
+            if (form3Visible)
+            {
+                form2.HideSpectrumWindowCheckBox.Enabled = true;
+                //form2.HideSpectrumWindowCheckBox.Visible = true;
+                form2.LevelMeterCheckBox.Checked = true;
+            }
+            if (form4Visible)
+                form2.LevelStreamCheckBox.Checked = true;
+            //if (!form4Visible || channel < maxChannel)        // mono does not affect stream
+            else
+            {
+                form2.LevelStreamPanel.Enabled = false;
+                form2.StreamColorButton.Enabled = false;
+                form2.AlfaLabel.Enabled = false;
+                form2.AlfaTextBox.Enabled = false;
+            }
 
             // form3 settings
             form3.Width = form3Width - (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0);
@@ -253,11 +308,29 @@ namespace SpeAnaLED
                 form3.FormBorderStyle = FormBorderStyle.None;
             else
                 form3.FormBorderStyle = FormBorderStyle.SizableToolWindow;
-            if (form3Visible)
+            
+            // form4 settings
+            form4.Width = form4Width - (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0);
+            form4.Height = form4Height - (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0);
+            form4.Top = form4Top;
+            form4.Left = form4Left;
+            for (int i = 0; i < streamCombineMode; i++)
+            {
+                streamBaseLine[i] = (form4.StreamPictureBox.Height - streamChannelSpacing) / maxChannel / streamCombineMode;
+                streamBaseLine[i] = streamBaseLine[i] * ((i + 1) * 2 - 1) + streamChannelSpacing * i;
+            }
+            if (form2.HideTitleCheckBox.Checked)
+                form4.FormBorderStyle = FormBorderStyle.None;
+            else
+            form4.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            form4.Visible = form4Visible;
+            if (form4Visible)
             {
                 form2.HideSpectrumWindowCheckBox.Enabled = true;
                 form2.HideSpectrumWindowCheckBox.Visible = true;
             }
+            streamPen = new Pen(new SolidBrush(streamColor), 1f);
+            streamColorAlfa = streamColor.A;
 
             // from form2
             sensitivity = form2.SensitivityTrackBar.Value / 10f;
@@ -283,6 +356,7 @@ namespace SpeAnaLED
                 positions = prisumPositions[numberOfBar];
                 endPointX = 0;
                 endPointY = canvas[0].Height;
+                form2.RainbowFlipCheckBox.Enabled = false;
             }
             else if ((form2.ClassicRadio.Checked = classicChecked) == true)
             {
@@ -290,6 +364,7 @@ namespace SpeAnaLED
                 positions = classicPositions;
                 endPointX = 0;
                 endPointY = canvas[0].Height;
+                form2.RainbowFlipCheckBox.Enabled = false;
             }
             else if ((form2.SimpleRadio.Checked = simpleChecked) == true)
             {
@@ -297,6 +372,7 @@ namespace SpeAnaLED
                 positions = simplePositions;
                 endPointX = 0;
                 endPointY = canvas[0].Height;
+                form2.RainbowFlipCheckBox.Enabled = false;
             }
             else
             {
@@ -305,15 +381,26 @@ namespace SpeAnaLED
                 positions = prisumPositions[numberOfBar];               // need for color position adjust
                 endPointX = barLeftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - barSpacing;    // Horizontal
                 endPointY = 0;
+                form2.RainbowFlipCheckBox.Enabled = true;
             }
             // set Gradient color pen
             if (!form2.RainbowRadio.Checked)
-                brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
-                { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
-            else
+                if (!rainbowFlip)
+                {
+                    brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
+                    { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                }
+                else
+                {
+                    brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
+                    { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                }
+                else
                 brush = new LinearGradientBrush(new Point(endPointX, endPointY), new Point(0, 0), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                 { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
             myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+            form2.RainbowFlipCheckBox.Checked = rainbowFlip;
+
 
             form3_GreenPen = new Pen(Color.FromArgb(144, 144, 238, 144), 8f) { DashPattern = new float[] { 3f, 0.75f } };    // 8*3=24, 8*0.75=6
             form3_RedPen = new Pen(Color.FromArgb(144, 255, 0, 0), 8f) { DashPattern = new float[] { 3f, 0.75f } };
@@ -600,9 +687,9 @@ namespace SpeAnaLED
         {
             if (e.Button == MouseButtons.Right && !form2.Visible)
                 form2.Show(this);
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left && sender == Spectrum1)
                 mousePoint = new Point(e.X, e.Y);
-            if (this.Cursor != Cursors.Default)
+            if (this.Cursor != Cursors.Default && sender == Spectrum1)
                 inFormSizeChange = true;
             else
                 inFormSizeChange = false;
@@ -709,47 +796,21 @@ namespace SpeAnaLED
                 inFormSizeChange = false;
         }
         
-        private void Form2_FormDoubleClicked(object sender, EventArgs e)
+        private void Form2_Form_DoubleClick(object sender, EventArgs e)
         {
-            if (form3.Visible)
+            DialogResult result = MessageBox.Show(
+                "Save config file?",
+                "Save config file",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Question
+                );
+            if (result == DialogResult.OK)
             {
-                form3.Visible = false;
-                form2.HideSpectrumWindowCheckBox.Enabled = false;
-                form2.HideSpectrumWindowCheckBox.Visible = false;
-            }
-            else
-            {
-                try
-                {
-                    form3.Show(this);
-                }
-                catch
-                {
-                    form3 = new Form3(this, form2.HideTitleCheckBox.Checked) { Owner = this };
-                    form3.Show(this);
-
-                    form3.Form3_Closed += Form3_Closed;
-                }
-
-                //form3.Width = form3Width + (form2.HideTitleCheckBox.Checked ? borderSize * 2 : 0) ;
-                //form3.Height = form3Height + (form2.HideTitleCheckBox.Checked ? titleHeight + borderSize * 2 : 0);
-                form3.Top = form3Top;
-                form3.Left = form3Left;
-                form3.LevelPictureBox.Width = form3.ClientSize.Width;
-                form3.LevelPictureBox.Height = form3.ClientSize.Height;
-                form3.LevelPictureBox.Left = 0;
-                form3.LevelPictureBox.Top = 0;
-                if (form2.HideTitleCheckBox.Checked)
-                    form3.FormBorderStyle = FormBorderStyle.None;
-                else
-                    form3.FormBorderStyle = FormBorderStyle.SizableToolWindow;
-
-                form2.HideSpectrumWindowCheckBox.Enabled = true;
-                form2.HideSpectrumWindowCheckBox.Visible = true;
+                SaveConfigParams();
             }
         }
 
-        private void Form2_HideSpectrumWindowCheckChanged(object sender, EventArgs e)
+        private void Form2_HideSpectrumWindow_CheckChanged(object sender, EventArgs e)
         {
             if (form2.HideSpectrumWindowCheckBox.Checked && form3.Visible)
             {
@@ -829,6 +890,7 @@ namespace SpeAnaLED
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                     { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
                 myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+                form2.RainbowFlipCheckBox.Enabled = false;
             }
         }
 
@@ -843,6 +905,7 @@ namespace SpeAnaLED
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                     { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
                 myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+                form2.RainbowFlipCheckBox.Enabled = false;
             }
         }
 
@@ -857,6 +920,7 @@ namespace SpeAnaLED
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                     { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
                 myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+                form2.RainbowFlipCheckBox.Enabled = false;
             }
         }
 
@@ -868,39 +932,50 @@ namespace SpeAnaLED
                 positions = prisumPositions[numberOfBar];       // need for color position adjustment
                 endPointX = barLeftPadding + numberOfBar * ((int)bgPen.Width + barSpacing) - barSpacing;        // Horizontal
                 endPointY = 0;
-                brush = new LinearGradientBrush(new Point(endPointX, endPointY), new Point(0, 0), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
+                if (!rainbowFlip)
+                {
+                    brush = new LinearGradientBrush(new Point(endPointX, endPointY), new Point(0, 0), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                     { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                }
+                else
+                {
+                    brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
+                    { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                }
                 myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+                form2.RainbowFlipCheckBox.Enabled = true;
             }
         }
 
-        private void Form2_SSaverCheckboxCheckedChanged(object sender, EventArgs e)
+        private void Form2_SSaverCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             // Do nothing here, flag is checked by timer.
         }
 
-        private void Form2_PeakholdCheckboxCheckedChanged(object sender, EventArgs e)
+        private void Form2_PeakholdCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (form2.PeakholdCheckBox.Checked)
                 form2.PeakholdTimeComboBox.Enabled =
                 form2.LabelPeakhold.Enabled =
                 form2.LabelMsec.Enabled =
+                form2.PeakholdDescentSpeedLabel.Enabled =
                 form2.PeakholdDescentSpeedTrackBar.Enabled =
                 form2.PeakholdDescentSpeedTextBox.Enabled = true;
             else
                 form2.PeakholdTimeComboBox.Enabled =
                 form2.LabelPeakhold.Enabled =
                 form2.LabelMsec.Enabled =
+                form2.PeakholdDescentSpeedLabel.Enabled =
                 form2.PeakholdDescentSpeedTrackBar.Enabled =
                 form2.PeakholdDescentSpeedTextBox.Enabled = false;
         }
 
-        private void Form2_AlwaysOnTopCheckboxCheckChanged(object sender, EventArgs e)
+        private void Form2_AlwaysOnTopCheckbox_CheckChanged(object sender, EventArgs e)
         {
             if (!inInit) TopMost = !TopMost;
         }
 
-        private void Form2_V_H_RadioCheckChanged(object sender, EventArgs e)                    // V/H dual use
+        private void Form2_V_H_Radio_CheckChanged(object sender, EventArgs e)                    // V/H dual use
         {
             // Only resizing of the H and V forms and drawing of the freq. labels are handled here.
             // This will not call SetSpectrumLayout. Because it's hard to align that sizes of Spectrum will not change.
@@ -992,7 +1067,7 @@ namespace SpeAnaLED
             inLayout = false;
         }
 
-        private void Form2_FlipSideRadioCheckChanged(object sender, EventArgs e)                // L/R dual use
+        private void Form2_FlipSideRadio_CheckChanged(object sender, EventArgs e)                // L/R dual use
         {
             if (!inInit)
             {
@@ -1028,7 +1103,7 @@ namespace SpeAnaLED
             }
         }
 
-        private void Form2_HideFreqCheckBoxCheckChanged(object sender, EventArgs e)
+        private void Form2_HideFreqCheckBox_CheckChanged(object sender, EventArgs e)
         {
             inLayout = true;
             if (form2.HideFreqCheckBox.Checked)
@@ -1043,37 +1118,52 @@ namespace SpeAnaLED
             inLayout = false;
         }
 
-        private void Form2_HideTitleCheckBoxCheckChanged(object sender, EventArgs e)
+        private void Form2_HideTitleCheckBox_CheckChanged(object sender, EventArgs e)
         {
             inLayout = true;
+            inInit = true;
             if (form2.HideTitleCheckBox.Checked)
             {
                 this.FormBorderStyle = FormBorderStyle.None;
                 form3.FormBorderStyle = FormBorderStyle.None;
-                this.Top +=  titleHeight + borderSize;
+                form4.FormBorderStyle = FormBorderStyle.None;
+                titleHeight = defaultTitleHeight;
+                borderSize = defaultBorderSize;
+
+                this.Top += titleHeight + borderSize;
                 this.Left += borderSize;
                 form3.Top += titleHeight + borderSize;
                 form3.Left += borderSize;
-                borderSize = 0;
-                titleHeight = 0;
+                form4.Top += titleHeight + borderSize;
+                form4.Left += borderSize;
+
                 form2.ExitAppButton.Enabled = true;
+
+                titleHeight = 0;
+                borderSize = 0;
             }
             else
             {
                 this.FormBorderStyle = FormBorderStyle.Sizable;
                 form3.FormBorderStyle = FormBorderStyle.SizableToolWindow;
-                borderSize = (this.Width - this.ClientSize.Width) / 2;
-                titleHeight = this.Height - this.ClientSize.Height - borderSize * 2;
+                form4.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+                titleHeight = defaultTitleHeight;
+                borderSize = defaultBorderSize;
+
                 this.Top -= titleHeight + borderSize;
                 this.Left -= borderSize;
                 form3.Top -= titleHeight + borderSize;
                 form3.Left -= borderSize;
+                form4.Top -= titleHeight + borderSize;
+                form4.Left -= borderSize;
+
                 form2.ExitAppButton.Enabled = false;
             }
+            inInit = false;
             inLayout = false;
         }
 
-        private void Form2_ShowCounterCheckBoxCheckChanged(object sender, EventArgs e)
+        private void Form2_ShowCounterCheckBox_CheckChanged(object sender, EventArgs e)
         {
             if (!inInit)
             {
@@ -1084,20 +1174,19 @@ namespace SpeAnaLED
             }
         }
 
-        private void Form2_LevelMeterCheckBoxCheckChanged(object sender, EventArgs e)
+        private void Form2_LevelMeterCheckBox_CheckChanged(object sender, EventArgs e)
         {
             if (form2.LevelMeterCheckBox.Checked)
             {
                 try
                 {
-                    form3.Show(this);
+                    form3.Visible = form3Visible = true;
                 }
                 catch
                 {
-                    form3 = new Form3(this, form2.HideTitleCheckBox.Checked) { Owner = this };
-                    form3.Show(this);
-
-                    form3.Form3_Closed += Form3_Closed;
+                    form3 = new Form3(this, form2.HideTitleCheckBox.Checked) { Owner = this, Visible = form3Visible = true };
+                    
+                    form3.Form_Closed += Form3_Closed;
                 }
 
                 if (form2.HideTitleCheckBox.Checked)
@@ -1107,38 +1196,163 @@ namespace SpeAnaLED
 
                 form3.Width = form3Width - (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0);
                 form3.Height = form3Height - (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0);
-                form3.Top = form3Top;
-                form3.Left = form3Left;
-                form3.LevelPictureBox.Width = form3.ClientSize.Width;
-                form3.LevelPictureBox.Height = form3.ClientSize.Height;
-                form3.LevelPictureBox.Left = 0;
+                form3.Top = form3Top - (form2.HideTitleCheckBox.Checked ? 0 : titleHeight + borderSize);// * 2);    I don't know why.
+                form3.Left = form3Left - (form2.HideTitleCheckBox.Checked ? 0 : borderSize);// * 2);
+                form3.LevelPictureBox.Size = form3.ClientSize;
                 form3.LevelPictureBox.Top = 0;
+                form3.LevelPictureBox.Left = 0;
+
                 form2.HideSpectrumWindowCheckBox.Enabled = true;
                 form3Visible= true;
             }
             else
             {
-                form3.Visible = form3Visible = false;
                 form2.HideSpectrumWindowCheckBox.Enabled = false;
+                form3.Visible = form3Visible = false;
             }
         }
 
-        private void Form2_ExitAppButtonClicked(object sender, EventArgs e)
+        private void Form2_LevelStreamCheckBox_CheckChanged(object sender, EventArgs e)
         {
-            inExiting = true;
+            if (form2.LevelStreamCheckBox.Checked)
+            {
+                inInit = true;
+                try
+                {
+                    form4.Visible = form4Visible = true;
+                }
+                catch
+                {
+                    form4 = new Form4(this, form2.HideTitleCheckBox.Checked) { Owner = this, Visible = form4Visible = true };
+                    previousBitmap = new Bitmap(form4.StreamPictureBox.Width, form4.StreamPictureBox.Height);
+                    
+                    form4.Form_SizeChanged += Form4_Form_SizeChanged;
+                    form4.Form_Closed += Form4_Closed;
+                }
+                
+                if (form2.HideTitleCheckBox.Checked)
+                    form4.FormBorderStyle = FormBorderStyle.None;
+                else
+                    form4.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+
+                inInit = false;
+
+                form4.Width = form4Width - (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0);
+                form4.Height = form4Height - (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0);
+                form4.Top = form4Top - (form2.HideTitleCheckBox.Checked ? 0 : titleHeight + borderSize);// * 2);    I don't know why.
+                form4.Left = form4Left - (form2.HideTitleCheckBox.Checked ? 0 : borderSize);// * 2);
+                form4.StreamPictureBox.Size = form4.ClientSize;
+                form4.StreamPictureBox.Top = 0;
+                form4.StreamPictureBox.Left = 0;
+
+                form2.LevelStreamPanel.Enabled = true;
+                form2.StreamColorButton.Enabled = true;
+                form2.AlfaTextBox.Enabled = true;
+                form2.AlfaLabel.Enabled = true;
+                form4Visible = true;
+            }
+            else
+            {
+                form2.LevelStreamPanel.Enabled = false;
+                form2.StreamColorButton.Enabled = false;
+                form2.AlfaTextBox.Enabled = false;
+                form2.AlfaLabel.Enabled = false;
+                form4.Visible = form4Visible = false;
+            }
+        }
+
+        private void Form2_SeparateStreamCheckBox_CheckChanged(object sender, EventArgs e)
+        {
+            streamCombineMode = form2.SeparateStreamRadio.Checked ? 2 : 1;
+            Form4_Form_SizeChanged(sender, e);
+        }
+
+        private void Form2_CombineStreamCheckBox_CheckChanged(object sender, EventArgs e)
+        {
+            streamCombineMode = form2.CombineStreamRadio.Checked ? 1 : 2;
+            Form4_Form_SizeChanged(sender, e);
+        }
+
+        private void Form2_StreamColorButton_Click(object sender, EventArgs e)
+        {
+            ColorDialog cd = new ColorDialog
+            {
+                AnyColor = true,
+                FullOpen = false,
+                ShowHelp = false,
+                SolidColorOnly = false,
+            };
+            if (cd.ShowDialog() == DialogResult.OK)
+            {
+                streamColor = Color.FromArgb(streamColorAlfa, cd.Color);
+                streamPen = new Pen(new SolidBrush(streamColor), 1f);
+            }
+        }
+
+        private void Form2_AlfaChannelChanged(object sender, EventArgs e)
+        {
+            streamColorAlfa = form2.currentAlfaChannel;
+            streamColor = Color.FromArgb(streamColorAlfa, streamColor.R, streamColor.G, streamColor.B);
+            streamPen = new Pen(new SolidBrush(streamColor), 1f);
+        }
+
+        private void Form2_RainbowFlipCheckBox_CheckChanged(object sender, EventArgs e)
+        {
+            if (!form2.RainbowFlipCheckBox.Checked)     // Blue -> Red
+            {
+                brush = new LinearGradientBrush(new Point(endPointX, endPointY), new Point(0, 0), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
+                { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+                rainbowFlip = false;
+            }
+            else                                        // Red -> Blue
+            {
+                brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
+                { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
+                myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
+                rainbowFlip = true;
+            }
+        }
+
+        private void Form2_ExitAppButton_Click(object sender, EventArgs e)
+        {
             Application.Exit();
         }
 
-        private void Form3_Closed(object sender, EventArgs e)
+        private void Form3_Closed(object sender, FormClosedEventArgs e)
         {
-            if(!inExiting)
+            if (e.CloseReason == CloseReason.UserClosing)
                 form2.LevelMeterCheckBox.Checked = false;
+        }
+
+        private void Form4_Closed(object sender, FormClosedEventArgs e)
+        {
+            if(e.CloseReason == CloseReason.UserClosing)
+                form2.LevelStreamCheckBox.Checked = false;
+        }
+
+        private void Form4_Form_SizeChanged(object sender, EventArgs e)
+        {
+            if (inInit) return;
+            form4.StreamPictureBox.Top = form4.StreamPictureBox.Left = 0;
+            if (form4 != null)
+            {
+                form4.StreamPictureBox.Size = new Size(form4.ClientSize.Width, form4.ClientSize.Height);
+                //if (channel < maxChannel) streamCombineMode = 1;
+                //else streamCombineMode = form2.CombineStreamRadio.Checked ? 1 : 2;
+            }
+            for (int i = 0; i < streamCombineMode; i++)
+            {
+                streamBaseLine[i] = (form4.StreamPictureBox.Height - streamChannelSpacing) / maxChannel / streamCombineMode;
+                streamBaseLine[i] = streamBaseLine[i] * ((i + 1) * 2 - 1) + (streamChannelSpacing + 1) * i;
+            }
+            previousBitmap = new Bitmap(form4.StreamPictureBox.Width, form4.StreamPictureBox.Height);
         }
 
         private void Analyzer_NumberOfChannelsChanged(object sender, EventArgs e)
         {
-            inInit = true;
             inLayout= true;
+            inInit = true;
             
             // reset parameters
             channel = analyzer._channel;
@@ -1147,6 +1361,8 @@ namespace SpeAnaLED
             peakHoldDescentCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;       // Inverse the value so that the direction of
             for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(Spectrum1.Width, Spectrum1.Height);        //  speed and value increase/decrease match.
             for (int i = 0; i < analyzer._spectrumdata.Count; i++) analyzer._spectrumdata[i] = 0x00;
+
+            inInit = false;
 
             if (channel < 2)                        // Case in change to Mono
             {
@@ -1157,10 +1373,20 @@ namespace SpeAnaLED
                 flipRight = RotateFlipType.RotateNoneFlipNone;
                 LocateFrequencyLabel(Spectrum1, freqLabel_Left, isFlip: false);
                 form2.ChannelLayoutGroup.Enabled = false;
+                /*if (form4.Visible)
+                {
+                    form2.LevelStreamPanel.Enabled = false;
+                    if (form2.SeparateStreamRadio.Checked) Form4_Form_SizeChanged(sender, EventArgs.Empty);
+                }*/
             }
             else                                    // cases in change to Stereo 
             {
                 form2.ChannelLayoutGroup.Enabled = true;
+                /*if (form4.Visible)
+                {
+                    form2.LevelStreamPanel.Enabled = true;
+                    if (form2.SeparateStreamRadio.Checked) Form4_Form_SizeChanged(sender, EventArgs.Empty);
+                }*/
             }
 
             if (!form2.HideFreqCheckBox.Checked)    // cases in require labels
@@ -1244,8 +1470,10 @@ namespace SpeAnaLED
             int dash = (int)(penWidth * bgPen.DashPattern[0]);
             int dashBG = (int)(penWidth * bgPen.DashPattern[1]);
             int dashUnit = dash + dashBG;
-            var g = new Graphics[channel];
-            int[] level = new int[channel];
+            var g = new Graphics[maxChannel];
+            int[] level = new int[maxChannel];
+
+            //  ** "Mono" means spectrum picturebox display only.  Level meter and level stream are always displayed stereo. **
 
             for (int i = 0; i < channel; i++) g[i] = Graphics.FromImage(canvas[i]);
             
@@ -1290,7 +1518,8 @@ namespace SpeAnaLED
             for (int i = 0; i < channel; i++) g[i].Dispose();
 
             canvas[0].RotateFlip(flipRight);    // Right (I don't know why.)
-            canvas[1].RotateFlip(flipLeft);     // Left, May be there is no canvas[1] in "MONO"
+            if (channel > 1)
+                canvas[1].RotateFlip(flipLeft); // Left, May be there is no canvas[1] in "MONO"
 
             if (channel > 1)                    // not mono
             {
@@ -1312,12 +1541,16 @@ namespace SpeAnaLED
                 int leftBarTop = 20;
                 int rightChPadding = 26;
                 int redzone = 240;
-                for (int i = 0; i < channel; i++)
+
+                level[0] = (int)((analyzer._level[0] * levelMeterSensitivity + 1) / dottedline) * dottedline;       // analyzer input point and calculate bounds
+                level[1] = (int)((analyzer._level[1] * levelMeterSensitivity + 1) / dottedline) * dottedline;
+                //if (channel < 2) level[0] = level[1] = Math.Max(level[0], level[1]);                                // case in Mono
+
+                for (int i = 0; i < maxChannel; i++)
                 {
-                    level[i] = (int)((analyzer._level[i] * levelMeterSensitivity + 1) / dottedline) * dottedline;       // analyzer input point and calculate bounds
                     if (level[i] > 390) level[i] = 390;
                     
-                    form3_g.DrawLine(form3_bgPen, leftPadding, leftBarTop + i * rightChPadding, form3_canvas.Width - rightPadding, leftBarTop + i * rightChPadding);  // 38= 42 - 8 / 2
+                    form3_g.DrawLine(form3_bgPen, leftPadding, leftBarTop + i * rightChPadding, form3_canvas.Width - rightPadding, leftBarTop + i * rightChPadding);  // 38=42-8/2
                     if (level[i] >= redzone)
                     {
                         form3_g.DrawLine(form3_GreenPen, leftPadding, leftBarTop + i * rightChPadding, redzone - 1 + leftPadding, leftBarTop + i * rightChPadding);
@@ -1326,43 +1559,20 @@ namespace SpeAnaLED
                     else
                         form3_g.DrawLine(form3_GreenPen, leftPadding, leftBarTop + i * rightChPadding, level[i] + leftPadding, leftBarTop + i * rightChPadding);
 
-                    if (channel < 2)    // mono
+                    /////// Level Meter Peakhold (always shown)
+                    if (level[i] == 0)
                     {
-                        form3_g.DrawLine(form3_bgPen, leftPadding, leftBarTop + rightChPadding, form3_canvas.Width - rightPadding, leftBarTop + rightChPadding);
-                        if (level[0] >= redzone)
-                        {
-                            form3_g.DrawLine(form3_GreenPen, leftPadding, leftBarTop + rightChPadding, redzone - 1 + leftPadding, leftBarTop + rightChPadding);
-                            form3_g.DrawLine(form3_RedPen, redzone + leftPadding, leftBarTop + rightChPadding, level[0] + leftPadding, leftBarTop + rightChPadding);
-                        }
-                        else
-                            form3_g.DrawLine(form3_GreenPen, leftPadding, leftBarTop + rightChPadding, level[0] + leftPadding, leftBarTop + rightChPadding);
+                        peakValue[i] = -solidline;
                     }
-
-                    /////// Meter Peakhold
-                    if (form2.PeakholdCheckBox.Checked)
+                    else
                     {
-                        if (level[i] == 0)
-                        {
-                            peakValue[i] = -solidline;
-                        }
-                        else
+                        if (peakCounter * 16 > counterCycle)
                         {
                             if (meterPeakValue[i] < level[i]) { meterPeakValue[i] = level[i]; }
-                            if (peakCounter * 16 > counterCycle)
-                            {
-                                if (meterPeakValue[i] >= redzone + solidline)
-                                    form3_g.DrawLine(form3_RedPen, meterPeakValue[i], leftBarTop + i * rightChPadding, meterPeakValue[i] + solidline, leftBarTop + i * rightChPadding);   // 0-23, 30-53, 60-83... left=right-23
-                                else
-                                    form3_g.DrawLine(form3_GreenPen, meterPeakValue[i], leftBarTop + i * rightChPadding, meterPeakValue[i] + solidline, leftBarTop + i * rightChPadding);
-
-                                if (channel < 2)    // mono
-                                {
-                                    if (meterPeakValue[0] >= redzone + solidline)
-                                        form3_g.DrawLine(form3_RedPen, meterPeakValue[0], leftBarTop + rightChPadding, meterPeakValue[0] + solidline, leftBarTop + rightChPadding);
-                                    else
-                                        form3_g.DrawLine(form3_GreenPen, meterPeakValue[0], leftBarTop + rightChPadding, meterPeakValue[0] + solidline, leftBarTop + rightChPadding);
-                                }
-                            }
+                            if (meterPeakValue[i] >= redzone + solidline)
+                                form3_g.DrawLine(form3_RedPen, meterPeakValue[i], leftBarTop + i * rightChPadding, meterPeakValue[i] + solidline, leftBarTop + i * rightChPadding);   // 0-23, 30-53, 60-83... left=right-23
+                            else
+                                form3_g.DrawLine(form3_GreenPen, meterPeakValue[i], leftBarTop + i * rightChPadding, meterPeakValue[i] + solidline, leftBarTop + i * rightChPadding);
                         }
                     }
                 }
@@ -1371,16 +1581,53 @@ namespace SpeAnaLED
                 form3.LevelPictureBox.Image = form3_canvas;
                 form3.LevelPictureBox.BringToFront();
 
-                //form3.LeftValueLabel.Text = level[0].ToString("0");
-                //form3.RightValueLabel.Text = level[1].ToString("0");
+                //form3.LeftValueLabel.Text = meterPeakValue[0].ToString("0");
+                //form3.RightValueLabel.Text = meterPeakValue[1].ToString("0");
             }
+
+            ////// form4 level stream
+            if (form4.Visible)
+            {
+                var streamCanvas = new Bitmap(form4.StreamPictureBox.Width, form4.StreamPictureBox.Height);
+                var g_stream = Graphics.FromImage(streamCanvas);
+                g_stream.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                int drawPointX = form4.StreamPictureBox.Width - 1;
+
+                Rectangle srcRect = new Rectangle(streamScrollUnit, 0, drawPointX - (streamScrollUnit - 2), streamCanvas.Height);
+                Rectangle destRect = new Rectangle(0, 0, drawPointX - (streamScrollUnit - 2), streamCanvas.Height);
+                g_stream.DrawImage(previousBitmap, destRect, srcRect, GraphicsUnit.Pixel);
+
+                int[] streamLevel = new int[maxChannel];
+                float streamLevelL  = (float)(Math.Pow(analyzer._level[0], pow) / Math.Pow(390, pow - 1));  // power-ing
+                float streamLevelR = (float)(Math.Pow(analyzer._level[1], pow) / Math.Pow(390, pow - 1));
+                streamLevel[0] = (int)(streamLevelL * (streamBaseLine[0] + 1) / 390);                       //analyzer._level = 0 -390
+                streamLevel[1] = (int)(streamLevelR * (streamBaseLine[0] + 1) / 390);                       //analyzer._level = 0 -390, value calcurated from same point as left ch.
+
+                //if (channel < 2) streamLevel[0] = streamLevel[1] = Math.Max(streamLevel[0], streamLevel[1]);    // case in Mono
+
+                if (streamCombineMode == 2)
+                {
+                    g_stream.DrawLine(streamPen, drawPointX, streamBaseLine[0] + streamLevel[0], drawPointX, streamBaseLine[0] - streamLevel[0]);
+                    g_stream.DrawLine(streamPen, drawPointX, streamBaseLine[1] + streamLevel[1], drawPointX, streamBaseLine[1] - streamLevel[1]);
+
+                }
+                else
+                {
+                    g_stream.DrawLine(streamPen, drawPointX, streamBaseLine[0] - streamLevel[0], drawPointX, streamBaseLine[0]);
+                    g_stream.DrawLine(streamPen, drawPointX, streamBaseLine[0] + streamLevel[1] + streamChannelSpacing, drawPointX, streamBaseLine[0] + streamChannelSpacing);
+                }
+
+                form4.StreamPictureBox.Image = previousBitmap = streamCanvas;
+                
+            }
+
 
             if (peakCounter >= counterCycle)    // if peakhold=false, counter is used screen saver preventing, so add the counter
             {
                 peakCounter = 0;                // reset when the specified number of rounds
 
                 for (int i = 0; i < numberOfBar * channel; i++) peakValue[i] = (int)(analyzer._spectrumdata[i] / sensitivityRatio);     // reset peak also
-                for (int i = 0; i < channel; i++) meterPeakValue[i] = level[i];
+                for (int i = 0; i < maxChannel; i++) meterPeakValue[i] = level[i];                                                      // right level peak is always shown
                 
                 displayOffCounter++;
             }
@@ -1425,7 +1672,7 @@ namespace SpeAnaLED
             if (!inInit && form3.Visible)
             {
                 var form3_g = new Graphics[2];
-                for (int i = 0; i < channel; i++)
+                for (int i = 0; i < maxChannel; i++)
                 {
                     form3_g[0] = Graphics.FromImage(form3_canvas);
                     form3_g[0].DrawLine(form3_bgPen, 30, 20+i*26, form3_canvas.Width-16, 20+i*26);
@@ -1516,9 +1763,12 @@ namespace SpeAnaLED
             }
             catch
             {
-                MessageBox.Show("No Config file was found.\r\n" +
+                MessageBox.Show(
+                    "No Config file was found.\r\n" +
                     "Use default Parameters.\r\n" +
-                    "Please enumerate devices from \"Setting\" dialog.",
+                    "Please enumerate devices from \"Config\" dialog.\r\n" +
+                    "When exiting the application,\r\n" +
+                    "Config file will be created automatically.",
                     "Config file not found - " + ProductName,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -1555,7 +1805,10 @@ namespace SpeAnaLED
             form2.HideFreqCheckBox.Checked = confReader.GetValue("hideFreq", false);
             form2.HideTitleCheckBox.Checked = confReader.GetValue("hideTitle", false);
             form2.AutoReloadCheckBox.Checked = confReader.GetValue("autoReload", false);
-            form2.RefreshNormalRadioButton.Checked = confReader.GetValue("refreshNormal", true);
+            form2.RefreshNormalRadio.Checked = confReader.GetValue("refreshNormal", true);
+            form2Separate = confReader.GetValue("separateStream", true);
+            form2Combine = confReader.GetValue("combineStream", false);
+
 
             if ((prisumChecked = confReader.GetValue("LED", true)) == false)
                 if ((classicChecked = confReader.GetValue("classic", false)) == false)
@@ -1585,6 +1838,8 @@ namespace SpeAnaLED
             }
             ARGB = confReader.GetValue("bgPenColor", "255,29,29,29").Split(',');
             bgPen.Color = Color.FromArgb(int.Parse(ARGB[0]), int.Parse(ARGB[1]), int.Parse(ARGB[2]), int.Parse(ARGB[3]));
+            ARGB = confReader.GetValue("streamColor", "192, 0, 255, 255").Split(',');
+            streamColor = Color.FromArgb(int.Parse(ARGB[0]), int.Parse(ARGB[1]), int.Parse(ARGB[2]), int.Parse(ARGB[3]));
 
             int[] bars = { 1, 2, 4, 8, 16 };
             string[][] param = new string[maxNumberOfBar + 1][];
@@ -1618,26 +1873,39 @@ namespace SpeAnaLED
                 pos++;
             }
 
-            form1Width = confReader.GetValue("form1Width", 640);            // When Vertical. Otherwise, resize automatically later
-            form1Height = confReader.GetValue("form1Height", 192);
+            rainbowFlip = confReader.GetValue("rainbowFlip", false);
+            streamScrollUnit = confReader.GetValue("streamScrollUnit", 1);
+
             form1Top = confReader.GetValue("form1Top", 130);
             form1Left = confReader.GetValue("form1Left", 130);
+            form1Width = confReader.GetValue("form1Width", 640);            // When Vertical. Otherwise, resize automatically later
+            form1Height = confReader.GetValue("form1Height", 192);
             form2.Top = confReader.GetValue("form2Top", form1Top + form1Height + topPadding);
             form2.Left = confReader.GetValue("form2Left", form1Left);
 
             form3Width = confReader.GetValue("form3Width", 446);
             form3Height = confReader.GetValue("form3Height", 102);
-            form3Top = confReader.GetValue("form3Top", form1Top);
-            form3Left = confReader.GetValue("form3Left", form1Left + form1Width + leftPadding);
+            form3Top = confReader.GetValue("form3Top", form1Top + 30);                  // adjusted
+            form3Left = confReader.GetValue("form3Left", form1Left + form1Width + 48);  // adjusted
             form3Visible = confReader.GetValue("form3Visible", false);
-            
 
-            UNICODE = confReader.GetValue("unicode", true);                 // add "unicode=false" in conf file cause codepage change to ANSI
+            form4Width = confReader.GetValue("form4Width", 640);
+            form4Height = confReader.GetValue("form4Height", 120);
+            form4Top = confReader.GetValue("form4Top", form3Top + form3Height + bottomPadding);
+            form4Left = confReader.GetValue("form4Left", form3Left);
+            form4Visible = confReader.GetValue("form4Visible", false);
+            streamScrollUnit = confReader.GetValue("streamScrollUnit", 1);
+            streamChannelSpacing = confReader.GetValue("streamChannelSpacing", 0);
+            pow = confReader.GetValue("streamPower", 1.4f);
+
+
+            UNICODE = confReader.GetValue("unicode", true);                 // In conf file, add "unicode=false" cause codepage change to ANSI
         }
 
         private bool SaveConfigParams()
         {
             var confWriter = new ConfigWriter();
+            confWriter.AddValue("ver.", relText);
             confWriter.AddValue("numberOfBar", numberOfBar);
             confWriter.AddValue("deviceNumber", analyzer._devicenumber);
 
@@ -1668,8 +1936,7 @@ namespace SpeAnaLED
             confWriter.AddValue("preventSSaver", form2.SSaverCheckBox.Checked);
             confWriter.AddValue("hideFreq", form2.HideFreqCheckBox.Checked);
             confWriter.AddValue("autoReload", form2.AutoReloadCheckBox.Checked);
-            confWriter.AddValue("refreshNormal", form2.RefreshNormalRadioButton.Checked);
-
+            confWriter.AddValue("refreshNormal", form2.RefreshNormalRadio.Checked);
             confWriter.AddValue("LED", form2.PrisumRadio.Checked);
             confWriter.AddValue("classic", form2.ClassicRadio.Checked);
             confWriter.AddValue("simple", form2.SimpleRadio.Checked);
@@ -1682,6 +1949,8 @@ namespace SpeAnaLED
             confWriter.AddValue("hideTitle", form2.HideTitleCheckBox.Checked);
             confWriter.AddValue("mono", form2.MonoRadio.Checked);
             confWriter.AddValue("stereo", form2.StereoRadio.Checked);
+            confWriter.AddValue("separateStream", form2.SeparateStreamRadio.Checked);
+            confWriter.AddValue("combineStream", form2.CombineStreamRadio.Checked);
 
             string strColors = "";
             for (int i = 0; i < classicColors.Length; i++)
@@ -1740,6 +2009,15 @@ namespace SpeAnaLED
             strSimplePosition = strSimplePosition.Trim(',');
             confWriter.AddValue("simplePosition", strSimplePosition);
 
+            confWriter.AddValue("rainbowFlip", rainbowFlip);
+            confWriter.AddValue("streamScroll", streamScrollUnit);
+
+            strColors = Convert.ToInt16(streamColor.A).ToString() + "," +
+                    Convert.ToInt16(streamColor.R).ToString() + "," +
+                    Convert.ToInt16(streamColor.G).ToString() + "," +
+                    Convert.ToInt16(streamColor.B).ToString();
+            confWriter.AddValue("streamColor", strColors);
+
             string devices = string.Empty;
             for (int i = 0; i < form2.devicelist.Items.Count; i++)
             {
@@ -1748,18 +2026,27 @@ namespace SpeAnaLED
                 confWriter.AddValue("devices", devices.TrimEnd(','));
 
             if (UNICODE == false) confWriter.AddValue("unicode", false);
-            
-            confWriter.AddValue("spectrum2Width", Spectrum2.Width);         // for debug save only
-            confWriter.AddValue("spectrum2Height", Spectrum2.Height);
-            confWriter.AddValue("spectrum2Top", Spectrum2.Top);
-            confWriter.AddValue("spectrum2Left", Spectrum2.Height);
 
+            confWriter.AddValue("spectrum2Top", Spectrum2.Top);                 // for debug save only
+            confWriter.AddValue("spectrum2Left", Spectrum2.Height);
+            confWriter.AddValue("spectrum2Width", Spectrum2.Width);
+            confWriter.AddValue("spectrum2Height", Spectrum2.Height);
+            
             confWriter.AddValue("form3Top", form3.Top);
             confWriter.AddValue("form3Left", form3.Left);
             confWriter.AddValue("form3Width", form3.Width + (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0));
             confWriter.AddValue("form3Height", form3.Height + (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0));
             confWriter.AddValue("form3Visible", form3Visible);
-            
+
+            confWriter.AddValue("form4Top", form4.Top);
+            confWriter.AddValue("form4Left", form4.Left);
+            confWriter.AddValue("form4Width", form4.Width + (form2.HideTitleCheckBox.Checked ? defaultBorderSize * 2 : 0));
+            confWriter.AddValue("form4Height", form4.Height + (form2.HideTitleCheckBox.Checked ? defaultTitleHeight + defaultBorderSize * 2 : 0));
+            confWriter.AddValue("form4Visible", form4Visible);
+            confWriter.AddValue("streamScrollUnit", streamScrollUnit);
+            confWriter.AddValue("streamChannelSpacing", streamChannelSpacing);
+            confWriter.AddValue("streamPower", pow);
+
 
             // add "unicode=false" in config file to change cause codepage to ANSI (not saved)
 

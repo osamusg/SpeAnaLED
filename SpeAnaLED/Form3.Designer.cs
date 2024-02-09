@@ -55,22 +55,22 @@
             // 
             this.LeftValueLabel.AutoSize = true;
             this.LeftValueLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.LeftValueLabel.Location = new System.Drawing.Point(312, 3);
+            this.LeftValueLabel.Location = new System.Drawing.Point(82, -2);
             this.LeftValueLabel.Name = "LeftValueLabel";
             this.LeftValueLabel.Size = new System.Drawing.Size(41, 15);
             this.LeftValueLabel.TabIndex = 8;
-            this.LeftValueLabel.Text = "label2";
+            this.LeftValueLabel.Text = "labelL";
             this.LeftValueLabel.Visible = false;
             // 
             // RightValueLabel
             // 
             this.RightValueLabel.AutoSize = true;
             this.RightValueLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.RightValueLabel.Location = new System.Drawing.Point(312, 49);
+            this.RightValueLabel.Location = new System.Drawing.Point(80, 16);
             this.RightValueLabel.Name = "RightValueLabel";
-            this.RightValueLabel.Size = new System.Drawing.Size(41, 15);
+            this.RightValueLabel.Size = new System.Drawing.Size(43, 15);
             this.RightValueLabel.TabIndex = 9;
-            this.RightValueLabel.Text = "label2";
+            this.RightValueLabel.Text = "labelR";
             this.RightValueLabel.Visible = false;
             // 
             // FormPictureBox
@@ -90,14 +90,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(436, 63);
-            this.Controls.Add(this.LevelPictureBox);
             this.Controls.Add(this.RightValueLabel);
+            this.Controls.Add(this.LevelPictureBox);
             this.Controls.Add(this.LeftValueLabel);
             this.Controls.Add(this.FormPictureBox);
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(144, 48);
             this.Name = "Form3";
             this.ShowInTaskbar = false;
             this.Text = "Level Meter - SpeAnaLED";
