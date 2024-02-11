@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        private readonly string relText = "Rel." + "24020915";
+        private readonly string relText = "Rel." + "24021109";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -155,7 +155,7 @@ namespace SpeAnaLED
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
                 if (File.Exists(configFileName + @".bad")) File.Delete(configFileName + @".\bad");
-                File.Move(configFileName, configFileName + @".bad");
+                if (File.Exists(configFileName)) File.Move(configFileName, configFileName + @".bad");
                 LoadConfigParams();
             }
 
@@ -342,6 +342,7 @@ namespace SpeAnaLED
                 LabelCycle.Visible = true;
             else
                 LabelCycle.Visible = false;
+
             if (form2.HideTitleCheckBox.Checked)
             {
                 titleHeight = 0;
@@ -2060,7 +2061,7 @@ namespace SpeAnaLED
             catch (Exception)
             {
                 FileStream fs;
-                if (!System.IO.File.Exists(configFileName))
+                if (!File.Exists(configFileName))
                 {
                     fs = new FileStream(configFileName, FileMode.CreateNew);
                     fs.Dispose();
