@@ -84,8 +84,8 @@
             this.LevelSensitivityTextBox = new System.Windows.Forms.TextBox();
             this.LevelStreamCheckBox = new System.Windows.Forms.CheckBox();
             this.LevelStreamPanel = new System.Windows.Forms.Panel();
-            this.CombineStreamRadio = new System.Windows.Forms.RadioButton();
-            this.SeparateStreamRadio = new System.Windows.Forms.RadioButton();
+            this.CombineStreamRadioButton = new System.Windows.Forms.RadioButton();
+            this.SeparateStreamRadioButton = new System.Windows.Forms.RadioButton();
             this.StreamColorButton = new System.Windows.Forms.Button();
             this.AlfaTextBox = new System.Windows.Forms.TextBox();
             this.AlfaLabel = new System.Windows.Forms.Label();
@@ -264,7 +264,7 @@
             this.textBox1.TabIndex = 35;
             this.textBox1.TabStop = false;
             this.textBox1.Text = "Depending on the number of device (disabled or not) you have, enumerating may tak" +
-    "e several minute.";
+    "e several minutes.";
             // 
             // NumberOfBarComboBox
             // 
@@ -745,34 +745,34 @@
             // 
             // LevelStreamPanel
             // 
-            this.LevelStreamPanel.Controls.Add(this.CombineStreamRadio);
-            this.LevelStreamPanel.Controls.Add(this.SeparateStreamRadio);
+            this.LevelStreamPanel.Controls.Add(this.CombineStreamRadioButton);
+            this.LevelStreamPanel.Controls.Add(this.SeparateStreamRadioButton);
             this.LevelStreamPanel.Location = new System.Drawing.Point(217, 232);
             this.LevelStreamPanel.Name = "LevelStreamPanel";
             this.LevelStreamPanel.Size = new System.Drawing.Size(179, 22);
             this.LevelStreamPanel.TabIndex = 61;
             // 
-            // CombineStreamRadio
+            // CombineStreamRadioButton
             // 
-            this.CombineStreamRadio.AutoSize = true;
-            this.CombineStreamRadio.Font = new System.Drawing.Font("Arial", 8F);
-            this.CombineStreamRadio.Location = new System.Drawing.Point(78, 1);
-            this.CombineStreamRadio.Name = "CombineStreamRadio";
-            this.CombineStreamRadio.Size = new System.Drawing.Size(66, 18);
-            this.CombineStreamRadio.TabIndex = 1;
-            this.CombineStreamRadio.Text = "Combine";
-            this.CombineStreamRadio.UseVisualStyleBackColor = true;
+            this.CombineStreamRadioButton.AutoSize = true;
+            this.CombineStreamRadioButton.Font = new System.Drawing.Font("Arial", 8F);
+            this.CombineStreamRadioButton.Location = new System.Drawing.Point(78, 1);
+            this.CombineStreamRadioButton.Name = "CombineStreamRadioButton";
+            this.CombineStreamRadioButton.Size = new System.Drawing.Size(66, 18);
+            this.CombineStreamRadioButton.TabIndex = 1;
+            this.CombineStreamRadioButton.Text = "Combine";
+            this.CombineStreamRadioButton.UseVisualStyleBackColor = true;
             // 
-            // SeparateStreamRadio
+            // SeparateStreamRadioButton
             // 
-            this.SeparateStreamRadio.AutoSize = true;
-            this.SeparateStreamRadio.Font = new System.Drawing.Font("Arial", 8F);
-            this.SeparateStreamRadio.Location = new System.Drawing.Point(4, 1);
-            this.SeparateStreamRadio.Name = "SeparateStreamRadio";
-            this.SeparateStreamRadio.Size = new System.Drawing.Size(69, 18);
-            this.SeparateStreamRadio.TabIndex = 0;
-            this.SeparateStreamRadio.Text = "Separate";
-            this.SeparateStreamRadio.UseVisualStyleBackColor = true;
+            this.SeparateStreamRadioButton.AutoSize = true;
+            this.SeparateStreamRadioButton.Font = new System.Drawing.Font("Arial", 8F);
+            this.SeparateStreamRadioButton.Location = new System.Drawing.Point(4, 1);
+            this.SeparateStreamRadioButton.Name = "SeparateStreamRadioButton";
+            this.SeparateStreamRadioButton.Size = new System.Drawing.Size(69, 18);
+            this.SeparateStreamRadioButton.TabIndex = 0;
+            this.SeparateStreamRadioButton.Text = "Separate";
+            this.SeparateStreamRadioButton.UseVisualStyleBackColor = true;
             // 
             // StreamColorButton
             // 
@@ -931,8 +931,8 @@
         protected internal System.Windows.Forms.TrackBar LevelSensitivityTrackBar;
         protected internal System.Windows.Forms.TextBox LevelSensitivityTextBox;
         protected internal System.Windows.Forms.CheckBox LevelStreamCheckBox;
-        protected internal System.Windows.Forms.RadioButton CombineStreamRadio;
-        protected internal System.Windows.Forms.RadioButton SeparateStreamRadio;
+        protected internal System.Windows.Forms.RadioButton CombineStreamRadioButton;
+        protected internal System.Windows.Forms.RadioButton SeparateStreamRadioButton;
         protected internal System.Windows.Forms.Button StreamColorButton;
         protected internal System.Windows.Forms.CheckBox RainbowFlipCheckBox;
         protected internal System.Windows.Forms.Panel LevelStreamPanel;

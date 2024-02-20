@@ -49,9 +49,10 @@
             this.Spectrum1.TabIndex = 0;
             this.Spectrum1.TabStop = false;
             this.Spectrum1.DoubleClick += new System.EventHandler(this.Spectrum1_DoubleClick);
-            this.Spectrum1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Spectrum1_MouseDown);
-            this.Spectrum1.MouseHover += new System.EventHandler(this.Spectrum1_MouseHover);
+            this.Spectrum1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
+            this.Spectrum1.MouseHover += new System.EventHandler(this.Form1_MouseHover);
             this.Spectrum1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Spectrum1_MouseMove);
+            this.Spectrum1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             // 
             // LabelCycle
             // 
@@ -78,9 +79,10 @@
             this.Spectrum2.TabIndex = 2;
             this.Spectrum2.TabStop = false;
             this.Spectrum2.DoubleClick += new System.EventHandler(this.Spectrum2_DoubleClick);
-            this.Spectrum2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseDown);
-            this.Spectrum2.MouseHover += new System.EventHandler(this.Spectrum2_MouseHover);
+            this.Spectrum2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
+            this.Spectrum2.MouseHover += new System.EventHandler(this.Form1_MouseHover);
             this.Spectrum2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseMove);
+            this.Spectrum2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             // 
             // label1
             // 
@@ -117,6 +119,7 @@
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.MouseHover += new System.EventHandler(this.Form1_MouseHover);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.Spectrum1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Spectrum2)).EndInit();
             this.ResumeLayout(false);

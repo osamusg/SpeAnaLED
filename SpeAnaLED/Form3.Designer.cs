@@ -40,6 +40,7 @@
             // LevelPictureBox
             // 
             this.LevelPictureBox.BackColor = System.Drawing.Color.Transparent;
+            this.LevelPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.LevelPictureBox.Location = new System.Drawing.Point(0, 16);
             this.LevelPictureBox.Name = "LevelPictureBox";
             this.LevelPictureBox.Size = new System.Drawing.Size(436, 8);
@@ -50,6 +51,7 @@
             this.LevelPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LevelPictureBox_MouseDown);
             this.LevelPictureBox.MouseHover += new System.EventHandler(this.LevelPictureBox_MouseHover);
             this.LevelPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.LevelPictureBox_MouseMove);
+            this.LevelPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.LevelPictureBox_MouseUp);
             // 
             // LeftValueLabel
             // 
@@ -77,6 +79,7 @@
             // 
             this.FormPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.FormPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.FormPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.FormPictureBox.Location = new System.Drawing.Point(12, 8);
             this.FormPictureBox.Name = "FormPictureBox";
             this.FormPictureBox.Size = new System.Drawing.Size(180, 15);

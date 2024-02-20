@@ -46,6 +46,7 @@
             this.StreamPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.StreamPictureBox_MouseDown);
             this.StreamPictureBox.MouseHover += new System.EventHandler(this.StreamPictureBox_MouseHover);
             this.StreamPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.StreamPictureBox_MouseMove);
+            this.StreamPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.StreamPictureBox_MouseUp);
             // 
             // label1
             // 

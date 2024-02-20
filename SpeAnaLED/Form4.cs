@@ -8,7 +8,8 @@ namespace SpeAnaLED
     {
         private readonly Form1 myParent;
         private readonly bool hideTitle;
-        private Point mousePoint = new Point(0, 0);
+        private Point mouseDragStartPoint = new Point(0, 0);
+        private bool pinchLeft, pinchRight, pinchTop, pinchBottom;
         private bool inFormSizeChange;
 
         // event handler (Fire)
@@ -44,67 +45,80 @@ namespace SpeAnaLED
 
         private void StreamPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-                mousePoint = new Point(e.X, e.Y);
-            else if (e.Button == MouseButtons.Right)
+            int mdt = 8;    // mouse detect thickness (inner)
+
+            if (e.Button == MouseButtons.Right)
+            {
                 PictureBox_MouseDown?.Invoke(sender, e);
-            if (this.Cursor != Cursors.Default)
-                inFormSizeChange = true;
-            else
-                inFormSizeChange = false;
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (FormBorderStyle == FormBorderStyle.None)
+                {
+                    mouseDragStartPoint = new Point(e.X, e.Y);
+
+                    pinchLeft = e.X < mdt;
+                    pinchRight = e.X > Width - mdt;
+                    pinchTop = e.Y < mdt;
+                    pinchBottom = e.Y > Height - mdt;
+                    inFormSizeChange = pinchLeft || pinchRight || pinchTop || pinchBottom;
+                    if (!inFormSizeChange) Cursor = Cursors.SizeAll;
+                }
+            }
         }
 
         private void StreamPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
-            int minWidth = 64;
-            int minHeight = 32;
-
-            if (e.Button == MouseButtons.Left)
+            if (FormBorderStyle == FormBorderStyle.None)
             {
-                if (this.Cursor == Cursors.SizeWE)
+                int minWidth = 64;
+                int minHeight = 32;
+                int mdt = 8;        // mouse detect thickness
+
+                if (e.Button == MouseButtons.Left)
                 {
-                    if (e.X < this.Width / 2)
+                    if (Cursor == Cursors.SizeWE)
                     {
-                        this.Width -= e.X - mousePoint.X;
-                        if (this.Width < minWidth) this.Width = minWidth;
-                        else this.Left += e.X - mousePoint.X;
+                        if (pinchLeft)
+                        {
+                            Width -= e.X - mouseDragStartPoint.X;
+                            if (Width < minWidth) Width = minWidth;
+                            else Left += e.X - mouseDragStartPoint.X;
+                        }
+                        else if (pinchRight)
+                        {
+                            Width = e.X;
+                            if (Width < minWidth) Width = minWidth;
+                        }
+                    }
+                    else if (Cursor == Cursors.SizeNS)
+                    {
+                        if (pinchTop)
+                        {
+                            Height -= e.Y - mouseDragStartPoint.Y;
+                            if (Height < minHeight) Height = minHeight;
+                            else Top += e.Y - mouseDragStartPoint.Y;
+                        }
+                        else if (pinchBottom)
+                        {
+                            Height = e.Y;
+                            if (Height < minHeight) Height = minHeight;
+                        }
                     }
                     else
                     {
-                        this.Width += (e.X - mousePoint.X) / 25;
-                        if (this.Width < minWidth) this.Width = minWidth;
+                        Left += e.X - mouseDragStartPoint.X;
+                        Top += e.Y - mouseDragStartPoint.Y;
                     }
                 }
-                else if (this.Cursor == Cursors.SizeNS)
-                {
-                    if (e.Y < this.Height / 3)
-                    {
-                        this.Height -= (e.Y - mousePoint.Y) / 15;
-                        if (this.Height < minHeight) this.Height = minHeight;
-                        else this.Top += (e.Y - mousePoint.Y) / 15;
-                    }
-                    else if (e.Y > this.Height * 1 / 2)
-                    {
-                        this.Height += (e.Y - mousePoint.Y) / 25;
-                        if (this.Height < minHeight) this.Height = minHeight;
-                    }
-                }
-                else
-                {
-                    this.Left += e.X - mousePoint.X;
-                    this.Top += e.Y - mousePoint.Y;
-                }
-            }
-            else if (this.FormBorderStyle == FormBorderStyle.None)
-            {
-                if (e.X < 8 || e.X > this.Width - 8)
-                    this.Cursor = Cursors.SizeWE;
-                else if (e.Y < 8 || e.Y > this.Height - 8)
-                    this.Cursor = Cursors.SizeNS;
-                else if (!inFormSizeChange)
-                    this.Cursor = Cursors.Default;
-            }
 
+                if (e.X < mdt || e.X > Width - mdt)
+                    Cursor = Cursors.SizeWE;
+                else if (e.Y < mdt || e.Y > Height - mdt)
+                    Cursor = Cursors.SizeNS;
+                else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
+                    Cursor = Cursors.Default;
+            }
         }
 
         private void StreamPictureBox_DoubleClick(object sender, EventArgs e)
@@ -116,6 +130,13 @@ namespace SpeAnaLED
         {
             inFormSizeChange = false;
             this.Cursor = Cursors.Default;
+        }
+
+        private void StreamPictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (Cursor != Cursors.Default)
+                Cursor = Cursors.Default;
+            pinchLeft = pinchRight = pinchTop = pinchBottom = false;
         }
     }
 }

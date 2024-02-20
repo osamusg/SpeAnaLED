@@ -140,7 +140,6 @@ namespace SpeAnaLED
                     PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
                 }
             }
-
         }
 
         private void PeakholdDescentSpeedTextBox_Leave(object sender, EventArgs e)
