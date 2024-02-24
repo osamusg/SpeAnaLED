@@ -48,7 +48,7 @@
             this.Spectrum1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Spectrum1.TabIndex = 0;
             this.Spectrum1.TabStop = false;
-            this.Spectrum1.DoubleClick += new System.EventHandler(this.Spectrum1_DoubleClick);
+            this.Spectrum1.DoubleClick += new System.EventHandler(this.Form1_DoubleClick);
             this.Spectrum1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.Spectrum1.MouseHover += new System.EventHandler(this.Form1_MouseHover);
             this.Spectrum1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Spectrum1_MouseMove);
@@ -59,7 +59,7 @@
             this.LabelCycle.AutoSize = true;
             this.LabelCycle.BackColor = System.Drawing.Color.Transparent;
             this.LabelCycle.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelCycle.Location = new System.Drawing.Point(21, 22);
+            this.LabelCycle.Location = new System.Drawing.Point(148, 40);
             this.LabelCycle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LabelCycle.Name = "LabelCycle";
             this.LabelCycle.Size = new System.Drawing.Size(41, 15);
@@ -78,7 +78,7 @@
             this.Spectrum2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Spectrum2.TabIndex = 2;
             this.Spectrum2.TabStop = false;
-            this.Spectrum2.DoubleClick += new System.EventHandler(this.Spectrum2_DoubleClick);
+            this.Spectrum2.DoubleClick += new System.EventHandler(this.Form1_DoubleClick);
             this.Spectrum2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.Spectrum2.MouseHover += new System.EventHandler(this.Form1_MouseHover);
             this.Spectrum2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Spectrum2_MouseMove);
@@ -114,7 +114,6 @@
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
-            this.VisibleChanged += new System.EventHandler(this.Form1_VisibleChanged);
             this.DoubleClick += new System.EventHandler(this.Form1_DoubleClick);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.MouseHover += new System.EventHandler(this.Form1_MouseHover);
@@ -130,8 +129,8 @@
         #endregion
 
         private System.Windows.Forms.PictureBox Spectrum1;
-        private System.Windows.Forms.Label LabelCycle;
         private System.Windows.Forms.PictureBox Spectrum2;
-        private System.Windows.Forms.Label label1;
+        protected internal System.Windows.Forms.Label label1;
+        protected internal System.Windows.Forms.Label LabelCycle;
     }
 }

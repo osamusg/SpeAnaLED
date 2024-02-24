@@ -1,60 +1,105 @@
 ﻿using System;
 using System.Drawing;
+using System.Security.Authentication.ExtendedProtection;
 using System.Windows.Forms;
 
 namespace SpeAnaLED
 {
     public partial class Form3 : Form
     {
-        public const int baseClientWidth = 436;
-        public const int baseClientHeight = 65;
+        private readonly Form1 form1;
+        private readonly Form2 form2;
+        
+        private const int baseClientWidth = 436;
+        private const int baseClientHeight = 65;
 
-        private readonly Form1 myParent;
-        private readonly bool hideTitle;
         private Point mouseDragStartPoint = new Point(0, 0);
         private bool pinchLeft, pinchRight, pinchTop, pinchBottom;
-        public readonly Bitmap[] canvas = new Bitmap[2];
         private bool inFormSizeChange;
-        private readonly string panelFontName = "Levenim MT Bold";
+        private readonly int[] meterPeakValue;
+        private float levelMeterSensitivity;
+        private int peakCounter;
+
+        // drawing
+        private readonly string panelFontName = "Microsoft Sans Serif";
+        private readonly Bitmap canvas;
+        public Pen greenPen, redPen, bgPen;
 
         // event handler (Fire)
         public event FormClosedEventHandler Form_Closed;
-        public event MouseEventHandler PictureBox_MouseDown;
 
-        public Form3(Form1 parent, bool hidetitle)
+        public Form3(Form1 _form1, Form2 _form2)
         {
             InitializeComponent();
 
-            myParent = parent;
-            this.hideTitle = hidetitle;
+            form1 = _form1;
+            form2 = _form2;
+
+            // subscribe
+            form2.LevelSensitivityTrackBar.ValueChanged += Form2_LevelSensitivityTrackBar_ValueChanged;
+            form1.DispatchAnalyzerLevelChanged += Form1_ReceiveSpectrumData;
+
+            meterPeakValue = new int[Form2.maxChannel];
+            canvas = new Bitmap(baseClientWidth, baseClientHeight);
+            levelMeterSensitivity = (float)form2.LevelSensitivityTrackBar.Value / 10f;
+
+            greenPen = new Pen(new Color(), 8f) { DashPattern = new float[] { 3f, 0.75f } };    // 8*3=24, 8*0.75=6
+            redPen = new Pen(new Color(), 8f) { DashPattern = new float[] { 3f, 0.75f } };
+            bgPen = new Pen(Color.FromArgb(29, 29, 29), 8f) { DashPattern = new float[] { 3f, 0.75f } };
+
+            FormPictureBox.Controls.Add(LevelPictureBox);
+            Draw_Panel();
+            
+            //if (!Form1.inInit)
+            //{
+                var g = Graphics.FromImage(canvas);
+                g.DrawLine(bgPen, 30, 20 * 26, canvas.Width - 16, 20 * 26);
+                LevelPictureBox.Image = canvas;
+            //}
         }
 
         private void Form3_Load(object sender, System.EventArgs e)
         {
-            FormPictureBox.SendToBack();
-            FormPictureBox.Controls.Add(LevelPictureBox);
-            
-            Draw_Panel();
-            if (hideTitle)
-                this.FormBorderStyle = FormBorderStyle.None;
+            bgPen.Color = form1.bgPen.Color;
+
+            if (form2.HideTitleCheckBox.Checked)
+                FormBorderStyle = FormBorderStyle.None;
+            else
+                FormBorderStyle = FormBorderStyle.SizableToolWindow;
+
+            Width = form2.form3Width - (FormBorderStyle == FormBorderStyle.None ? form2.defaultBorderSize * 2 : 0);
+            Height = form2.form3Height - (FormBorderStyle == FormBorderStyle.None ? form2.defaultTitleHeight + form2.defaultBorderSize : 0);
+            Top = form2.form3Top;
+            Left = form2.form3Left;
+
+            LevelPictureBox.Width = ClientSize.Width;
+            LevelPictureBox.Height = ClientSize.Height;
+            LevelPictureBox.Left = 0;
+            LevelPictureBox.Top = 0;
+
+            if (Visible)
+            {
+                form2.HideSpectrumWindowCheckBox.Enabled =
+                form2.HideSpectrumWindowCheckBox.Visible = true;
+            }
         }
 
-         private void Draw_Panel()
-         {
+        private void Draw_Panel()
+        {
             Font panelFont = new Font(panelFontName, 9f, FontStyle.Bold);
-            
+
             FormPictureBox.Top = FormPictureBox.Left = 0;
             FormPictureBox.Size = new Size(ClientSize.Width, ClientSize.Height);
-            Bitmap form3ClientCanvas = new Bitmap(baseClientWidth, baseClientHeight);
-            Graphics g_client = Graphics.FromImage(form3ClientCanvas);
+            Bitmap canvas = new Bitmap(baseClientWidth, baseClientHeight);
+            Graphics g = Graphics.FromImage(canvas);
             Brush greenBrush = new SolidBrush(Color.FromArgb(96, 194, 96));
             Brush redBrush = new SolidBrush(Color.FromArgb(160, 0, 0));
-            g_client.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            g_client.DrawString("-        -20   -15    -10    -7      -5     -3     -1", panelFont, greenBrush, 30, 24);
-            g_client.DrawString("0     +1     +3     +5    +8", panelFont, redBrush, 276, 24);
-            g_client.DrawString("L", panelFont, greenBrush, 10, 11);
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.DrawString("-        -20   -15    -10    -7      -5     -3     -1", panelFont, greenBrush, 30, 24);
+            g.DrawString("0     +1     +3     +5    +8", panelFont, redBrush, 276, 24);
+            g.DrawString("L", panelFont, greenBrush, 10, 11);
             //g_client.DrawString("db", panelFont, greenBrush, 10, 24);
-            g_client.DrawString("R", panelFont, greenBrush, 10, 38);
+            g.DrawString("R", panelFont, greenBrush, 10, 38);
             //g_client.DrawString("PEAK LEVEL METER", new Font(fontName, 7f, FontStyle.Bold), greenBrush, 10, 1);
 
             Bitmap infinityCanvas = new Bitmap(16, 16);
@@ -67,34 +112,112 @@ namespace SpeAnaLED
             g_Infinity.DrawString("8", new Font(panelFontName, 12f, FontStyle.Bold), brush, 0, 0);
             g_Infinity.Dispose();
 
-            g_client.DrawImage(infinityCanvas, 36, 27, (int)(infinityFontWidth * 1.2), 16);
-            g_client.Dispose();
+            g.DrawImage(infinityCanvas, 36, 27, (int)(infinityFontWidth * 1.2), 16);
+            g.Dispose();
 
-            FormPictureBox.Image = form3ClientCanvas;
+            FormPictureBox.Image = canvas;
             FormPictureBox.Update();
             FormPictureBox.SendToBack();
         }
 
+        private void Form1_ReceiveSpectrumData(object sender, EventArgs e)
+        {
+            Graphics g = Graphics.FromImage(canvas);
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            int[] level = new int[Form2.maxChannel];
+            int leftPadding = 30;
+            int rightPadding = 16;
+            int dottedline = 30;
+            int solidline = dottedline - 7/*blankBG*/;
+            int leftBarTop = 20;
+            int rightChPadding = 26;
+            int redzone = 240;
+
+            level[0] = (int)((form1.level[0] * levelMeterSensitivity + 1) / dottedline) * dottedline;       // analyzer input point and calculate bounds
+            level[1] = (int)((form1.level[1] * levelMeterSensitivity + 1) / dottedline) * dottedline;
+
+            for (int i = 0; i < Form2.maxChannel; i++)
+            {
+                if (level[i] > Form2.lmPBWidth) level[i] = Form2.lmPBWidth;
+
+                g.DrawLine(bgPen, leftPadding, leftBarTop + i * rightChPadding, canvas.Width - rightPadding, leftBarTop + i * rightChPadding);  // 38=42-8/2
+                if (level[i] >= redzone)
+                {
+                    g.DrawLine(greenPen, leftPadding, leftBarTop + i * rightChPadding, redzone - 1 + leftPadding, leftBarTop + i * rightChPadding);
+                    g.DrawLine(redPen, redzone + leftPadding, leftBarTop + i * rightChPadding, level[i] + leftPadding, leftBarTop + i * rightChPadding);
+                }
+                else
+                    g.DrawLine(greenPen, leftPadding, leftBarTop + i * rightChPadding, level[i] + leftPadding, leftBarTop + i * rightChPadding);
+
+                /////// Level Meter Peakhold (always shown)
+                if (level[i] == 0)
+                {
+                    meterPeakValue[i] = -solidline;
+                }
+                else
+                {
+                    if (peakCounter * Form2.maxNumberOfBar > form2.counterCycle)
+                    {
+                        if (meterPeakValue[i] < level[i]) { meterPeakValue[i] = level[i]; }
+                        if (meterPeakValue[i] >= redzone + solidline)
+                            g.DrawLine(redPen, meterPeakValue[i], leftBarTop + i * rightChPadding, meterPeakValue[i] + solidline, leftBarTop + i * rightChPadding);   // 0-23, 30-53, 60-83... left=right-23
+                        else
+                            g.DrawLine(greenPen, meterPeakValue[i], leftBarTop + i * rightChPadding, meterPeakValue[i] + solidline, leftBarTop + i * rightChPadding);
+                    }
+                }
+            }
+            g.Dispose();
+            peakCounter += (form2.numberOfBar * form2.channel);      // end of peak drawing
+
+            RightValueLabel.Text = level[1].ToString();
+
+            LevelPictureBox.Image = canvas;
+            LevelPictureBox.BringToFront();
+
+            if (peakCounter >= form2.counterCycle)    // if peakhold=false, counter is used screen saver preventing, so add the counter
+            {
+                peakCounter = 0;                // reset when the specified number of rounds
+                for (int i = 0; i < Form2.maxChannel; i++) meterPeakValue[i] = level[i];                                                      // right level peak is always shown
+            }
+        }
+
+        private void Form2_LevelSensitivityTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            levelMeterSensitivity = form2.LevelSensitivityTrackBar.Value / 10f;
+        }
+        
         private void Form3_SizeChanged(object sender, System.EventArgs e)
         {
             Draw_Panel();
             LevelPictureBox.Width = ClientSize.Width;
             LevelPictureBox.Height = ClientSize.Height;
+            if (!Form1.inInit)
+            {
+                var g = Graphics.FromImage(canvas);
+                    g.DrawLine(bgPen, 30, 20 * 26, canvas.Width - 16, 20 * 26);
+                LevelPictureBox.Image = canvas;
+            }
         }
 
         private void Form3_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (!myParent.Visible) myParent.Visible = true;
             Form_Closed?.Invoke(sender, e);
+            
+            form2.form3Width = Width;
+            form2.form3Height = Height;
+            form2.form3Top = Top;
+            form2.form3Left = Left;
+            if (e.CloseReason == CloseReason.UserClosing)
+                form2.LevelMeterCheckBox.Checked = false;
         }
 
         private void LevelPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
             int mdt = 8;    // mouse detect thickness (inner)
-            
+
             if (e.Button == MouseButtons.Right)
             {
-                PictureBox_MouseDown?.Invoke(sender, e);
+                form2.Visible = true;
             }
             else if (e.Button == MouseButtons.Left)
             {
@@ -169,7 +292,7 @@ namespace SpeAnaLED
         private void LevelPictureBox_MouseHover(object sender, EventArgs e)
         {
             inFormSizeChange = false;
-            this.Cursor = Cursors.Default;
+            Cursor = Cursors.Default;
         }
 
         private void LevelPictureBox_MouseUp(object sender, MouseEventArgs e)
@@ -181,7 +304,7 @@ namespace SpeAnaLED
 
         private void LevelPictureBox_DoubleClick(object sender, EventArgs e)
         {
-            if (!myParent.Visible) myParent.Visible = true;
+            if (!form2.Visible) form2.Visible = true;
         }
     }
 }

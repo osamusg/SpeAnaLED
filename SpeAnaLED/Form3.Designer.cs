@@ -41,9 +41,9 @@
             // 
             this.LevelPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.LevelPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.LevelPictureBox.Location = new System.Drawing.Point(0, 16);
+            this.LevelPictureBox.Location = new System.Drawing.Point(-1, 29);
             this.LevelPictureBox.Name = "LevelPictureBox";
-            this.LevelPictureBox.Size = new System.Drawing.Size(436, 8);
+            this.LevelPictureBox.Size = new System.Drawing.Size(223, 22);
             this.LevelPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.LevelPictureBox.TabIndex = 0;
             this.LevelPictureBox.TabStop = false;
@@ -80,9 +80,9 @@
             this.FormPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.FormPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.FormPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.FormPictureBox.Location = new System.Drawing.Point(12, 8);
+            this.FormPictureBox.Location = new System.Drawing.Point(-1, 8);
             this.FormPictureBox.Name = "FormPictureBox";
-            this.FormPictureBox.Size = new System.Drawing.Size(180, 15);
+            this.FormPictureBox.Size = new System.Drawing.Size(223, 23);
             this.FormPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.FormPictureBox.TabIndex = 10;
             this.FormPictureBox.TabStop = false;
@@ -93,8 +93,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(436, 63);
-            this.Controls.Add(this.RightValueLabel);
             this.Controls.Add(this.LevelPictureBox);
+            this.Controls.Add(this.RightValueLabel);
             this.Controls.Add(this.LeftValueLabel);
             this.Controls.Add(this.FormPictureBox);
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

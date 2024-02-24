@@ -29,42 +29,41 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
-            this.devicelist = new System.Windows.Forms.ComboBox();
+            this.DeviceListComboBox = new System.Windows.Forms.ComboBox();
             this.CloseButton = new System.Windows.Forms.Button();
             this.SensitivityTrackBar = new System.Windows.Forms.TrackBar();
             this.SensitivityTextBox = new System.Windows.Forms.TextBox();
-            this.ClassicRadio = new System.Windows.Forms.RadioButton();
-            this.PrisumRadio = new System.Windows.Forms.RadioButton();
-            this.SimpleRadio = new System.Windows.Forms.RadioButton();
-            this.RainbowRadio = new System.Windows.Forms.RadioButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ClassicRadioButton = new System.Windows.Forms.RadioButton();
+            this.PrisumRadioButton = new System.Windows.Forms.RadioButton();
+            this.SimpleRadioButton = new System.Windows.Forms.RadioButton();
+            this.RainbowRadioButton = new System.Windows.Forms.RadioButton();
+            this.SpectrumColorShemeGroupBox = new System.Windows.Forms.GroupBox();
             this.RainbowFlipCheckBox = new System.Windows.Forms.CheckBox();
             this.EnumerateButton = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.SpectrumSensitivityGroupBox = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.NumberOfBarComboBox = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.PeakholdTimeComboBox = new System.Windows.Forms.ComboBox();
             this.LabelPeakhold = new System.Windows.Forms.Label();
             this.LabelMsec = new System.Windows.Forms.Label();
             this.PeakholdDescentSpeedTrackBar = new System.Windows.Forms.TrackBar();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.SpectrumPeakholdGroupBox = new System.Windows.Forms.GroupBox();
             this.PeakholdDescentSpeedLabel = new System.Windows.Forms.Label();
             this.PeakholdDescentSpeedTextBox = new System.Windows.Forms.TextBox();
             this.PeakholdCheckBox = new System.Windows.Forms.CheckBox();
             this.SSaverCheckBox = new System.Windows.Forms.CheckBox();
             this.ChannelLayoutGroup = new System.Windows.Forms.GroupBox();
             this.FlipGroup = new System.Windows.Forms.GroupBox();
-            this.NoFlipRadio = new System.Windows.Forms.RadioButton();
-            this.RightFlipRadio = new System.Windows.Forms.RadioButton();
-            this.LeftFlipRadio = new System.Windows.Forms.RadioButton();
-            this.HorizontalRadio = new System.Windows.Forms.RadioButton();
-            this.VerticalRadio = new System.Windows.Forms.RadioButton();
+            this.NoFlipRadioButton = new System.Windows.Forms.RadioButton();
+            this.RightFlipRadioButton = new System.Windows.Forms.RadioButton();
+            this.LeftFlipRadioButton = new System.Windows.Forms.RadioButton();
+            this.HorizontalRadioButton = new System.Windows.Forms.RadioButton();
+            this.VerticalRadioButton = new System.Windows.Forms.RadioButton();
             this.AlwaysOnTopCheckBox = new System.Windows.Forms.CheckBox();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.StereoRadio = new System.Windows.Forms.RadioButton();
-            this.MonoRadio = new System.Windows.Forms.RadioButton();
+            this.NoCGroupBox = new System.Windows.Forms.GroupBox();
+            this.StereoRadioButton = new System.Windows.Forms.RadioButton();
+            this.MonoRadioButton = new System.Windows.Forms.RadioButton();
             this.ShowCounterCheckBox = new System.Windows.Forms.CheckBox();
             this.HideFreqCheckBox = new System.Windows.Forms.CheckBox();
             this.HideTitleCheckBox = new System.Windows.Forms.CheckBox();
@@ -79,47 +78,54 @@
             this.RefreshModeGroupBox = new System.Windows.Forms.GroupBox();
             this.RefreshFastRadio = new System.Windows.Forms.RadioButton();
             this.RefreshNormalRadio = new System.Windows.Forms.RadioButton();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.LevelMeterSensitivityGroupBox = new System.Windows.Forms.GroupBox();
             this.LevelSensitivityTrackBar = new System.Windows.Forms.TrackBar();
             this.LevelSensitivityTextBox = new System.Windows.Forms.TextBox();
             this.LevelStreamCheckBox = new System.Windows.Forms.CheckBox();
             this.LevelStreamPanel = new System.Windows.Forms.Panel();
-            this.CombineStreamRadioButton = new System.Windows.Forms.RadioButton();
-            this.SeparateStreamRadioButton = new System.Windows.Forms.RadioButton();
-            this.StreamColorButton = new System.Windows.Forms.Button();
             this.AlfaTextBox = new System.Windows.Forms.TextBox();
             this.AlfaLabel = new System.Windows.Forms.Label();
+            this.StreamColorButton = new System.Windows.Forms.Button();
+            this.CombineStreamRadioButton = new System.Windows.Forms.RadioButton();
+            this.SeparateStreamRadioButton = new System.Windows.Forms.RadioButton();
+            this.NumberOfBarsPanel = new System.Windows.Forms.Panel();
+            this.NumberOfBar4RadioButton = new System.Windows.Forms.RadioButton();
+            this.NumberOfBar8RadioButton = new System.Windows.Forms.RadioButton();
+            this.NumberOfBar16RadioButton = new System.Windows.Forms.RadioButton();
+            this.NumberOfBarLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.SpectrumColorShemeGroupBox.SuspendLayout();
+            this.SpectrumSensitivityGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PeakholdDescentSpeedTrackBar)).BeginInit();
-            this.groupBox3.SuspendLayout();
+            this.SpectrumPeakholdGroupBox.SuspendLayout();
             this.ChannelLayoutGroup.SuspendLayout();
             this.FlipGroup.SuspendLayout();
-            this.groupBox5.SuspendLayout();
+            this.NoCGroupBox.SuspendLayout();
             this.RefreshModeGroupBox.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.LevelMeterSensitivityGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LevelSensitivityTrackBar)).BeginInit();
             this.LevelStreamPanel.SuspendLayout();
+            this.NumberOfBarsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // devicelist
+            // DeviceListComboBox
             // 
-            this.devicelist.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.devicelist.FormattingEnabled = true;
-            this.devicelist.Location = new System.Drawing.Point(12, 28);
-            this.devicelist.Name = "devicelist";
-            this.devicelist.Size = new System.Drawing.Size(440, 20);
-            this.devicelist.TabIndex = 38;
+            this.DeviceListComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.DeviceListComboBox.FormattingEnabled = true;
+            this.DeviceListComboBox.Location = new System.Drawing.Point(12, 28);
+            this.DeviceListComboBox.Name = "DeviceListComboBox";
+            this.DeviceListComboBox.Size = new System.Drawing.Size(440, 20);
+            this.DeviceListComboBox.TabIndex = 38;
+            this.DeviceListComboBox.SelectedIndexChanged += new System.EventHandler(this.DeviceListComboBox_SelectedIndexChanged);
             // 
             // CloseButton
             // 
             this.CloseButton.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CloseButton.Location = new System.Drawing.Point(567, 520);
+            this.CloseButton.Location = new System.Drawing.Point(513, 522);
             this.CloseButton.Name = "CloseButton";
-            this.CloseButton.Size = new System.Drawing.Size(75, 23);
+            this.CloseButton.Size = new System.Drawing.Size(129, 27);
             this.CloseButton.TabIndex = 1;
-            this.CloseButton.Text = "Close";
+            this.CloseButton.Text = "Close This Dialog";
             this.CloseButton.UseVisualStyleBackColor = true;
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
@@ -147,73 +153,73 @@
             this.SensitivityTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SensitivityTextBox_KeyDown);
             this.SensitivityTextBox.Leave += new System.EventHandler(this.SensitivityTextBox_Leave);
             // 
-            // ClassicRadio
+            // ClassicRadioButton
             // 
-            this.ClassicRadio.AutoSize = true;
-            this.ClassicRadio.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ClassicRadio.Location = new System.Drawing.Point(17, 47);
-            this.ClassicRadio.Name = "ClassicRadio";
-            this.ClassicRadio.Size = new System.Drawing.Size(70, 20);
-            this.ClassicRadio.TabIndex = 4;
-            this.ClassicRadio.TabStop = true;
-            this.ClassicRadio.Text = "Classic";
-            this.ClassicRadio.UseVisualStyleBackColor = true;
+            this.ClassicRadioButton.AutoSize = true;
+            this.ClassicRadioButton.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ClassicRadioButton.Location = new System.Drawing.Point(17, 50);
+            this.ClassicRadioButton.Name = "ClassicRadioButton";
+            this.ClassicRadioButton.Size = new System.Drawing.Size(70, 20);
+            this.ClassicRadioButton.TabIndex = 4;
+            this.ClassicRadioButton.TabStop = true;
+            this.ClassicRadioButton.Text = "Classic";
+            this.ClassicRadioButton.UseVisualStyleBackColor = true;
             // 
-            // PrisumRadio
+            // PrisumRadioButton
             // 
-            this.PrisumRadio.AutoSize = true;
-            this.PrisumRadio.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PrisumRadio.Location = new System.Drawing.Point(17, 22);
-            this.PrisumRadio.Name = "PrisumRadio";
-            this.PrisumRadio.Size = new System.Drawing.Size(52, 20);
-            this.PrisumRadio.TabIndex = 3;
-            this.PrisumRadio.TabStop = true;
-            this.PrisumRadio.Text = "LED";
-            this.PrisumRadio.UseVisualStyleBackColor = true;
+            this.PrisumRadioButton.AutoSize = true;
+            this.PrisumRadioButton.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PrisumRadioButton.Location = new System.Drawing.Point(17, 24);
+            this.PrisumRadioButton.Name = "PrisumRadioButton";
+            this.PrisumRadioButton.Size = new System.Drawing.Size(52, 20);
+            this.PrisumRadioButton.TabIndex = 3;
+            this.PrisumRadioButton.TabStop = true;
+            this.PrisumRadioButton.Text = "LED";
+            this.PrisumRadioButton.UseVisualStyleBackColor = true;
             // 
-            // SimpleRadio
+            // SimpleRadioButton
             // 
-            this.SimpleRadio.AutoSize = true;
-            this.SimpleRadio.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SimpleRadio.Location = new System.Drawing.Point(17, 73);
-            this.SimpleRadio.Name = "SimpleRadio";
-            this.SimpleRadio.Size = new System.Drawing.Size(67, 20);
-            this.SimpleRadio.TabIndex = 5;
-            this.SimpleRadio.TabStop = true;
-            this.SimpleRadio.Text = "Simple";
-            this.SimpleRadio.UseVisualStyleBackColor = true;
+            this.SimpleRadioButton.AutoSize = true;
+            this.SimpleRadioButton.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SimpleRadioButton.Location = new System.Drawing.Point(17, 76);
+            this.SimpleRadioButton.Name = "SimpleRadioButton";
+            this.SimpleRadioButton.Size = new System.Drawing.Size(67, 20);
+            this.SimpleRadioButton.TabIndex = 5;
+            this.SimpleRadioButton.TabStop = true;
+            this.SimpleRadioButton.Text = "Simple";
+            this.SimpleRadioButton.UseVisualStyleBackColor = true;
             // 
-            // RainbowRadio
+            // RainbowRadioButton
             // 
-            this.RainbowRadio.AutoSize = true;
-            this.RainbowRadio.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RainbowRadio.Location = new System.Drawing.Point(17, 98);
-            this.RainbowRadio.Name = "RainbowRadio";
-            this.RainbowRadio.Size = new System.Drawing.Size(155, 20);
-            this.RainbowRadio.TabIndex = 6;
-            this.RainbowRadio.TabStop = true;
-            this.RainbowRadio.Text = "Rainbow (Horizontal)";
-            this.RainbowRadio.UseVisualStyleBackColor = true;
+            this.RainbowRadioButton.AutoSize = true;
+            this.RainbowRadioButton.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RainbowRadioButton.Location = new System.Drawing.Point(17, 102);
+            this.RainbowRadioButton.Name = "RainbowRadioButton";
+            this.RainbowRadioButton.Size = new System.Drawing.Size(155, 20);
+            this.RainbowRadioButton.TabIndex = 6;
+            this.RainbowRadioButton.TabStop = true;
+            this.RainbowRadioButton.Text = "Rainbow (Horizontal)";
+            this.RainbowRadioButton.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
+            // SpectrumColorShemeGroupBox
             // 
-            this.groupBox1.Controls.Add(this.RainbowFlipCheckBox);
-            this.groupBox1.Controls.Add(this.ClassicRadio);
-            this.groupBox1.Controls.Add(this.RainbowRadio);
-            this.groupBox1.Controls.Add(this.PrisumRadio);
-            this.groupBox1.Controls.Add(this.SimpleRadio);
-            this.groupBox1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(12, 54);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(185, 147);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Spectrum Color Scheme";
+            this.SpectrumColorShemeGroupBox.Controls.Add(this.RainbowFlipCheckBox);
+            this.SpectrumColorShemeGroupBox.Controls.Add(this.ClassicRadioButton);
+            this.SpectrumColorShemeGroupBox.Controls.Add(this.RainbowRadioButton);
+            this.SpectrumColorShemeGroupBox.Controls.Add(this.PrisumRadioButton);
+            this.SpectrumColorShemeGroupBox.Controls.Add(this.SimpleRadioButton);
+            this.SpectrumColorShemeGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SpectrumColorShemeGroupBox.Location = new System.Drawing.Point(12, 57);
+            this.SpectrumColorShemeGroupBox.Name = "SpectrumColorShemeGroupBox";
+            this.SpectrumColorShemeGroupBox.Size = new System.Drawing.Size(185, 148);
+            this.SpectrumColorShemeGroupBox.TabIndex = 3;
+            this.SpectrumColorShemeGroupBox.TabStop = false;
+            this.SpectrumColorShemeGroupBox.Text = "Spectrum Color Scheme";
             // 
             // RainbowFlipCheckBox
             // 
             this.RainbowFlipCheckBox.AutoSize = true;
-            this.RainbowFlipCheckBox.Location = new System.Drawing.Point(36, 117);
+            this.RainbowFlipCheckBox.Location = new System.Drawing.Point(36, 120);
             this.RainbowFlipCheckBox.Name = "RainbowFlipCheckBox";
             this.RainbowFlipCheckBox.Size = new System.Drawing.Size(79, 19);
             this.RainbowFlipCheckBox.TabIndex = 7;
@@ -231,17 +237,17 @@
             this.EnumerateButton.UseVisualStyleBackColor = true;
             this.EnumerateButton.Click += new System.EventHandler(this.EnumerateButton_Click);
             // 
-            // groupBox2
+            // SpectrumSensitivityGroupBox
             // 
-            this.groupBox2.Controls.Add(this.SensitivityTrackBar);
-            this.groupBox2.Controls.Add(this.SensitivityTextBox);
-            this.groupBox2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(15, 394);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(386, 59);
-            this.groupBox2.TabIndex = 14;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Spectrum Sensitivity (1.0 - 9.9)";
+            this.SpectrumSensitivityGroupBox.Controls.Add(this.SensitivityTrackBar);
+            this.SpectrumSensitivityGroupBox.Controls.Add(this.SensitivityTextBox);
+            this.SpectrumSensitivityGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SpectrumSensitivityGroupBox.Location = new System.Drawing.Point(15, 394);
+            this.SpectrumSensitivityGroupBox.Name = "SpectrumSensitivityGroupBox";
+            this.SpectrumSensitivityGroupBox.Size = new System.Drawing.Size(386, 59);
+            this.SpectrumSensitivityGroupBox.TabIndex = 14;
+            this.SpectrumSensitivityGroupBox.TabStop = false;
+            this.SpectrumSensitivityGroupBox.Text = "Spectrum Sensitivity (1.0 - 9.9)";
             // 
             // label1
             // 
@@ -265,6 +271,7 @@
             this.textBox1.TabStop = false;
             this.textBox1.Text = "Depending on the number of device (disabled or not) you have, enumerating may tak" +
     "e several minutes.";
+            this.textBox1.Visible = false;
             // 
             // NumberOfBarComboBox
             // 
@@ -276,22 +283,13 @@
             "4",
             "8",
             "16"});
-            this.NumberOfBarComboBox.Location = new System.Drawing.Point(344, 59);
+            this.NumberOfBarComboBox.Location = new System.Drawing.Point(422, 449);
             this.NumberOfBarComboBox.Name = "NumberOfBarComboBox";
             this.NumberOfBarComboBox.Size = new System.Drawing.Size(47, 24);
             this.NumberOfBarComboBox.TabIndex = 7;
             this.NumberOfBarComboBox.ValueMember = "1,2,4,8,16";
+            this.NumberOfBarComboBox.Visible = false;
             this.NumberOfBarComboBox.SelectedIndexChanged += new System.EventHandler(this.NumberOfBarComboBox_SelectedIndexChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(203, 63);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(132, 15);
-            this.label2.TabIndex = 17;
-            this.label2.Text = "Number of Bandwidth :";
             // 
             // PeakholdTimeComboBox
             // 
@@ -308,6 +306,7 @@
             this.PeakholdTimeComboBox.Name = "PeakholdTimeComboBox";
             this.PeakholdTimeComboBox.Size = new System.Drawing.Size(58, 24);
             this.PeakholdTimeComboBox.TabIndex = 20;
+            this.PeakholdTimeComboBox.SelectedIndexChanged += new System.EventHandler(this.PeakholdTimeComboBox_SelectedIndexChanged);
             // 
             // LabelPeakhold
             // 
@@ -344,22 +343,22 @@
             this.PeakholdDescentSpeedTrackBar.Value = 10;
             this.PeakholdDescentSpeedTrackBar.ValueChanged += new System.EventHandler(this.PeakholdDescentSpeedTrackBar_ValueChanged);
             // 
-            // groupBox3
+            // SpectrumPeakholdGroupBox
             // 
-            this.groupBox3.Controls.Add(this.PeakholdDescentSpeedLabel);
-            this.groupBox3.Controls.Add(this.PeakholdDescentSpeedTextBox);
-            this.groupBox3.Controls.Add(this.PeakholdDescentSpeedTrackBar);
-            this.groupBox3.Controls.Add(this.PeakholdCheckBox);
-            this.groupBox3.Controls.Add(this.PeakholdTimeComboBox);
-            this.groupBox3.Controls.Add(this.LabelPeakhold);
-            this.groupBox3.Controls.Add(this.LabelMsec);
-            this.groupBox3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(12, 283);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(390, 103);
-            this.groupBox3.TabIndex = 17;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Spectrum Peakhold";
+            this.SpectrumPeakholdGroupBox.Controls.Add(this.PeakholdDescentSpeedLabel);
+            this.SpectrumPeakholdGroupBox.Controls.Add(this.PeakholdDescentSpeedTextBox);
+            this.SpectrumPeakholdGroupBox.Controls.Add(this.PeakholdDescentSpeedTrackBar);
+            this.SpectrumPeakholdGroupBox.Controls.Add(this.PeakholdCheckBox);
+            this.SpectrumPeakholdGroupBox.Controls.Add(this.PeakholdTimeComboBox);
+            this.SpectrumPeakholdGroupBox.Controls.Add(this.LabelPeakhold);
+            this.SpectrumPeakholdGroupBox.Controls.Add(this.LabelMsec);
+            this.SpectrumPeakholdGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SpectrumPeakholdGroupBox.Location = new System.Drawing.Point(12, 283);
+            this.SpectrumPeakholdGroupBox.Name = "SpectrumPeakholdGroupBox";
+            this.SpectrumPeakholdGroupBox.Size = new System.Drawing.Size(390, 103);
+            this.SpectrumPeakholdGroupBox.TabIndex = 17;
+            this.SpectrumPeakholdGroupBox.TabStop = false;
+            this.SpectrumPeakholdGroupBox.Text = "Spectrum Peakhold";
             // 
             // PeakholdDescentSpeedLabel
             // 
@@ -390,6 +389,7 @@
             this.PeakholdCheckBox.TabIndex = 18;
             this.PeakholdCheckBox.Text = "Enable";
             this.PeakholdCheckBox.UseVisualStyleBackColor = true;
+            this.PeakholdCheckBox.CheckedChanged += new System.EventHandler(this.PeakholdCheckBox_CheckedChanged);
             // 
             // SSaverCheckBox
             // 
@@ -405,8 +405,8 @@
             // ChannelLayoutGroup
             // 
             this.ChannelLayoutGroup.Controls.Add(this.FlipGroup);
-            this.ChannelLayoutGroup.Controls.Add(this.HorizontalRadio);
-            this.ChannelLayoutGroup.Controls.Add(this.VerticalRadio);
+            this.ChannelLayoutGroup.Controls.Add(this.HorizontalRadioButton);
+            this.ChannelLayoutGroup.Controls.Add(this.VerticalRadioButton);
             this.ChannelLayoutGroup.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ChannelLayoutGroup.Location = new System.Drawing.Point(6, 44);
             this.ChannelLayoutGroup.Name = "ChannelLayoutGroup";
@@ -417,9 +417,9 @@
             // 
             // FlipGroup
             // 
-            this.FlipGroup.Controls.Add(this.NoFlipRadio);
-            this.FlipGroup.Controls.Add(this.RightFlipRadio);
-            this.FlipGroup.Controls.Add(this.LeftFlipRadio);
+            this.FlipGroup.Controls.Add(this.NoFlipRadioButton);
+            this.FlipGroup.Controls.Add(this.RightFlipRadioButton);
+            this.FlipGroup.Controls.Add(this.LeftFlipRadioButton);
             this.FlipGroup.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FlipGroup.Location = new System.Drawing.Point(28, 75);
             this.FlipGroup.Name = "FlipGroup";
@@ -428,65 +428,65 @@
             this.FlipGroup.TabStop = false;
             this.FlipGroup.Text = "Horizontal Flip";
             // 
-            // NoFlipRadio
+            // NoFlipRadioButton
             // 
-            this.NoFlipRadio.AutoSize = true;
-            this.NoFlipRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.NoFlipRadio.Location = new System.Drawing.Point(18, 23);
-            this.NoFlipRadio.Name = "NoFlipRadio";
-            this.NoFlipRadio.Size = new System.Drawing.Size(64, 19);
-            this.NoFlipRadio.TabIndex = 28;
-            this.NoFlipRadio.TabStop = true;
-            this.NoFlipRadio.Text = "No Flip";
-            this.NoFlipRadio.UseVisualStyleBackColor = true;
+            this.NoFlipRadioButton.AutoSize = true;
+            this.NoFlipRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NoFlipRadioButton.Location = new System.Drawing.Point(18, 23);
+            this.NoFlipRadioButton.Name = "NoFlipRadioButton";
+            this.NoFlipRadioButton.Size = new System.Drawing.Size(64, 19);
+            this.NoFlipRadioButton.TabIndex = 28;
+            this.NoFlipRadioButton.TabStop = true;
+            this.NoFlipRadioButton.Text = "No Flip";
+            this.NoFlipRadioButton.UseVisualStyleBackColor = true;
             // 
-            // RightFlipRadio
+            // RightFlipRadioButton
             // 
-            this.RightFlipRadio.AutoSize = true;
-            this.RightFlipRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RightFlipRadio.Location = new System.Drawing.Point(18, 72);
-            this.RightFlipRadio.Name = "RightFlipRadio";
-            this.RightFlipRadio.Size = new System.Drawing.Size(113, 19);
-            this.RightFlipRadio.TabIndex = 30;
-            this.RightFlipRadio.TabStop = true;
-            this.RightFlipRadio.Text = "R.ch (Center Hi)";
-            this.RightFlipRadio.UseVisualStyleBackColor = true;
+            this.RightFlipRadioButton.AutoSize = true;
+            this.RightFlipRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RightFlipRadioButton.Location = new System.Drawing.Point(18, 72);
+            this.RightFlipRadioButton.Name = "RightFlipRadioButton";
+            this.RightFlipRadioButton.Size = new System.Drawing.Size(113, 19);
+            this.RightFlipRadioButton.TabIndex = 30;
+            this.RightFlipRadioButton.TabStop = true;
+            this.RightFlipRadioButton.Text = "R.ch (Center Hi)";
+            this.RightFlipRadioButton.UseVisualStyleBackColor = true;
             // 
-            // LeftFlipRadio
+            // LeftFlipRadioButton
             // 
-            this.LeftFlipRadio.AutoSize = true;
-            this.LeftFlipRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LeftFlipRadio.Location = new System.Drawing.Point(18, 47);
-            this.LeftFlipRadio.Name = "LeftFlipRadio";
-            this.LeftFlipRadio.Size = new System.Drawing.Size(122, 19);
-            this.LeftFlipRadio.TabIndex = 29;
-            this.LeftFlipRadio.TabStop = true;
-            this.LeftFlipRadio.Text = "L.ch (Center Low)";
-            this.LeftFlipRadio.UseVisualStyleBackColor = true;
+            this.LeftFlipRadioButton.AutoSize = true;
+            this.LeftFlipRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LeftFlipRadioButton.Location = new System.Drawing.Point(18, 47);
+            this.LeftFlipRadioButton.Name = "LeftFlipRadioButton";
+            this.LeftFlipRadioButton.Size = new System.Drawing.Size(122, 19);
+            this.LeftFlipRadioButton.TabIndex = 29;
+            this.LeftFlipRadioButton.TabStop = true;
+            this.LeftFlipRadioButton.Text = "L.ch (Center Low)";
+            this.LeftFlipRadioButton.UseVisualStyleBackColor = true;
             // 
-            // HorizontalRadio
+            // HorizontalRadioButton
             // 
-            this.HorizontalRadio.AutoSize = true;
-            this.HorizontalRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HorizontalRadio.Location = new System.Drawing.Point(13, 48);
-            this.HorizontalRadio.Name = "HorizontalRadio";
-            this.HorizontalRadio.Size = new System.Drawing.Size(80, 19);
-            this.HorizontalRadio.TabIndex = 26;
-            this.HorizontalRadio.TabStop = true;
-            this.HorizontalRadio.Text = "Horizontal";
-            this.HorizontalRadio.UseVisualStyleBackColor = true;
+            this.HorizontalRadioButton.AutoSize = true;
+            this.HorizontalRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HorizontalRadioButton.Location = new System.Drawing.Point(13, 48);
+            this.HorizontalRadioButton.Name = "HorizontalRadioButton";
+            this.HorizontalRadioButton.Size = new System.Drawing.Size(80, 19);
+            this.HorizontalRadioButton.TabIndex = 26;
+            this.HorizontalRadioButton.TabStop = true;
+            this.HorizontalRadioButton.Text = "Horizontal";
+            this.HorizontalRadioButton.UseVisualStyleBackColor = true;
             // 
-            // VerticalRadio
+            // VerticalRadioButton
             // 
-            this.VerticalRadio.AutoSize = true;
-            this.VerticalRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.VerticalRadio.Location = new System.Drawing.Point(13, 23);
-            this.VerticalRadio.Name = "VerticalRadio";
-            this.VerticalRadio.Size = new System.Drawing.Size(64, 19);
-            this.VerticalRadio.TabIndex = 25;
-            this.VerticalRadio.TabStop = true;
-            this.VerticalRadio.Text = "Vertical";
-            this.VerticalRadio.UseVisualStyleBackColor = true;
+            this.VerticalRadioButton.AutoSize = true;
+            this.VerticalRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.VerticalRadioButton.Location = new System.Drawing.Point(13, 23);
+            this.VerticalRadioButton.Name = "VerticalRadioButton";
+            this.VerticalRadioButton.Size = new System.Drawing.Size(64, 19);
+            this.VerticalRadioButton.TabIndex = 25;
+            this.VerticalRadioButton.TabStop = true;
+            this.VerticalRadioButton.Text = "Vertical";
+            this.VerticalRadioButton.UseVisualStyleBackColor = true;
             // 
             // AlwaysOnTopCheckBox
             // 
@@ -499,41 +499,42 @@
             this.AlwaysOnTopCheckBox.Text = "Always on Top";
             this.AlwaysOnTopCheckBox.UseVisualStyleBackColor = true;
             // 
-            // groupBox5
+            // NoCGroupBox
             // 
-            this.groupBox5.Controls.Add(this.StereoRadio);
-            this.groupBox5.Controls.Add(this.MonoRadio);
-            this.groupBox5.Controls.Add(this.ChannelLayoutGroup);
-            this.groupBox5.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox5.Location = new System.Drawing.Point(422, 204);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(220, 228);
-            this.groupBox5.TabIndex = 32;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Number of Channels (Spectrum)";
+            this.NoCGroupBox.Controls.Add(this.StereoRadioButton);
+            this.NoCGroupBox.Controls.Add(this.MonoRadioButton);
+            this.NoCGroupBox.Controls.Add(this.ChannelLayoutGroup);
+            this.NoCGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NoCGroupBox.Location = new System.Drawing.Point(422, 204);
+            this.NoCGroupBox.Name = "NoCGroupBox";
+            this.NoCGroupBox.Size = new System.Drawing.Size(220, 228);
+            this.NoCGroupBox.TabIndex = 32;
+            this.NoCGroupBox.TabStop = false;
+            this.NoCGroupBox.Text = "Number of Channels (Spectrum)";
             // 
-            // StereoRadio
+            // StereoRadioButton
             // 
-            this.StereoRadio.AutoSize = true;
-            this.StereoRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.StereoRadio.Location = new System.Drawing.Point(140, 19);
-            this.StereoRadio.Name = "StereoRadio";
-            this.StereoRadio.Size = new System.Drawing.Size(74, 19);
-            this.StereoRadio.TabIndex = 34;
-            this.StereoRadio.Text = "2: Stereo";
-            this.StereoRadio.UseVisualStyleBackColor = true;
+            this.StereoRadioButton.AutoSize = true;
+            this.StereoRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.StereoRadioButton.Location = new System.Drawing.Point(140, 19);
+            this.StereoRadioButton.Name = "StereoRadioButton";
+            this.StereoRadioButton.Size = new System.Drawing.Size(74, 19);
+            this.StereoRadioButton.TabIndex = 34;
+            this.StereoRadioButton.Text = "2: Stereo";
+            this.StereoRadioButton.UseVisualStyleBackColor = true;
+            this.StereoRadioButton.CheckedChanged += new System.EventHandler(this.MonoRadioButton_CheckedChanged);
             // 
-            // MonoRadio
+            // MonoRadioButton
             // 
-            this.MonoRadio.AutoSize = true;
-            this.MonoRadio.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MonoRadio.Location = new System.Drawing.Point(19, 20);
-            this.MonoRadio.Name = "MonoRadio";
-            this.MonoRadio.Size = new System.Drawing.Size(119, 19);
-            this.MonoRadio.TabIndex = 33;
-            this.MonoRadio.Text = "1: Mono(L+R Mix)";
-            this.MonoRadio.UseVisualStyleBackColor = true;
-            this.MonoRadio.CheckedChanged += new System.EventHandler(this.MonoRadio_CheckedChanged);
+            this.MonoRadioButton.AutoSize = true;
+            this.MonoRadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MonoRadioButton.Location = new System.Drawing.Point(19, 20);
+            this.MonoRadioButton.Name = "MonoRadioButton";
+            this.MonoRadioButton.Size = new System.Drawing.Size(119, 19);
+            this.MonoRadioButton.TabIndex = 33;
+            this.MonoRadioButton.Text = "1: Mono(L+R Mix)";
+            this.MonoRadioButton.UseVisualStyleBackColor = true;
+            this.MonoRadioButton.CheckedChanged += new System.EventHandler(this.MonoRadioButton_CheckedChanged);
             // 
             // ShowCounterCheckBox
             // 
@@ -596,20 +597,19 @@
             // DeviceResetButton
             // 
             this.DeviceResetButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DeviceResetButton.Location = new System.Drawing.Point(521, 28);
+            this.DeviceResetButton.Location = new System.Drawing.Point(513, 27);
             this.DeviceResetButton.Name = "DeviceResetButton";
             this.DeviceResetButton.Size = new System.Drawing.Size(107, 23);
             this.DeviceResetButton.TabIndex = 52;
             this.DeviceResetButton.Text = "Reload Device";
             this.DeviceResetButton.UseVisualStyleBackColor = true;
-            this.DeviceResetButton.EnabledChanged += new System.EventHandler(this.DeviceResetButton_EnabledChanged);
-            this.DeviceResetButton.Click += new System.EventHandler(this.DeviceResetButton_Click);
+            this.DeviceResetButton.Click += new System.EventHandler(this.DeviceReloadButton_Click);
             // 
             // FrequencyLabel
             // 
             this.FrequencyLabel.AutoSize = true;
             this.FrequencyLabel.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FrequencyLabel.Location = new System.Drawing.Point(458, 31);
+            this.FrequencyLabel.Location = new System.Drawing.Point(454, 31);
             this.FrequencyLabel.Name = "FrequencyLabel";
             this.FrequencyLabel.Size = new System.Drawing.Size(59, 15);
             this.FrequencyLabel.TabIndex = 53;
@@ -658,14 +658,13 @@
             this.AutoReloadCheckBox.TabIndex = 57;
             this.AutoReloadCheckBox.Text = "Auto Reload";
             this.AutoReloadCheckBox.UseVisualStyleBackColor = true;
-            this.AutoReloadCheckBox.CheckedChanged += new System.EventHandler(this.AutoReloadCheckBox_CheckedChanged);
             // 
             // RefreshModeGroupBox
             // 
             this.RefreshModeGroupBox.Controls.Add(this.RefreshFastRadio);
             this.RefreshModeGroupBox.Controls.Add(this.RefreshNormalRadio);
             this.RefreshModeGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RefreshModeGroupBox.Location = new System.Drawing.Point(12, 207);
+            this.RefreshModeGroupBox.Location = new System.Drawing.Point(12, 211);
             this.RefreshModeGroupBox.Name = "RefreshModeGroupBox";
             this.RefreshModeGroupBox.Size = new System.Drawing.Size(185, 49);
             this.RefreshModeGroupBox.TabIndex = 58;
@@ -696,17 +695,17 @@
             this.RefreshNormalRadio.Text = "Normal";
             this.RefreshNormalRadio.UseVisualStyleBackColor = true;
             // 
-            // groupBox4
+            // LevelMeterSensitivityGroupBox
             // 
-            this.groupBox4.Controls.Add(this.LevelSensitivityTrackBar);
-            this.groupBox4.Controls.Add(this.LevelSensitivityTextBox);
-            this.groupBox4.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox4.Location = new System.Drawing.Point(16, 459);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(386, 56);
-            this.groupBox4.TabIndex = 59;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Level Meter Sensitivity (1.0 - 2.0)";
+            this.LevelMeterSensitivityGroupBox.Controls.Add(this.LevelSensitivityTrackBar);
+            this.LevelMeterSensitivityGroupBox.Controls.Add(this.LevelSensitivityTextBox);
+            this.LevelMeterSensitivityGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LevelMeterSensitivityGroupBox.Location = new System.Drawing.Point(16, 459);
+            this.LevelMeterSensitivityGroupBox.Name = "LevelMeterSensitivityGroupBox";
+            this.LevelMeterSensitivityGroupBox.Size = new System.Drawing.Size(386, 56);
+            this.LevelMeterSensitivityGroupBox.TabIndex = 59;
+            this.LevelMeterSensitivityGroupBox.TabStop = false;
+            this.LevelMeterSensitivityGroupBox.Text = "Level Meter Sensitivity (1.0 - 2.0)";
             // 
             // LevelSensitivityTrackBar
             // 
@@ -745,18 +744,52 @@
             // 
             // LevelStreamPanel
             // 
+            this.LevelStreamPanel.Controls.Add(this.AlfaTextBox);
+            this.LevelStreamPanel.Controls.Add(this.AlfaLabel);
+            this.LevelStreamPanel.Controls.Add(this.StreamColorButton);
             this.LevelStreamPanel.Controls.Add(this.CombineStreamRadioButton);
             this.LevelStreamPanel.Controls.Add(this.SeparateStreamRadioButton);
             this.LevelStreamPanel.Location = new System.Drawing.Point(217, 232);
             this.LevelStreamPanel.Name = "LevelStreamPanel";
-            this.LevelStreamPanel.Size = new System.Drawing.Size(179, 22);
+            this.LevelStreamPanel.Size = new System.Drawing.Size(199, 45);
             this.LevelStreamPanel.TabIndex = 61;
+            // 
+            // AlfaTextBox
+            // 
+            this.AlfaTextBox.Font = new System.Drawing.Font("Arial", 8F);
+            this.AlfaTextBox.Location = new System.Drawing.Point(148, 20);
+            this.AlfaTextBox.Name = "AlfaTextBox";
+            this.AlfaTextBox.Size = new System.Drawing.Size(37, 20);
+            this.AlfaTextBox.TabIndex = 64;
+            this.AlfaTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.AlfaTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AlfaTextBox_KeyDown);
+            this.AlfaTextBox.Leave += new System.EventHandler(this.AlfaTextBox_Leave);
+            // 
+            // AlfaLabel
+            // 
+            this.AlfaLabel.AutoSize = true;
+            this.AlfaLabel.Font = new System.Drawing.Font("Arial", 8F);
+            this.AlfaLabel.Location = new System.Drawing.Point(75, 22);
+            this.AlfaLabel.Name = "AlfaLabel";
+            this.AlfaLabel.Size = new System.Drawing.Size(72, 14);
+            this.AlfaLabel.TabIndex = 65;
+            this.AlfaLabel.Text = "Alfa (0 - 255)";
+            // 
+            // StreamColorButton
+            // 
+            this.StreamColorButton.Font = new System.Drawing.Font("Arial", 8F);
+            this.StreamColorButton.Location = new System.Drawing.Point(4, 20);
+            this.StreamColorButton.Name = "StreamColorButton";
+            this.StreamColorButton.Size = new System.Drawing.Size(65, 19);
+            this.StreamColorButton.TabIndex = 65;
+            this.StreamColorButton.Text = "Fore Color";
+            this.StreamColorButton.UseVisualStyleBackColor = true;
             // 
             // CombineStreamRadioButton
             // 
             this.CombineStreamRadioButton.AutoSize = true;
             this.CombineStreamRadioButton.Font = new System.Drawing.Font("Arial", 8F);
-            this.CombineStreamRadioButton.Location = new System.Drawing.Point(78, 1);
+            this.CombineStreamRadioButton.Location = new System.Drawing.Point(4, 3);
             this.CombineStreamRadioButton.Name = "CombineStreamRadioButton";
             this.CombineStreamRadioButton.Size = new System.Drawing.Size(66, 18);
             this.CombineStreamRadioButton.TabIndex = 1;
@@ -767,56 +800,80 @@
             // 
             this.SeparateStreamRadioButton.AutoSize = true;
             this.SeparateStreamRadioButton.Font = new System.Drawing.Font("Arial", 8F);
-            this.SeparateStreamRadioButton.Location = new System.Drawing.Point(4, 1);
+            this.SeparateStreamRadioButton.Location = new System.Drawing.Point(76, 3);
             this.SeparateStreamRadioButton.Name = "SeparateStreamRadioButton";
             this.SeparateStreamRadioButton.Size = new System.Drawing.Size(69, 18);
             this.SeparateStreamRadioButton.TabIndex = 0;
             this.SeparateStreamRadioButton.Text = "Separate";
             this.SeparateStreamRadioButton.UseVisualStyleBackColor = true;
             // 
-            // StreamColorButton
+            // NumberOfBarsPanel
             // 
-            this.StreamColorButton.Font = new System.Drawing.Font("Arial", 8F);
-            this.StreamColorButton.Location = new System.Drawing.Point(221, 252);
-            this.StreamColorButton.Name = "StreamColorButton";
-            this.StreamColorButton.Size = new System.Drawing.Size(65, 19);
-            this.StreamColorButton.TabIndex = 62;
-            this.StreamColorButton.Text = "Fore Color";
-            this.StreamColorButton.UseVisualStyleBackColor = true;
+            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar4RadioButton);
+            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar8RadioButton);
+            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar16RadioButton);
+            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBarLabel);
+            this.NumberOfBarsPanel.Location = new System.Drawing.Point(204, 55);
+            this.NumberOfBarsPanel.Name = "NumberOfBarsPanel";
+            this.NumberOfBarsPanel.Size = new System.Drawing.Size(248, 21);
+            this.NumberOfBarsPanel.TabIndex = 62;
             // 
-            // AlfaTextBox
+            // NumberOfBar4RadioButton
             // 
-            this.AlfaTextBox.Font = new System.Drawing.Font("Arial", 8F);
-            this.AlfaTextBox.Location = new System.Drawing.Point(365, 252);
-            this.AlfaTextBox.Name = "AlfaTextBox";
-            this.AlfaTextBox.Size = new System.Drawing.Size(37, 20);
-            this.AlfaTextBox.TabIndex = 63;
-            this.AlfaTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.AlfaTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AlfaTextBox_KeyDown);
-            this.AlfaTextBox.Leave += new System.EventHandler(this.AlfaTextBox_Leave);
+            this.NumberOfBar4RadioButton.AutoSize = true;
+            this.NumberOfBar4RadioButton.Location = new System.Drawing.Point(216, 2);
+            this.NumberOfBar4RadioButton.Name = "NumberOfBar4RadioButton";
+            this.NumberOfBar4RadioButton.Size = new System.Drawing.Size(29, 16);
+            this.NumberOfBar4RadioButton.TabIndex = 21;
+            this.NumberOfBar4RadioButton.TabStop = true;
+            this.NumberOfBar4RadioButton.Text = "4";
+            this.NumberOfBar4RadioButton.UseVisualStyleBackColor = true;
+            this.NumberOfBar4RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
             // 
-            // AlfaLabel
+            // NumberOfBar8RadioButton
             // 
-            this.AlfaLabel.AutoSize = true;
-            this.AlfaLabel.Font = new System.Drawing.Font("Arial", 8F);
-            this.AlfaLabel.Location = new System.Drawing.Point(292, 254);
-            this.AlfaLabel.Name = "AlfaLabel";
-            this.AlfaLabel.Size = new System.Drawing.Size(72, 14);
-            this.AlfaLabel.TabIndex = 64;
-            this.AlfaLabel.Text = "Alfa (0 - 255)";
+            this.NumberOfBar8RadioButton.AutoSize = true;
+            this.NumberOfBar8RadioButton.Location = new System.Drawing.Point(182, 2);
+            this.NumberOfBar8RadioButton.Name = "NumberOfBar8RadioButton";
+            this.NumberOfBar8RadioButton.Size = new System.Drawing.Size(29, 16);
+            this.NumberOfBar8RadioButton.TabIndex = 20;
+            this.NumberOfBar8RadioButton.TabStop = true;
+            this.NumberOfBar8RadioButton.Text = "8";
+            this.NumberOfBar8RadioButton.UseVisualStyleBackColor = true;
+            this.NumberOfBar8RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
+            // 
+            // NumberOfBar16RadioButton
+            // 
+            this.NumberOfBar16RadioButton.AutoSize = true;
+            this.NumberOfBar16RadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.NumberOfBar16RadioButton.Location = new System.Drawing.Point(141, 2);
+            this.NumberOfBar16RadioButton.Name = "NumberOfBar16RadioButton";
+            this.NumberOfBar16RadioButton.Size = new System.Drawing.Size(35, 16);
+            this.NumberOfBar16RadioButton.TabIndex = 19;
+            this.NumberOfBar16RadioButton.TabStop = true;
+            this.NumberOfBar16RadioButton.Text = "16";
+            this.NumberOfBar16RadioButton.UseVisualStyleBackColor = true;
+            this.NumberOfBar16RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
+            // 
+            // NumberOfBarLabel
+            // 
+            this.NumberOfBarLabel.AutoSize = true;
+            this.NumberOfBarLabel.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NumberOfBarLabel.Location = new System.Drawing.Point(3, 2);
+            this.NumberOfBarLabel.Name = "NumberOfBarLabel";
+            this.NumberOfBarLabel.Size = new System.Drawing.Size(132, 15);
+            this.NumberOfBarLabel.TabIndex = 18;
+            this.NumberOfBarLabel.Text = "Number of Bandwidth :";
             // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(668, 590);
+            this.ClientSize = new System.Drawing.Size(668, 599);
             this.ControlBox = false;
-            this.Controls.Add(this.AlfaLabel);
-            this.Controls.Add(this.AlfaTextBox);
-            this.Controls.Add(this.StreamColorButton);
             this.Controls.Add(this.LevelStreamPanel);
             this.Controls.Add(this.LevelStreamCheckBox);
-            this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.LevelMeterSensitivityGroupBox);
             this.Controls.Add(this.RefreshModeGroupBox);
             this.Controls.Add(this.AutoReloadCheckBox);
             this.Controls.Add(this.LevelMeterCheckBox);
@@ -824,24 +881,25 @@
             this.Controls.Add(this.RelLabel);
             this.Controls.Add(this.FrequencyLabel);
             this.Controls.Add(this.DeviceResetButton);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.SpectrumPeakholdGroupBox);
             this.Controls.Add(this.ExitAppButton);
             this.Controls.Add(this.LinkLabel1);
             this.Controls.Add(this.HideTitleCheckBox);
             this.Controls.Add(this.HideFreqCheckBox);
             this.Controls.Add(this.ShowCounterCheckBox);
-            this.Controls.Add(this.groupBox5);
+            this.Controls.Add(this.NoCGroupBox);
             this.Controls.Add(this.AlwaysOnTopCheckBox);
             this.Controls.Add(this.SSaverCheckBox);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.NumberOfBarComboBox);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.SpectrumSensitivityGroupBox);
             this.Controls.Add(this.EnumerateButton);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.SpectrumColorShemeGroupBox);
             this.Controls.Add(this.CloseButton);
-            this.Controls.Add(this.devicelist);
+            this.Controls.Add(this.DeviceListComboBox);
+            this.Controls.Add(this.NumberOfBarsPanel);
+            this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
@@ -853,50 +911,47 @@
             this.DoubleClick += new System.EventHandler(this.Form2_DoubleClick);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form2_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.SpectrumColorShemeGroupBox.ResumeLayout(false);
+            this.SpectrumColorShemeGroupBox.PerformLayout();
+            this.SpectrumSensitivityGroupBox.ResumeLayout(false);
+            this.SpectrumSensitivityGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PeakholdDescentSpeedTrackBar)).EndInit();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.SpectrumPeakholdGroupBox.ResumeLayout(false);
+            this.SpectrumPeakholdGroupBox.PerformLayout();
             this.ChannelLayoutGroup.ResumeLayout(false);
             this.ChannelLayoutGroup.PerformLayout();
             this.FlipGroup.ResumeLayout(false);
             this.FlipGroup.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
+            this.NoCGroupBox.ResumeLayout(false);
+            this.NoCGroupBox.PerformLayout();
             this.RefreshModeGroupBox.ResumeLayout(false);
             this.RefreshModeGroupBox.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.LevelMeterSensitivityGroupBox.ResumeLayout(false);
+            this.LevelMeterSensitivityGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LevelSensitivityTrackBar)).EndInit();
             this.LevelStreamPanel.ResumeLayout(false);
             this.LevelStreamPanel.PerformLayout();
+            this.NumberOfBarsPanel.ResumeLayout(false);
+            this.NumberOfBarsPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.GroupBox groupBox1;
         public System.Windows.Forms.Button EnumerateButton;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.GroupBox groupBox5;
-        protected internal System.Windows.Forms.RadioButton NoFlipRadio;
-        protected internal System.Windows.Forms.RadioButton RightFlipRadio;
-        protected internal System.Windows.Forms.RadioButton LeftFlipRadio;
-        protected internal System.Windows.Forms.ComboBox devicelist;
+        protected internal System.Windows.Forms.RadioButton NoFlipRadioButton;
+        protected internal System.Windows.Forms.RadioButton RightFlipRadioButton;
+        protected internal System.Windows.Forms.RadioButton LeftFlipRadioButton;
+        protected internal System.Windows.Forms.ComboBox DeviceListComboBox;
         protected internal System.Windows.Forms.TrackBar SensitivityTrackBar;
         protected internal System.Windows.Forms.ComboBox NumberOfBarComboBox;
-        protected internal System.Windows.Forms.RadioButton ClassicRadio;
-        protected internal System.Windows.Forms.RadioButton PrisumRadio;
-        protected internal System.Windows.Forms.RadioButton SimpleRadio;
-        protected internal System.Windows.Forms.RadioButton RainbowRadio;
+        protected internal System.Windows.Forms.RadioButton ClassicRadioButton;
+        protected internal System.Windows.Forms.RadioButton PrisumRadioButton;
+        protected internal System.Windows.Forms.RadioButton SimpleRadioButton;
+        protected internal System.Windows.Forms.RadioButton RainbowRadioButton;
         protected internal System.Windows.Forms.ComboBox PeakholdTimeComboBox;
         protected internal System.Windows.Forms.TrackBar PeakholdDescentSpeedTrackBar;
         protected internal System.Windows.Forms.CheckBox SSaverCheckBox;
@@ -904,10 +959,10 @@
         protected internal System.Windows.Forms.CheckBox AlwaysOnTopCheckBox;
         protected internal System.Windows.Forms.TextBox SensitivityTextBox;
         protected internal System.Windows.Forms.TextBox PeakholdDescentSpeedTextBox;
-        protected internal System.Windows.Forms.RadioButton HorizontalRadio;
-        protected internal System.Windows.Forms.RadioButton VerticalRadio;
-        protected internal System.Windows.Forms.RadioButton StereoRadio;
-        protected internal System.Windows.Forms.RadioButton MonoRadio;
+        protected internal System.Windows.Forms.RadioButton HorizontalRadioButton;
+        protected internal System.Windows.Forms.RadioButton VerticalRadioButton;
+        protected internal System.Windows.Forms.RadioButton StereoRadioButton;
+        protected internal System.Windows.Forms.RadioButton MonoRadioButton;
         protected internal System.Windows.Forms.CheckBox ShowCounterCheckBox;
         protected internal System.Windows.Forms.GroupBox FlipGroup;
         protected internal System.Windows.Forms.Label LabelPeakhold;
@@ -927,17 +982,26 @@
         private System.Windows.Forms.GroupBox RefreshModeGroupBox;
         protected internal System.Windows.Forms.RadioButton RefreshFastRadio;
         protected internal System.Windows.Forms.RadioButton RefreshNormalRadio;
-        private System.Windows.Forms.GroupBox groupBox4;
         protected internal System.Windows.Forms.TrackBar LevelSensitivityTrackBar;
         protected internal System.Windows.Forms.TextBox LevelSensitivityTextBox;
         protected internal System.Windows.Forms.CheckBox LevelStreamCheckBox;
         protected internal System.Windows.Forms.RadioButton CombineStreamRadioButton;
         protected internal System.Windows.Forms.RadioButton SeparateStreamRadioButton;
-        protected internal System.Windows.Forms.Button StreamColorButton;
         protected internal System.Windows.Forms.CheckBox RainbowFlipCheckBox;
         protected internal System.Windows.Forms.Panel LevelStreamPanel;
+        protected internal System.Windows.Forms.Label PeakholdDescentSpeedLabel;
         protected internal System.Windows.Forms.TextBox AlfaTextBox;
         protected internal System.Windows.Forms.Label AlfaLabel;
-        protected internal System.Windows.Forms.Label PeakholdDescentSpeedLabel;
+        protected internal System.Windows.Forms.Button StreamColorButton;
+        protected internal System.Windows.Forms.GroupBox SpectrumColorShemeGroupBox;
+        protected internal System.Windows.Forms.GroupBox SpectrumPeakholdGroupBox;
+        protected internal System.Windows.Forms.GroupBox SpectrumSensitivityGroupBox;
+        protected internal System.Windows.Forms.GroupBox NoCGroupBox;
+        protected internal System.Windows.Forms.GroupBox LevelMeterSensitivityGroupBox;
+        protected internal System.Windows.Forms.Label NumberOfBarLabel;
+        protected internal System.Windows.Forms.RadioButton NumberOfBar16RadioButton;
+        protected internal System.Windows.Forms.RadioButton NumberOfBar4RadioButton;
+        protected internal System.Windows.Forms.RadioButton NumberOfBar8RadioButton;
+        protected internal System.Windows.Forms.Panel NumberOfBarsPanel;
     }
 }

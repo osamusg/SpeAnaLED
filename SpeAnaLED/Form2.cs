@@ -1,113 +1,157 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace SpeAnaLED
 {
     public partial class Form2 : Form
     {
-        // go public controls for Analyzer class
-        public ComboBox Devicelist { get { return devicelist; } }
-       
+        private readonly Form1 form1;
+
+        // common
+        public int channel;
+        public int numberOfBar;
+        //public ComboBox Devicelist { get { return DeviceListComboBox; } }
+        private static int deviceNumber;
+
+        // layput
+        public int borderSize;
+        public int titleHeight;
+        public readonly int defaultBorderSize;
+        public readonly int defaultTitleHeight;
+        public int form3Top, form3Left;                             // for load config
+        public int form3Width, form3Height;                         // for load config
+        public int form4Top, form4Left;                             // for load config
+        public int form4Width, form4Height;                         // for load config
+        
+        // drawing
+        private int currentAlfaChannel;
+
+        // calculations
+        public int counterCycle;
+        public int peakHoldTimeMsec;
+        public float pow;
+
+        // constants
+        public const int maxChannel = 2;
+        public const int maxNumberOfBar = 16;
+        public const int timerIntervalMilliSeconds = 25;
+        public const float cycleMultiplyer = 50f / 16 / 2;          // 1.5625f = const50 / maxNumberOfBars / maxChannels
+        public const int lmPBWidth = 13 * (24 + 6);                 // level meter PictureBox width = 390 = 13LEDs * (24+6)px
+        private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
+
         // event handler (Fire)
         public event EventHandler ClearSpectrum;
         public event EventHandler AlfaChannelChanged;
         public event EventHandler Form_DoubleClick;
+        public event EventHandler CounterCycleChanged;
+        public event EventHandler NumberOfChannelChanged;
+        public event EventHandler NumberOfBarChanged;
 
-        private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
-        private static bool autoReloadChecked;
-        public int currentAlfaChannel;
+        // static functions
+        public static int DeviceNumber { get { return deviceNumber; } set { deviceNumber = value; } }
 
-        public Form2()
+        public Form2(Form1 _form1)
         {
             InitializeComponent();
+
+            form1 = _form1;
+            RelLabel.Text = form1.relText;
+
+            // subscribe
+            form1.DispatchAnalyzerIsBusy += AnalyzerIsBusy;
+
+            borderSize = defaultBorderSize = (form1.Width - form1.ClientSize.Width) / 2;
+            titleHeight = defaultTitleHeight = form1.Height - form1.ClientSize.Height - borderSize * 2;
+
         }
 
-        public static bool AutoReloadChecked { get { return autoReloadChecked; } }
+        public void Init()
+        { 
+            // after config loaded,
 
-        private void Form2_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Escape)
-            {
-                e.SuppressKeyPress = true;      // suppress bell rings
-                this.Visible = false;
-                this.Owner.Activate();          // prevent form1 go behind
-            }
+            // Params
+            //counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * cycleMultiplyer=50 * (float)(numberOfBar * channel / maxNumberOfBar));
+            counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
+            // default hold time. I don't know why "* cycleMultiplyer" is necessary. This is based on actual measurements of physical sensations.
+            
+            // Controls
+            NumberOfBarComboBox.SelectedIndex = NumberOfBarComboBox.Items.IndexOf(numberOfBar.ToString());
+            PeakholdTimeComboBox.SelectedIndex = PeakholdTimeComboBox.Items.IndexOf(peakHoldTimeMsec.ToString());
+            SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
+            PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
+            LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
+            RefreshFastRadio.Checked = RefreshFastRadio.Checked;
+            HideSpectrumWindowCheckBox.Checked = !form1.form1Visible;
+            if (numberOfBar == 16) NumberOfBar16RadioButton.Checked = true;
+            else if (numberOfBar == 8) NumberOfBar8RadioButton.Checked = true;
+            else NumberOfBar4RadioButton.Checked = true;
+
+            // Enabling
+            if (channel < 2) ChannelLayoutGroup.Enabled = false;
+            LabelPeakhold.Enabled = LabelMsec.Enabled = PeakholdTimeComboBox.Enabled = PeakholdCheckBox.Checked;
+            FlipGroup.Enabled = HorizontalRadioButton.Checked;
+            HideSpectrumWindowCheckBox.Enabled = (LevelMeterCheckBox.Checked || LevelStreamCheckBox.Checked);
+            LevelStreamPanel.Enabled = LevelStreamCheckBox.Checked;
+
+#if DEBUG
+            ShowCounterCheckBox.Visible = true;
+#endif
         }
 
-        private void Form2_DoubleClick(object sender, EventArgs e)
+        private void AnalyzerIsBusy(object sender, CheckedEventArgs ce)
         {
-            Form_DoubleClick?.Invoke(sender, EventArgs.Empty);
+            EnumerateButton.Enabled =
+            DeviceResetButton.Enabled =
+            AutoReloadCheckBox.Enabled = !ce.Checked;
         }
 
-        private void CloseButton_Click(object sender, EventArgs e)
+        private void DeviceListComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.Visible = false;
+            if (Form1.inInit) return;
+            deviceNumber = Convert.ToInt16(DeviceListComboBox.SelectedItem.ToString().Split(' ')[0]);
         }
 
         private void NumberOfBarComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ClearSpectrum?.Invoke(this, EventArgs.Empty);
-            if (devicelist.SelectedIndex == -1)
-            {
-                devicelist.Items.Clear();
-                devicelist.Items.Add("Please Enumerate Devices");
-                devicelist.SelectedIndex = 0;
-            }
+            numberOfBar = Convert.ToInt16(NumberOfBarComboBox.SelectedItem);
+            counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
+            CounterCycleChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SensitivityTrackBar_ValueChanged(object sender, EventArgs e)
+        private void NumberOfBarRadioButtonCheckedChanged(object sender, EventArgs e)
         {
-            SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
+            int nob = 16;
+            if (NumberOfBar8RadioButton.Checked) nob = 8;
+            else if (NumberOfBar4RadioButton.Checked) nob = 4;
+            numberOfBar = nob;
+            counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
+            NumberOfBarChanged?.Invoke(this, EventArgs.Empty);  // == Also CounterCycle will be changed
         }
 
-        private void SensitivityTextBox_KeyDown(object sender, KeyEventArgs e)
+        private void PeakholdTimeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Return)
-            {
-                e.SuppressKeyPress = true;      // suppress bell rings
-                try
-                {
-                    int SensitivityChangedValue = Convert.ToInt16(float.Parse(SensitivityTextBox.Text) * 10f);
-                    if (SensitivityChangedValue != SensitivityTrackBar.Value)
-                    {
-                        if (SensitivityChangedValue >= 10 && SensitivityChangedValue < 100)
-                            SensitivityTrackBar.Value = SensitivityChangedValue;
-                        else
-                        {
-                            System.Media.SystemSounds.Exclamation.Play();
-                            SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
-                        }
-                    }
-                }
-                catch
-                {
-                    System.Media.SystemSounds.Exclamation.Play();
-                    SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
-                }
-            }
+            peakHoldTimeMsec = Convert.ToInt16(PeakholdTimeComboBox.SelectedItem);
+            counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
+            CounterCycleChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SensitivityTextBox_Leave(object sender, EventArgs e)
+        private void PeakholdCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            try
-            {
-                int SensitivityChangeValue = Convert.ToInt16(float.Parse(SensitivityTextBox.Text) * 10f);
-                if (SensitivityChangeValue != SensitivityTrackBar.Value)
-                {
-                    if (SensitivityChangeValue >= 10 && SensitivityChangeValue < 100)
-                        SensitivityTrackBar.Value = SensitivityChangeValue;
-                    else
-                    {
-                        System.Media.SystemSounds.Exclamation.Play();
-                        SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
-                    }
-                }
-            }
-            catch
-            {
-                System.Media.SystemSounds.Exclamation.Play();
-                SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
-            }
+            if (PeakholdCheckBox.Checked)
+                PeakholdTimeComboBox.Enabled =
+                LabelPeakhold.Enabled =
+                LabelMsec.Enabled =
+                PeakholdDescentSpeedLabel.Enabled =
+                PeakholdDescentSpeedTrackBar.Enabled =
+                PeakholdDescentSpeedTextBox.Enabled = true;
+            else
+                PeakholdTimeComboBox.Enabled =
+                LabelPeakhold.Enabled =
+                LabelMsec.Enabled =
+                PeakholdDescentSpeedLabel.Enabled =
+                PeakholdDescentSpeedTrackBar.Enabled =
+                PeakholdDescentSpeedTextBox.Enabled = false;
         }
 
         private void PeakholdDescentSpeedTrackBar_ValueChanged(object sender, EventArgs e)
@@ -117,29 +161,10 @@ namespace SpeAnaLED
 
         private void PeakholdDescentSpeedTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return)
-            {
-                e.SuppressKeyPress = true;      // suppress bell rings
-                try
-                {
-                    int DescentSpeedChangeValue = Convert.ToInt16(PeakholdDescentSpeedTextBox.Text);
-                    if (DescentSpeedChangeValue != PeakholdDescentSpeedTrackBar.Value)
-                    {
-                        if (DescentSpeedChangeValue >= 4 && DescentSpeedChangeValue <= 20)
-                            PeakholdDescentSpeedTrackBar.Value = DescentSpeedChangeValue;
-                        else
-                        {
-                            System.Media.SystemSounds.Exclamation.Play();
-                            PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
-                        }
-                    }
-                }
-                catch
-                {
-                    System.Media.SystemSounds.Exclamation.Play();
-                    PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
-                }
-            }
+            if (e.KeyCode != Keys.Return) return;
+            
+            e.SuppressKeyPress = true;
+            PeakholdDescentSpeedTextBox_Leave(sender, e);
         }
 
         private void PeakholdDescentSpeedTextBox_Leave(object sender, EventArgs e)
@@ -165,6 +190,42 @@ namespace SpeAnaLED
             }
         }
 
+        private void SensitivityTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
+        }
+
+        private void SensitivityTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Return) return;
+
+            e.SuppressKeyPress = true;
+            SensitivityTextBox_Leave(sender, e);
+        }
+
+        private void SensitivityTextBox_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                int SensitivityChangeValue = Convert.ToInt16(float.Parse(SensitivityTextBox.Text) * 10f);
+                if (SensitivityChangeValue != SensitivityTrackBar.Value)
+                {
+                    if (SensitivityChangeValue >= 10 && SensitivityChangeValue < 100)
+                        SensitivityTrackBar.Value = SensitivityChangeValue;
+                    else
+                    {
+                        System.Media.SystemSounds.Exclamation.Play();
+                        SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
+                    }
+                }
+            }
+            catch
+            {
+                System.Media.SystemSounds.Exclamation.Play();
+                SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
+            }
+        }
+
         private void LevelSensitivityTrackBar_ValueChanged(object sender, EventArgs e)
         {
             LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
@@ -172,29 +233,10 @@ namespace SpeAnaLED
 
         private void LevelSensitivityTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return)
-            {
-                e.SuppressKeyPress = true;
-                try
-                {
-                    int LevelSensitivityChangeValue = Convert.ToInt16(float.Parse(LevelSensitivityTextBox.Text) * 10f);
-                    if (LevelSensitivityChangeValue != LevelSensitivityTrackBar.Value)
-                    {
-                        if (LevelSensitivityChangeValue >= 10 && LevelSensitivityChangeValue <= 20)
-                            LevelSensitivityTrackBar.Value = LevelSensitivityChangeValue;
-                        else
-                        {
-                            System.Media.SystemSounds.Exclamation.Play();
-                            LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
-                        }
-                    }
-                }
-                catch
-                {
-                    System.Media.SystemSounds.Exclamation.Play();
-                    LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
-                }
-            }
+            if (e.KeyCode != Keys.Return) return;
+
+            e.SuppressKeyPress = true;
+            LevelSensitivityTextBox_Leave(sender, e);
         }
 
         private void LevelSensitivityTextBox_Leave(object sender, EventArgs e)
@@ -221,36 +263,28 @@ namespace SpeAnaLED
 
         }
 
-        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            LinkLabel1.LinkVisited = true;
-            System.Diagnostics.Process.Start(gitUri);
-        }
-
         private void EnumerateButton_Click(object sender, EventArgs e)
         {
             ClearSpectrum?.Invoke(this, EventArgs.Empty);
         }
 
-        private void DeviceResetButton_Click(object sender, EventArgs e)
+        private void DeviceReloadButton_Click(object sender, EventArgs e)
         {
             ClearSpectrum?.Invoke(this, EventArgs.Empty);
         }
 
-        private void MonoRadio_CheckedChanged(object sender, EventArgs e)
+        private void MonoRadioButton_CheckedChanged(object sender, EventArgs e)
+        //private void StereoRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            ClearSpectrum?.Invoke(this, EventArgs.Empty);
+            channel = MonoRadioButton.Checked ? 1 : 2;
+            counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
+            NumberOfChannelChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void AutoReloadCheckBox_CheckedChanged(object sender, EventArgs e)
+        /*private void AutoReloadCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            autoReloadChecked = AutoReloadCheckBox.Checked;
-        }
-
-        private void DeviceResetButton_EnabledChanged(object sender, EventArgs e)
-        {
-            AutoReloadCheckBox.Enabled = DeviceResetButton.Enabled;
-        }
+            //autoReloadChecked = AutoReloadCheckBox.Checked;
+        }*/
 
         private void AlfaTextBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -306,6 +340,32 @@ namespace SpeAnaLED
                 System.Media.SystemSounds.Exclamation.Play();
                 AlfaTextBox.Text = currentAlfaChannel.ToString();
             }
+        }
+
+        private void Form2_DoubleClick(object sender, EventArgs e)
+        {
+            Form_DoubleClick?.Invoke(sender, EventArgs.Empty);
+        }
+
+        private void Form2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                e.SuppressKeyPress = true;      // suppress bell rings
+                this.Visible = false;
+                this.Owner.Activate();          // prevent form1 go behind
+            }
+        }
+
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LinkLabel1.LinkVisited = true;
+            System.Diagnostics.Process.Start(gitUri);
+        }
+
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            this.Visible = false;
         }
     }
 }
