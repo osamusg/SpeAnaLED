@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        public readonly string relText = "Rel." + "24022813";
+        public readonly string relText = "Rel." + "24042418";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -95,7 +95,7 @@ namespace SpeAnaLED
         // freq label
         private readonly Label[] freqLabel_Left, freqLabel_Right;
         private float labelFontSize;
-        private readonly float baseLabelFontSize = 8f;     // not constant for possibility of change in the future
+        private readonly float baseLabelFontSize = 6f;     // not constant for possibility of change in the future
         public int baseLabelWidth, baseLabelHeight;
 
         // color settings
@@ -115,7 +115,7 @@ namespace SpeAnaLED
                 Color.FromArgb(0,255,0),    // 120  lime
                 Color.FromArgb(0,255,255),  // 180  cyan
                 Color.FromArgb(0,0,255),};  // 240  blue
-        private readonly float[][] prisumPositions = new float[17][];        // maxNumberOfBar+1 jagg array for easy to see
+        private readonly float[][] prisumPositions = new float[33][];        // maxNumberOfBar+1 jagg array for easy to see
 
         private Color[] simpleColors = { Color.LightSkyBlue, Color.LightSkyBlue };
         private readonly float[] simplePositions = { 0.0f, 1.0f };
@@ -607,7 +607,7 @@ namespace SpeAnaLED
 
             SuspendLayout();
 
-            labelFontSize = (float)Math.Round(baseLabelFontSize * spectrumWidthScale, 1);
+            labelFontSize = (float)Math.Round(baseLabelFontSize * spectrumWidthScale, 1) - 1;
             labelFontSize = labelFontSize < 11f ? labelFontSize : 11f;
             labelFontSize = labelFontSize > 7f ? labelFontSize : 7f;
 
@@ -619,8 +619,10 @@ namespace SpeAnaLED
                     labelText = (freqvalues / 1000).ToString("0") + "k";    // "khz";
                 else if (freqvalues > 1000)
                     labelText = (freqvalues / 100 * 100 / 1000f).ToString("0.0") + "k";
-                else
+                else if (freqvalues > 100 || numberOfBar < 32)
                     labelText = (freqvalues / 10 * 10).ToString("0");       // round -1
+                else
+                    labelText = freqvalues.ToString("0");
 
                 int j = isFlip ? numberOfBar - 1 - i : i;
 
@@ -1529,7 +1531,7 @@ namespace SpeAnaLED
 
             form2.PeakholdCheckBox.Checked = confReader.GetValue("peakhold", true);
             form2.AlwaysOnTopCheckBox.Checked = confReader.GetValue("alwaysOnTop", false);
-            form2.SSaverCheckBox.Checked = confReader.GetValue("preventSSaver", true);
+            form2.SSaverCheckBox.Checked = confReader.GetValue("preventSSaver", false);
             form2.HorizontalRadioButton.Checked = confReader.GetValue("horizontalLayout", true);
             form2.VerticalRadioButton.Checked = confReader.GetValue("verticalLayout", false);
             form2.NoFlipRadioButton.Checked = confReader.GetValue("flipNone", true);
@@ -1569,13 +1571,14 @@ namespace SpeAnaLED
             form4.streamPen.Color = Argb(confReader.GetValue("streamPenColor", "192, 0, 255, 255"))[0];
             form4.startPen.Color = Argb(confReader.GetValue("startPenColor", "255, 255, 0, 0"))[0];
 
-            int[] bars = { 1, 2, 4, 8, 16 };
+            int[] bars = { 1, 2, 4, 8, 16, 32 };
             string[][] param = new string[Form2.maxNumberOfBar + 1][];
             param[1] = confReader.GetValue("prisumPositions_1", "0.0, 0.20, 0.25, 0.27, 1.0").Split(',');      // red,yellow,lime,cyan,blue
             param[2] = confReader.GetValue("prisumPositions_2", "0.0, 0.35, 0.5, 0.55, 1.0").Split(',');
             param[4] = confReader.GetValue("prisumPositions_4", "0.0, 0.50, 0.52, 0.62, 1.0").Split(',');
             param[8] = confReader.GetValue("prisumPositions_8", "0.0, 0.50, 0.70, 0.75, 1.0").Split(',');
             param[16] = confReader.GetValue("prisumPositions_16", "0.0, 0.30, 0.50, 0.60, 1.0").Split(',');
+            param[32] = confReader.GetValue("prisumPositions_32", "0.0, 0.30, 0.50, 0.60, 1.0").Split(',');
             foreach (int bar in bars)                             // 1,2,4,8,16
             {
                 prisumPositions[bar] = new float[param[bar].Length];

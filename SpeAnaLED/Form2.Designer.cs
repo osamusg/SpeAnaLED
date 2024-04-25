@@ -89,10 +89,11 @@
             this.CombineStreamRadioButton = new System.Windows.Forms.RadioButton();
             this.SeparateStreamRadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBarsPanel = new System.Windows.Forms.Panel();
-            this.NumberOfBar4RadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBar8RadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBar16RadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBarLabel = new System.Windows.Forms.Label();
+            this.NumberOfBar32RadioButton = new System.Windows.Forms.RadioButton();
+            this.NumberOfBar4RadioButton = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.SpectrumColorShemeGroupBox.SuspendLayout();
             this.SpectrumSensitivityGroupBox.SuspendLayout();
@@ -809,31 +810,20 @@
             // 
             // NumberOfBarsPanel
             // 
-            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar4RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar8RadioButton);
+            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar32RadioButton);
+            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar4RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar16RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBarLabel);
             this.NumberOfBarsPanel.Location = new System.Drawing.Point(204, 55);
             this.NumberOfBarsPanel.Name = "NumberOfBarsPanel";
-            this.NumberOfBarsPanel.Size = new System.Drawing.Size(248, 21);
+            this.NumberOfBarsPanel.Size = new System.Drawing.Size(290, 21);
             this.NumberOfBarsPanel.TabIndex = 62;
-            // 
-            // NumberOfBar4RadioButton
-            // 
-            this.NumberOfBar4RadioButton.AutoSize = true;
-            this.NumberOfBar4RadioButton.Location = new System.Drawing.Point(216, 2);
-            this.NumberOfBar4RadioButton.Name = "NumberOfBar4RadioButton";
-            this.NumberOfBar4RadioButton.Size = new System.Drawing.Size(29, 16);
-            this.NumberOfBar4RadioButton.TabIndex = 21;
-            this.NumberOfBar4RadioButton.TabStop = true;
-            this.NumberOfBar4RadioButton.Text = "4";
-            this.NumberOfBar4RadioButton.UseVisualStyleBackColor = true;
-            this.NumberOfBar4RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
             // 
             // NumberOfBar8RadioButton
             // 
             this.NumberOfBar8RadioButton.AutoSize = true;
-            this.NumberOfBar8RadioButton.Location = new System.Drawing.Point(182, 2);
+            this.NumberOfBar8RadioButton.Location = new System.Drawing.Point(252, 2);
             this.NumberOfBar8RadioButton.Name = "NumberOfBar8RadioButton";
             this.NumberOfBar8RadioButton.Size = new System.Drawing.Size(29, 16);
             this.NumberOfBar8RadioButton.TabIndex = 20;
@@ -846,7 +836,7 @@
             // 
             this.NumberOfBar16RadioButton.AutoSize = true;
             this.NumberOfBar16RadioButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.NumberOfBar16RadioButton.Location = new System.Drawing.Point(141, 2);
+            this.NumberOfBar16RadioButton.Location = new System.Drawing.Point(211, 2);
             this.NumberOfBar16RadioButton.Name = "NumberOfBar16RadioButton";
             this.NumberOfBar16RadioButton.Size = new System.Drawing.Size(35, 16);
             this.NumberOfBar16RadioButton.TabIndex = 19;
@@ -859,11 +849,35 @@
             // 
             this.NumberOfBarLabel.AutoSize = true;
             this.NumberOfBarLabel.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.NumberOfBarLabel.Location = new System.Drawing.Point(3, 2);
+            this.NumberOfBarLabel.Location = new System.Drawing.Point(0, 2);
             this.NumberOfBarLabel.Name = "NumberOfBarLabel";
             this.NumberOfBarLabel.Size = new System.Drawing.Size(132, 15);
             this.NumberOfBarLabel.TabIndex = 18;
             this.NumberOfBarLabel.Text = "Number of Bandwidth :";
+            // 
+            // NumberOfBar32RadioButton
+            // 
+            this.NumberOfBar32RadioButton.AutoSize = true;
+            this.NumberOfBar32RadioButton.Location = new System.Drawing.Point(138, 2);
+            this.NumberOfBar32RadioButton.Name = "NumberOfBar32RadioButton";
+            this.NumberOfBar32RadioButton.Size = new System.Drawing.Size(69, 16);
+            this.NumberOfBar32RadioButton.TabIndex = 22;
+            this.NumberOfBar32RadioButton.TabStop = true;
+            this.NumberOfBar32RadioButton.Text = "32 (beta)";
+            this.NumberOfBar32RadioButton.UseVisualStyleBackColor = true;
+            // 
+            // NumberOfBar4RadioButton
+            // 
+            this.NumberOfBar4RadioButton.AutoSize = true;
+            this.NumberOfBar4RadioButton.Location = new System.Drawing.Point(264, 2);
+            this.NumberOfBar4RadioButton.Name = "NumberOfBar4RadioButton";
+            this.NumberOfBar4RadioButton.Size = new System.Drawing.Size(29, 16);
+            this.NumberOfBar4RadioButton.TabIndex = 21;
+            this.NumberOfBar4RadioButton.TabStop = true;
+            this.NumberOfBar4RadioButton.Text = "4";
+            this.NumberOfBar4RadioButton.UseVisualStyleBackColor = true;
+            this.NumberOfBar4RadioButton.Visible = false;
+            this.NumberOfBar4RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
             // 
             // Form2
             // 
@@ -1000,8 +1014,9 @@
         protected internal System.Windows.Forms.GroupBox LevelMeterSensitivityGroupBox;
         protected internal System.Windows.Forms.Label NumberOfBarLabel;
         protected internal System.Windows.Forms.RadioButton NumberOfBar16RadioButton;
-        protected internal System.Windows.Forms.RadioButton NumberOfBar4RadioButton;
         protected internal System.Windows.Forms.RadioButton NumberOfBar8RadioButton;
         protected internal System.Windows.Forms.Panel NumberOfBarsPanel;
+        private System.Windows.Forms.RadioButton NumberOfBar32RadioButton;
+        protected internal System.Windows.Forms.RadioButton NumberOfBar4RadioButton;
     }
 }

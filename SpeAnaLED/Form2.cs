@@ -34,7 +34,7 @@ namespace SpeAnaLED
 
         // constants
         public const int maxChannel = 2;
-        public const int maxNumberOfBar = 16;
+        public const int maxNumberOfBar = 32;
         public const int timerIntervalMilliSeconds = 25;
         public const float cycleMultiplyer = 50f / 16 / 2;          // 1.5625f = const50 / maxNumberOfBars / maxChannels
         public const int lmPBWidth = 13 * (24 + 6);                 // level meter PictureBox width = 390 = 13LEDs * (24+6)px
@@ -71,9 +71,7 @@ namespace SpeAnaLED
             // after config loaded,
 
             // Params
-            //counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * cycleMultiplyer=50 * (float)(numberOfBar * channel / maxNumberOfBar));
             counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
-            // default hold time. I don't know why "* cycleMultiplyer" is necessary. This is based on actual measurements of physical sensations.
             
             // Controls
             NumberOfBarComboBox.SelectedIndex = NumberOfBarComboBox.Items.IndexOf(numberOfBar.ToString());
@@ -81,9 +79,9 @@ namespace SpeAnaLED
             SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
             PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
             LevelSensitivityTextBox.Text = (LevelSensitivityTrackBar.Value / 10f).ToString("0.0");
-            RefreshFastRadio.Checked = RefreshFastRadio.Checked;
             HideSpectrumWindowCheckBox.Checked = !form1.form1Visible;
-            if (numberOfBar == 16) NumberOfBar16RadioButton.Checked = true;
+            if (numberOfBar == 32) NumberOfBar32RadioButton.Checked = true;
+            else if (numberOfBar == 16) NumberOfBar16RadioButton.Checked = true;
             else if (numberOfBar == 8) NumberOfBar8RadioButton.Checked = true;
             else NumberOfBar4RadioButton.Checked = true;
 
@@ -121,8 +119,9 @@ namespace SpeAnaLED
 
         private void NumberOfBarRadioButtonCheckedChanged(object sender, EventArgs e)
         {
-            int nob = 16;
-            if (NumberOfBar8RadioButton.Checked) nob = 8;
+            int nob = 32;
+            if (NumberOfBar16RadioButton.Checked) nob = 16;
+            else if (NumberOfBar8RadioButton.Checked) nob = 8;
             else if (NumberOfBar4RadioButton.Checked) nob = 4;
             numberOfBar = nob;
             counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);

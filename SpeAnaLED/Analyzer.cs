@@ -172,7 +172,7 @@ namespace SpeAnaLED
                     freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_numberOfBars - 1)) + _freqShift) * _mixfreqMultiplyer);
                 else
                     freqValue = (int)(Math.Pow(2, (bandX * 10.0 / (_numberOfBars - 1)) + _freqShift) / 5 * _mixfreqMultiplyer);    // I don't know why 5...
-                                                                                                                            // denominator lager -> shift right
+                                                                                                                                   // denominator lager -> shift right
                 if (freqValue <= fftPos) freqValue = fftPos + 1;                                            // if out of range, min. freq. selected
                 
                 if (_mixfreq <= 48000)          // 44.1khz, 48khz
