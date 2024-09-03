@@ -69,7 +69,7 @@
             this.HideTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.LinkLabel1 = new System.Windows.Forms.LinkLabel();
             this.ExitAppButton = new System.Windows.Forms.Button();
-            this.DeviceResetButton = new System.Windows.Forms.Button();
+            this.DeviceReloadButton = new System.Windows.Forms.Button();
             this.FrequencyLabel = new System.Windows.Forms.Label();
             this.RelLabel = new System.Windows.Forms.Label();
             this.HideSpectrumWindowCheckBox = new System.Windows.Forms.CheckBox();
@@ -90,10 +90,10 @@
             this.SeparateStreamRadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBarsPanel = new System.Windows.Forms.Panel();
             this.NumberOfBar8RadioButton = new System.Windows.Forms.RadioButton();
-            this.NumberOfBar16RadioButton = new System.Windows.Forms.RadioButton();
-            this.NumberOfBarLabel = new System.Windows.Forms.Label();
             this.NumberOfBar32RadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBar4RadioButton = new System.Windows.Forms.RadioButton();
+            this.NumberOfBar16RadioButton = new System.Windows.Forms.RadioButton();
+            this.NumberOfBarLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.SpectrumColorShemeGroupBox.SuspendLayout();
             this.SpectrumSensitivityGroupBox.SuspendLayout();
@@ -595,16 +595,16 @@
             this.ExitAppButton.Text = "Exit This App.";
             this.ExitAppButton.UseVisualStyleBackColor = true;
             // 
-            // DeviceResetButton
+            // DeviceReloadButton
             // 
-            this.DeviceResetButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DeviceResetButton.Location = new System.Drawing.Point(513, 27);
-            this.DeviceResetButton.Name = "DeviceResetButton";
-            this.DeviceResetButton.Size = new System.Drawing.Size(107, 23);
-            this.DeviceResetButton.TabIndex = 52;
-            this.DeviceResetButton.Text = "Reload Device";
-            this.DeviceResetButton.UseVisualStyleBackColor = true;
-            this.DeviceResetButton.Click += new System.EventHandler(this.DeviceReloadButton_Click);
+            this.DeviceReloadButton.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DeviceReloadButton.Location = new System.Drawing.Point(513, 27);
+            this.DeviceReloadButton.Name = "DeviceReloadButton";
+            this.DeviceReloadButton.Size = new System.Drawing.Size(107, 23);
+            this.DeviceReloadButton.TabIndex = 52;
+            this.DeviceReloadButton.Text = "Reload Device";
+            this.DeviceReloadButton.UseVisualStyleBackColor = true;
+            this.DeviceReloadButton.Click += new System.EventHandler(this.DeviceReloadButton_Click);
             // 
             // FrequencyLabel
             // 
@@ -812,7 +812,6 @@
             // 
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar8RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar32RadioButton);
-            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar4RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar16RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBarLabel);
             this.NumberOfBarsPanel.Location = new System.Drawing.Point(204, 55);
@@ -831,6 +830,30 @@
             this.NumberOfBar8RadioButton.Text = "8";
             this.NumberOfBar8RadioButton.UseVisualStyleBackColor = true;
             this.NumberOfBar8RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
+            // 
+            // NumberOfBar32RadioButton
+            // 
+            this.NumberOfBar32RadioButton.AutoSize = true;
+            this.NumberOfBar32RadioButton.Location = new System.Drawing.Point(138, 2);
+            this.NumberOfBar32RadioButton.Name = "NumberOfBar32RadioButton";
+            this.NumberOfBar32RadioButton.Size = new System.Drawing.Size(69, 16);
+            this.NumberOfBar32RadioButton.TabIndex = 22;
+            this.NumberOfBar32RadioButton.TabStop = true;
+            this.NumberOfBar32RadioButton.Text = "32 (beta)";
+            this.NumberOfBar32RadioButton.UseVisualStyleBackColor = true;
+            // 
+            // NumberOfBar4RadioButton
+            // 
+            this.NumberOfBar4RadioButton.AutoSize = true;
+            this.NumberOfBar4RadioButton.Location = new System.Drawing.Point(476, 453);
+            this.NumberOfBar4RadioButton.Name = "NumberOfBar4RadioButton";
+            this.NumberOfBar4RadioButton.Size = new System.Drawing.Size(29, 16);
+            this.NumberOfBar4RadioButton.TabIndex = 21;
+            this.NumberOfBar4RadioButton.TabStop = true;
+            this.NumberOfBar4RadioButton.Text = "4";
+            this.NumberOfBar4RadioButton.UseVisualStyleBackColor = true;
+            this.NumberOfBar4RadioButton.Visible = false;
+            this.NumberOfBar4RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
             // 
             // NumberOfBar16RadioButton
             // 
@@ -855,30 +878,6 @@
             this.NumberOfBarLabel.TabIndex = 18;
             this.NumberOfBarLabel.Text = "Number of Bandwidth :";
             // 
-            // NumberOfBar32RadioButton
-            // 
-            this.NumberOfBar32RadioButton.AutoSize = true;
-            this.NumberOfBar32RadioButton.Location = new System.Drawing.Point(138, 2);
-            this.NumberOfBar32RadioButton.Name = "NumberOfBar32RadioButton";
-            this.NumberOfBar32RadioButton.Size = new System.Drawing.Size(69, 16);
-            this.NumberOfBar32RadioButton.TabIndex = 22;
-            this.NumberOfBar32RadioButton.TabStop = true;
-            this.NumberOfBar32RadioButton.Text = "32 (beta)";
-            this.NumberOfBar32RadioButton.UseVisualStyleBackColor = true;
-            // 
-            // NumberOfBar4RadioButton
-            // 
-            this.NumberOfBar4RadioButton.AutoSize = true;
-            this.NumberOfBar4RadioButton.Location = new System.Drawing.Point(264, 2);
-            this.NumberOfBar4RadioButton.Name = "NumberOfBar4RadioButton";
-            this.NumberOfBar4RadioButton.Size = new System.Drawing.Size(29, 16);
-            this.NumberOfBar4RadioButton.TabIndex = 21;
-            this.NumberOfBar4RadioButton.TabStop = true;
-            this.NumberOfBar4RadioButton.Text = "4";
-            this.NumberOfBar4RadioButton.UseVisualStyleBackColor = true;
-            this.NumberOfBar4RadioButton.Visible = false;
-            this.NumberOfBar4RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
-            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -887,6 +886,7 @@
             this.ControlBox = false;
             this.Controls.Add(this.LevelStreamPanel);
             this.Controls.Add(this.LevelStreamCheckBox);
+            this.Controls.Add(this.NumberOfBar4RadioButton);
             this.Controls.Add(this.LevelMeterSensitivityGroupBox);
             this.Controls.Add(this.RefreshModeGroupBox);
             this.Controls.Add(this.AutoReloadCheckBox);
@@ -894,7 +894,7 @@
             this.Controls.Add(this.HideSpectrumWindowCheckBox);
             this.Controls.Add(this.RelLabel);
             this.Controls.Add(this.FrequencyLabel);
-            this.Controls.Add(this.DeviceResetButton);
+            this.Controls.Add(this.DeviceReloadButton);
             this.Controls.Add(this.SpectrumPeakholdGroupBox);
             this.Controls.Add(this.ExitAppButton);
             this.Controls.Add(this.LinkLabel1);
@@ -986,7 +986,7 @@
         protected internal System.Windows.Forms.CheckBox HideTitleCheckBox;
         protected internal System.Windows.Forms.Button ExitAppButton;
         protected internal System.Windows.Forms.GroupBox ChannelLayoutGroup;
-        protected internal System.Windows.Forms.Button DeviceResetButton;
+        protected internal System.Windows.Forms.Button DeviceReloadButton;
         protected internal System.Windows.Forms.Label FrequencyLabel;
         protected internal System.Windows.Forms.Label RelLabel;
         protected internal System.Windows.Forms.CheckBox HideSpectrumWindowCheckBox;
@@ -1016,7 +1016,7 @@
         protected internal System.Windows.Forms.RadioButton NumberOfBar16RadioButton;
         protected internal System.Windows.Forms.RadioButton NumberOfBar8RadioButton;
         protected internal System.Windows.Forms.Panel NumberOfBarsPanel;
-        private System.Windows.Forms.RadioButton NumberOfBar32RadioButton;
         protected internal System.Windows.Forms.RadioButton NumberOfBar4RadioButton;
+        protected internal System.Windows.Forms.RadioButton NumberOfBar32RadioButton;
     }
 }

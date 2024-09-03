@@ -47,6 +47,7 @@ namespace SpeAnaLED
         public event EventHandler CounterCycleChanged;
         public event EventHandler NumberOfChannelChanged;
         public event EventHandler NumberOfBarChanged;
+        public event EventHandler DeviceReloadRequested;
 
         // static functions
         public static int DeviceNumber { get { return deviceNumber; } set { deviceNumber = value; } }
@@ -60,7 +61,8 @@ namespace SpeAnaLED
 
             // subscribe
             form1.DispatchAnalyzerIsBusy += AnalyzerIsBusy;
-
+            form1.KeyDown += Form2_KeyDown;
+            
             borderSize = defaultBorderSize = (form1.Width - form1.ClientSize.Width) / 2;
             titleHeight = defaultTitleHeight = form1.Height - form1.ClientSize.Height - borderSize * 2;
 
@@ -100,7 +102,7 @@ namespace SpeAnaLED
         private void AnalyzerIsBusy(object sender, CheckedEventArgs ce)
         {
             EnumerateButton.Enabled =
-            DeviceResetButton.Enabled =
+            DeviceReloadButton.Enabled =
             AutoReloadCheckBox.Enabled = !ce.Checked;
         }
 
@@ -269,6 +271,7 @@ namespace SpeAnaLED
 
         private void DeviceReloadButton_Click(object sender, EventArgs e)
         {
+            DeviceReloadRequested?.Invoke(this, EventArgs.Empty);
             ClearSpectrum?.Invoke(this, EventArgs.Empty);
         }
 
@@ -346,13 +349,47 @@ namespace SpeAnaLED
             Form_DoubleClick?.Invoke(sender, EventArgs.Empty);
         }
 
-        private void Form2_KeyDown(object sender, KeyEventArgs e)
+        protected internal void Form2_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
             {
                 e.SuppressKeyPress = true;      // suppress bell rings
                 this.Visible = false;
                 this.Owner.Activate();          // prevent form1 go behind
+            }
+            else if (e.KeyCode == Keys.D3 || e.KeyCode == Keys.NumPad3)
+                NumberOfBar32RadioButton.Checked = true;
+            else if (e.KeyCode == Keys.D1 || e.KeyCode == Keys.NumPad1)
+                NumberOfBar16RadioButton.Checked = true;
+            else if (e.KeyCode == Keys.D8 || e.KeyCode == Keys.NumPad8)
+                NumberOfBar8RadioButton.Checked = true;
+            else if (e.KeyCode == Keys.D4 || e.KeyCode == Keys.NumPad4)
+                NumberOfBar4RadioButton.Checked = true;
+            else if (e.KeyCode == Keys.L)
+                PrisumRadioButton.Checked = true;
+            else if (e.KeyCode == Keys.C)
+                ClassicRadioButton.Checked = true;
+            else if (e.KeyCode == Keys.S)
+                SimpleRadioButton.Checked = true;
+            else if (e.KeyCode == Keys.R)
+                RainbowRadioButton.Checked = true;
+            else if (e.KeyCode == Keys.O)
+                this.Visible = !this.Visible;
+            else if (e.KeyCode == Keys.D)
+            {
+                DeviceReloadRequested?.Invoke(this, EventArgs.Empty);
+                ClearSpectrum?.Invoke(this, EventArgs.Empty);
+            }
+            else if (e.KeyCode == Keys.Q)
+            {   
+                var result =  MessageBox.Show(
+                "Quit?",
+                "Quit",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Question
+                );
+                if (result == DialogResult.OK)
+                    Application.Exit();
             }
         }
 

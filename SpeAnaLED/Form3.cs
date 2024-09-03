@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Security.Authentication.ExtendedProtection;
 using System.Windows.Forms;
 
 namespace SpeAnaLED
@@ -27,7 +26,7 @@ namespace SpeAnaLED
 
         // event handler (Fire)
         public event FormClosedEventHandler Form_Closed;
-
+        
         public Form3(Form1 _form1, Form2 _form2)
         {
             InitializeComponent();
@@ -38,7 +37,7 @@ namespace SpeAnaLED
             // subscribe
             form2.LevelSensitivityTrackBar.ValueChanged += Form2_LevelSensitivityTrackBar_ValueChanged;
             form1.DispatchAnalyzerLevelChanged += Form1_ReceiveSpectrumData;
-
+            
             meterPeakValue = new int[Form2.maxChannel];
             canvas = new Bitmap(baseClientWidth, baseClientHeight);
             levelMeterSensitivity = (float)form2.LevelSensitivityTrackBar.Value / 10f;

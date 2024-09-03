@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        public readonly string relText = "Rel." + "24042418";
+        public readonly string relText = "Rel." + "24090311";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -123,7 +123,7 @@ namespace SpeAnaLED
         // for fire
         public event CheckedEventHandler DispatchAnalyzerIsBusy;
         public event EventHandler DispatchAnalyzerLevelChanged;
-        
+
         // delegate
         public delegate void CheckedEventHandler(object sender, CheckedEventArgs ce);
 
@@ -179,7 +179,7 @@ namespace SpeAnaLED
                 form2.DeviceListComboBox.Items.Add("Please Enumerate Devices");
                 form2.DeviceListComboBox.SelectedIndex = 0;
                 form2.DeviceListComboBox.Enabled = false;
-                form2.DeviceResetButton.Enabled = false;
+                form2.DeviceReloadButton.Enabled = false;
                 analyzer.inInit = false;
             }
             else
@@ -214,12 +214,13 @@ namespace SpeAnaLED
             form2.ShowCounterCheckBox.CheckedChanged += Form2_ShowCounterCheckBox_CheckChanged;
 
             form2.NumberOfChannelChanged += Form2_NumberOfChannelsChanged;
-            //form2.NumberOfBarComboBox.SelectedIndexChanged += Form2_NumberOfBarComboBox_SelectedItemChanged;
             form2.NumberOfBarChanged += Form2_NumberOfBarRadioButton_CheckChanged;
             form2.CounterCycleChanged += Form2_CounterCycleChanged;
             form2.ClearSpectrum += ClearSpectrum;
 
             form3.FormClosed += ChildFormClosed;
+            form3.KeyDown += form2.Form2_KeyDown;
+            form4.KeyDown += form2.Form2_KeyDown;
 
             // Other Event handler (subscribe)
             analyzer.SpectrumChanged += Analyzer_ReceiveSpectrumData;
@@ -237,7 +238,6 @@ namespace SpeAnaLED
             titleHeight = defaultTitleHeight = form2.titleHeight;
 
             spectrumWidthScale = Spectrum1.Width / (float)baseSpectrumWidth;        // depens on number of bars
-            //spectrumHeightScale = Spectrum1.Height / (float)baseSpectrumHeght;    // haven't used this one
             canvasWidth = barLeftPadding + numberOfBar * ((int)penWidth + barSpacing) - (barLeftPadding - barSpacing);  // Calculate size per number of bars to enlarge
             canvas = new Bitmap[maxChannel];
             freqLabel_Left = new Label[maxNumberOfBar];
@@ -489,6 +489,7 @@ namespace SpeAnaLED
             Spectrum2.Image = canvas[0];
             Spectrum1.Update();
             Spectrum2.Update();
+            form4.Form4_SizeChanged(this, EventArgs.Empty);
 
             if (form2.RainbowRadioButton.Checked)
             {
@@ -884,11 +885,6 @@ namespace SpeAnaLED
             numberOfBar = form2.numberOfBar;
             counterCycle = form2.counterCycle;
         }
-
-        /*private void Form2_NumberOfBarComboBox_SelectedItemChanged(object sender, EventArgs e)
-        {
-            Form2_NumberOfBarRadioButton_CheckChanged(sender, e);
-        }*/
 
         private void Form2_NumberOfBarRadioButton_CheckChanged(object sender, EventArgs e)
         {
@@ -1467,9 +1463,7 @@ namespace SpeAnaLED
                 MessageBoxIcon.Question
                 );
             if (result == DialogResult.OK)
-            {
                 SaveConfigParams();
-            }
         }
 
         private void Form2_ExitAppButton_Click(object sender, EventArgs e)
@@ -1766,7 +1760,6 @@ namespace SpeAnaLED
             confWriter.AddValue("streamScrollUnit", form4.streamScrollUnit);
             confWriter.AddValue("streamChannelSpacing", form4.streamChannelSpacing);
             confWriter.AddValue("streamPower", form2.pow);
-
 
             // add "unicode=false" in config file to change cause codepage to ANSI (not saved)
 

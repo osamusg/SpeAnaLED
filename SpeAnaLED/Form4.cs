@@ -16,7 +16,7 @@ namespace SpeAnaLED
         public float pow;
         public int streamCombineMode;                               // combine:1 separate:2
         public Pen streamPen, startPen;
-        public int streamScrollUnit = 1;                           // 1 2 4?, For test
+        public int streamScrollUnit = 1;                            // 1 2 4?, For test
         public int streamChannelSpacing = 0;
         
         // event handler (Fire)
@@ -127,7 +127,7 @@ namespace SpeAnaLED
             streamPen.Color = Color.FromArgb(Int16.Parse(form2.AlfaTextBox.Text), streamPen.Color.R, streamPen.Color.G, streamPen.Color.B);
         }
 
-        private void Form4_SizeChanged(object sender, EventArgs e)
+        protected internal void Form4_SizeChanged(object sender, EventArgs e)
         {
             if (Form1.inLayout) return;
             StreamPictureBox.Top = StreamPictureBox.Left = 0;
