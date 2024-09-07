@@ -355,7 +355,7 @@ namespace SpeAnaLED
             {
                 e.SuppressKeyPress = true;      // suppress bell rings
                 this.Visible = false;
-                this.Owner.Activate();          // prevent form1 go behind
+                form1.Activate();               // prevent form1 go behind
             }
             else if (e.KeyCode == Keys.D3 || e.KeyCode == Keys.NumPad3)
                 NumberOfBar32RadioButton.Checked = true;
