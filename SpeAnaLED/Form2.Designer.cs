@@ -91,9 +91,9 @@
             this.NumberOfBarsPanel = new System.Windows.Forms.Panel();
             this.NumberOfBar8RadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBar32RadioButton = new System.Windows.Forms.RadioButton();
-            this.NumberOfBar4RadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBar16RadioButton = new System.Windows.Forms.RadioButton();
             this.NumberOfBarLabel = new System.Windows.Forms.Label();
+            this.NumberOfBar4RadioButton = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.SpectrumColorShemeGroupBox.SuspendLayout();
             this.SpectrumSensitivityGroupBox.SuspendLayout();
@@ -812,11 +812,12 @@
             // 
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar8RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar32RadioButton);
+            this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar4RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBar16RadioButton);
             this.NumberOfBarsPanel.Controls.Add(this.NumberOfBarLabel);
             this.NumberOfBarsPanel.Location = new System.Drawing.Point(204, 55);
             this.NumberOfBarsPanel.Name = "NumberOfBarsPanel";
-            this.NumberOfBarsPanel.Size = new System.Drawing.Size(290, 21);
+            this.NumberOfBarsPanel.Size = new System.Drawing.Size(325, 21);
             this.NumberOfBarsPanel.TabIndex = 62;
             // 
             // NumberOfBar8RadioButton
@@ -842,19 +843,6 @@
             this.NumberOfBar32RadioButton.Text = "32 (beta)";
             this.NumberOfBar32RadioButton.UseVisualStyleBackColor = true;
             // 
-            // NumberOfBar4RadioButton
-            // 
-            this.NumberOfBar4RadioButton.AutoSize = true;
-            this.NumberOfBar4RadioButton.Location = new System.Drawing.Point(476, 453);
-            this.NumberOfBar4RadioButton.Name = "NumberOfBar4RadioButton";
-            this.NumberOfBar4RadioButton.Size = new System.Drawing.Size(29, 16);
-            this.NumberOfBar4RadioButton.TabIndex = 21;
-            this.NumberOfBar4RadioButton.TabStop = true;
-            this.NumberOfBar4RadioButton.Text = "4";
-            this.NumberOfBar4RadioButton.UseVisualStyleBackColor = true;
-            this.NumberOfBar4RadioButton.Visible = false;
-            this.NumberOfBar4RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
-            // 
             // NumberOfBar16RadioButton
             // 
             this.NumberOfBar16RadioButton.AutoSize = true;
@@ -878,6 +866,19 @@
             this.NumberOfBarLabel.TabIndex = 18;
             this.NumberOfBarLabel.Text = "Number of Bandwidth :";
             // 
+            // NumberOfBar4RadioButton
+            // 
+            this.NumberOfBar4RadioButton.AutoSize = true;
+            this.NumberOfBar4RadioButton.Location = new System.Drawing.Point(287, 2);
+            this.NumberOfBar4RadioButton.Name = "NumberOfBar4RadioButton";
+            this.NumberOfBar4RadioButton.Size = new System.Drawing.Size(29, 16);
+            this.NumberOfBar4RadioButton.TabIndex = 21;
+            this.NumberOfBar4RadioButton.TabStop = true;
+            this.NumberOfBar4RadioButton.Text = "4";
+            this.NumberOfBar4RadioButton.UseVisualStyleBackColor = true;
+            this.NumberOfBar4RadioButton.Visible = false;
+            this.NumberOfBar4RadioButton.CheckedChanged += new System.EventHandler(this.NumberOfBarRadioButtonCheckedChanged);
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -886,7 +887,6 @@
             this.ControlBox = false;
             this.Controls.Add(this.LevelStreamPanel);
             this.Controls.Add(this.LevelStreamCheckBox);
-            this.Controls.Add(this.NumberOfBar4RadioButton);
             this.Controls.Add(this.LevelMeterSensitivityGroupBox);
             this.Controls.Add(this.RefreshModeGroupBox);
             this.Controls.Add(this.AutoReloadCheckBox);

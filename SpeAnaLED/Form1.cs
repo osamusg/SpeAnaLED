@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        public readonly string relText = "Rel." + "24090722";
+        public readonly string relText = "Rel." + "24091011";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -904,7 +904,7 @@ namespace SpeAnaLED
             }
 
             canvasWidth = barLeftPadding + numberOfBar * ((int)penWidth + barSpacing) - (barLeftPadding - barSpacing);  // to stretch, calculate canvas size by number of bar
-            if (!inInit) ClearSpectrum(sender, EventArgs.Empty);
+            //if (!inInit) ClearSpectrum(sender, EventArgs.Empty);
             spectrumWidthScale = (float)Spectrum1.Width / baseSpectrumWidth * (maxNumberOfBar / numberOfBar);
             if (!form2.HideFreqCheckBox.Checked)
             {
@@ -916,7 +916,9 @@ namespace SpeAnaLED
 
             if (form2.RainbowRadioButton.Checked) Form2_RainbowRadioButton_CheckChanged(sender, EventArgs.Empty);   // To change color positons.
 
-            ClearSpectrum(sender, EventArgs.Empty);
+            inLayout = true;
+            if (!inInit) ClearSpectrum(sender, EventArgs.Empty);
+            inLayout = false;
         }
 
         private void Form2_NumberOfChannelsChanged(object sender, EventArgs e)
