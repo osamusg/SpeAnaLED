@@ -1,4 +1,6 @@
 # SpeAnaLED
+<img src="./screenshot/screenshot9.png"/>
+
 ## About
 - **SpeAnaLED** is a WASAPI([Windows Audio Session API](https://en.wikipedia.org/wiki/Technical_features_new_to_Windows_Vista#Audio_stack_architecture)) Loopback Spectrum-Analyzer-like visualizer with LED-matrix-like visualization. (L+R Max. 2 channels)
 - "Loopback" means,
@@ -41,6 +43,9 @@
 - Rainbow colors left flip(center-Low) without peakhold, label and titlebar<br/>
 <img src="./screenshot/screenshot4.png"/>
 
+- 32 bars, vertical layout, vertical flip, w/o titlebar<br/>
+<img src="./screenshot/screenshot10.png" width="480"/>
+
 - Simple color 8 bars  right flip(center-Hi)<br/>
 <img src="./screenshot/screenshot5.png"/>
 
@@ -53,7 +58,8 @@
 
 ## Other features
 - Sound device select (If you have 2 or more.)
-    - Windows sound control panel also must be changed by yourself.
+    - <strike>Windows sound control panel also must be changed by yourself.</strike>
+    - Now, Windows default sound device is automatically selected.
 - Peakhold-time adjust
 - Peakhold descent speed adjust
 - Sensitivity adjust
@@ -61,7 +67,10 @@
 - Preventing screensaver
 - Mono (L+R mix 1ch.) mode
 - Save settings
-- 4 bars (Who would use it?)
+- <strike>4 bars (Who would use it?)</strike>
+- Max. 32 bars for each channel
+- 2ch. Level meter (optional)
+- 2ch. Level stream display (optional)
 <br><br>
 
 <p>Changes to most display settings take effect in real time.</p>

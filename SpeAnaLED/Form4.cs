@@ -9,7 +9,8 @@ namespace SpeAnaLED
         private readonly Form1 form1;
         private readonly Form2 form2;
         private Point mouseDragStartPoint = new Point(0, 0);
-        private bool pinchLeft, pinchRight, pinchTop, pinchBottom;
+        private struct RectangleBool { public bool left, right, top, bottom; }
+        private RectangleBool pinch;
         private bool inFormSizeChange;
         private Bitmap previousBitmap;
         private readonly int[] streamBaseLine = { 0, 0 };
@@ -18,7 +19,8 @@ namespace SpeAnaLED
         public Pen streamPen, startPen;
         public int streamScrollUnit = 1;                            // 1 2 4?, For test
         public int streamChannelSpacing = 0;
-        
+        private const int mdt = 8;                                  // mouse detect thickness (inner)
+
         // event handler (Fire)
         public event FormClosedEventHandler Form_Closed;
 
@@ -156,8 +158,6 @@ namespace SpeAnaLED
 
         private void StreamPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            int mdt = 8;    // mouse detect thickness (inner)
-
             if (e.Button == MouseButtons.Right)
             {
                 form2.Visible = true;
@@ -168,11 +168,11 @@ namespace SpeAnaLED
                 {
                     mouseDragStartPoint = new Point(e.X, e.Y);
 
-                    pinchLeft = e.X < mdt;
-                    pinchRight = e.X > Width - mdt;
-                    pinchTop = e.Y < mdt;
-                    pinchBottom = e.Y > Height - mdt;
-                    inFormSizeChange = pinchLeft || pinchRight || pinchTop || pinchBottom;
+                    pinch.left = e.X < mdt;
+                    pinch.right = e.X > Width - mdt;
+                    pinch.top = e.Y < mdt;
+                    pinch.bottom = e.Y > Height - mdt;
+                    inFormSizeChange = pinch.left || pinch.right || pinch.top || pinch.bottom;
                     if (!inFormSizeChange) Cursor = Cursors.SizeAll;
                 }
             }
@@ -184,19 +184,18 @@ namespace SpeAnaLED
             {
                 int minWidth = 64;
                 int minHeight = 32;
-                int mdt = 8;        // mouse detect thickness
-
+                
                 if (e.Button == MouseButtons.Left)
                 {
                     if (Cursor == Cursors.SizeWE)
                     {
-                        if (pinchLeft)
+                        if (pinch.left)
                         {
                             Width -= e.X - mouseDragStartPoint.X;
                             if (Width < minWidth) Width = minWidth;
                             else Left += e.X - mouseDragStartPoint.X;
                         }
-                        else if (pinchRight)
+                        else if (pinch.right)
                         {
                             Width = e.X;
                             if (Width < minWidth) Width = minWidth;
@@ -204,13 +203,13 @@ namespace SpeAnaLED
                     }
                     else if (Cursor == Cursors.SizeNS)
                     {
-                        if (pinchTop)
+                        if (pinch.top)
                         {
                             Height -= e.Y - mouseDragStartPoint.Y;
                             if (Height < minHeight) Height = minHeight;
                             else Top += e.Y - mouseDragStartPoint.Y;
                         }
-                        else if (pinchBottom)
+                        else if (pinch.bottom)
                         {
                             Height = e.Y;
                             if (Height < minHeight) Height = minHeight;
@@ -242,7 +241,7 @@ namespace SpeAnaLED
         {
             if (Cursor != Cursors.Default)
                 Cursor = Cursors.Default;
-            pinchLeft = pinchRight = pinchTop = pinchBottom = false;
+            pinch.left = pinch.right = pinch.top = pinch.bottom = false;
         }
         
         private void StreamPictureBox_DoubleClick(object sender, EventArgs e)

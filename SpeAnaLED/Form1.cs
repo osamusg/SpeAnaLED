@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        public readonly string relText = "Rel." + "24091011";
+        public readonly string relText = "Rel." + "25030718";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -37,13 +37,13 @@ namespace SpeAnaLED
         private int verticalSpacing;
 
         // basic params
-        private string devices;                             // for load config. conf can't store arrays length unknown
         public int[] level;
-        private int channel;        // copy from form2
-        private int numberOfBar;    // copy from form2
+        private int channel;                // copy from form2
+        private int numberOfBar;            // copy from form2
+        private string lastDefaultDevice;   // copy from form2
 
         // calculation
-        private int counterCycle;   // copy from form2
+        private int counterCycle;           // copy from form2
         private int[] peakValue;
         private int peakCounter;
         private int peakHoldDescentCycle;   // fast(heavy) <- 8cycle=160/20unit 10(default)=160/16 16=160/10 20=160/8 -> slow(light)
@@ -53,8 +53,9 @@ namespace SpeAnaLED
         
         // form size change
         private Point mouseDragStartPoint = new Point(0, 0);
-        private bool pinchLeft, pinchRight, pinchTop, pinchBottom;
-        
+        private struct RectangleBool { public bool left, right, top, bottom; }
+        private RectangleBool pinch;
+
         // in form layout
         private int labelPadding;
         private int leftPadding;
@@ -62,6 +63,7 @@ namespace SpeAnaLED
         private int bottomPadding;
         private int barLeftPadding;
         private float spectrumWidthScale;
+        private int mdt;                    // mouse detect thickness (inner)
         
         // condition static
         public static bool inInit;
@@ -121,13 +123,9 @@ namespace SpeAnaLED
         private readonly float[] simplePositions = { 0.0f, 1.0f };
 
         // for fire
-        public event CheckedEventHandler DispatchAnalyzerIsBusy;
         public event EventHandler DispatchAnalyzerLevelChanged;
 
-        // delegate
-        public delegate void CheckedEventHandler(object sender, CheckedEventArgs ce);
-
-        // statuc function
+        // static function
         public static bool Unicode() { return UNICODE; }
 
         public Form1()
@@ -164,38 +162,19 @@ namespace SpeAnaLED
                 LoadConfigParams();
             }
 
-            // before analizer birth...
-            string[] deviceItems = devices.Split(',');
-            for (int i = 0; i < deviceItems.Length; i++) form2.DeviceListComboBox.Items.Add(deviceItems[i].TrimStart());
-            form2.DeviceListComboBox.SelectedIndex = 0;
-
             // after param load, make a Analyzer instance.
-            analyzer = new Analyzer(form2);
-
-            if (devices == null || devices == string.Empty)
+            analyzer = new Analyzer(form2)
             {
-                analyzer.inInit = true;
-                form2.DeviceListComboBox.Items.Clear();
-                form2.DeviceListComboBox.Items.Add("Please Enumerate Devices");
-                form2.DeviceListComboBox.SelectedIndex = 0;
-                form2.DeviceListComboBox.Enabled = false;
-                form2.DeviceReloadButton.Enabled = false;
-                analyzer.inInit = false;
-            }
-            else
-            {
-                analyzer.Enable = true;
-            }
-
-            // Event handler for modeless option form (subscribe)
-            analyzer.IsBusy += AnalyzerIsBusy;
-
+                Enable = true
+            };
+            
             form2.ClassicRadioButton.CheckedChanged += Form2_ClassicRadioButton_CheckChanged;
             form2.PrisumRadioButton.CheckedChanged += Form2_PrisumRadioButton_CheckChanged;
             form2.SimpleRadioButton.CheckedChanged += Form2_SimpleRadioButton_CheckChanged;
             form2.RainbowRadioButton.CheckedChanged += Form2_RainbowRadioButton_CheckChanged;
             form2.RainbowFlipCheckBox.CheckedChanged += Form2_RainbowFlipCheckBox_CheckChanged;
             form2.VerticalRadioButton.CheckedChanged += Form2_V_H_RadioButton_CheckChanged;      // V/H dual use
+            form2.VerticalFlipCheckBox.CheckedChanged += Form2_VerticalFlipRadioButton_CheckChanged;
             form2.HorizontalRadioButton.CheckedChanged += Form2_V_H_RadioButton_CheckChanged;    // V/H dual use
             form2.RightFlipRadioButton.CheckedChanged += Form2_FlipSideRadioButton_CheckChanged; // L/R dual use
             form2.LeftFlipRadioButton.CheckedChanged += Form2_FlipSideRadioButton_CheckChanged;  // L/R dual use
@@ -323,22 +302,35 @@ namespace SpeAnaLED
             myPen = new Pen(brush, penWidth) { DashPattern = new float[] { 0.1f, 0.1f } };
             form2.RainbowFlipCheckBox.Checked = rainbowFlip;
 
-            if (form2.LeftFlipRadioButton.Checked)
+            if (form2.StereoRadioButton.Checked)
             {
-                flipLeft = RotateFlipType.RotateNoneFlipX;
-                flipRight = RotateFlipType.RotateNoneFlipNone;
+                if (form2.HorizontalRadioButton.Checked)
+                {
+                    if (form2.LeftFlipRadioButton.Checked)
+                    {
+                        flipLeft = RotateFlipType.RotateNoneFlipX;
+                        flipRight = RotateFlipType.RotateNoneFlipNone;
+                    }
+                    else if (form2.RightFlipRadioButton.Checked)
+                    {
+                        flipLeft = RotateFlipType.RotateNoneFlipNone;
+                        flipRight = RotateFlipType.RotateNoneFlipX;
+                    }
+                }
+                else
+                {
+                    if (form2.VerticalFlipCheckBox.Checked)
+                    {
+                        flipLeft = RotateFlipType.RotateNoneFlipNone;
+                        flipRight = RotateFlipType.RotateNoneFlipY;
+                    }
+                    else
+                    {
+                        flipLeft = RotateFlipType.RotateNoneFlipNone;
+                        flipRight = RotateFlipType.RotateNoneFlipNone;
+                    }
+                }
             }
-            else if (form2.RightFlipRadioButton.Checked)
-            {
-                flipLeft = RotateFlipType.RotateNoneFlipNone;
-                flipRight = RotateFlipType.RotateNoneFlipX;
-            }
-            else
-            {
-                flipLeft = RotateFlipType.RotateNoneFlipNone;
-                flipRight = RotateFlipType.RotateNoneFlipNone;
-            }
-
 
             form3.Visible = form2.LevelMeterCheckBox.Checked;
             form4.Visible = form2.LevelStreamCheckBox.Checked;
@@ -380,7 +372,7 @@ namespace SpeAnaLED
             if (inInit) { return; }
 
             int bounds;
-            int isLeft = 0; // for interreave
+            int isRight = 0; // for interreave
             int dash = (int)(penWidth * bgPen.DashPattern[0]);
             int dashBG = (int)(penWidth * bgPen.DashPattern[1]);
             int dashUnit = dash + dashBG;
@@ -393,14 +385,14 @@ namespace SpeAnaLED
             }
             for (int i = 0; i < numberOfBar * channel; i++)     // _spectumdata receiving from analizer is max16*2=32 byte L,R,L,R,...
             {
-                if (channel > 1) isLeft = i % 2;                // even: right=0, odd: left=1 (I don't know why), mono is always 0
+                if (channel > 1) isRight = i % 2;               // even: left=0, odd: right=1, mono is always 0
 
-                var posX = barLeftPadding + (i - isLeft) / channel * (penWidth + barSpacing);           // horizontal position
+                var posX = barLeftPadding + (i - isRight) / channel * (penWidth + barSpacing);          // horizontal position
                 var powY = (int)(analyzer.spectrumdata[i] / sensitivityRatio);                          // calculate drawing vertical length
-                g[isLeft].DrawLine(bgPen, posX, canvas[0].Height, posX, 0);                             // first, draw BG from bottom to top
+                g[isRight].DrawLine(bgPen, posX, canvas[0].Height, posX, 0);                            // first, draw BG from bottom to top
                 powY = ((powY - dash) / dashUnit + 1) * dashUnit;                                       // calculate LED bounds
                 if (powY > 6)                                                                           // _spectrumdata 0x00 is powY = 6
-                    g[isLeft].DrawLine(myPen, posX, canvas[0].Height, posX, canvas[0].Height - powY);   // from bottom to top direction
+                    g[isRight].DrawLine(myPen, posX, canvas[0].Height, posX, canvas[0].Height - powY);  // from bottom to top direction
 
                 // Peak Hold
                 if (form2.PeakholdCheckBox.Checked)
@@ -413,33 +405,34 @@ namespace SpeAnaLED
                     else if (peakCounter > counterCycle * 0.75      // decide whether to descend peak. 0.75 is to descend from cycle of 3/4
                         && peakCounter % peakHoldDescentCycle == 0)                                 // speed of descend
                     {
-                        for (int j = 0; j < peakValue.Length; j++) peakValue[j] -= dashUnit; // let Peak descend 1 level
+                        for (int j = 0; j < peakValue.Length; j++) peakValue[j] -= dashUnit;        // let Peak descend 1 level
                         if (peakValue[i] < powY) peakValue[i] = powY;                               // When it descends too much, update
                         else if (powY == 0 && peakValue[i] > 0)
-                            // not reach here?
+                            // never reach here?
                             for (int j = 0; j < peakValue.Length; j++) peakValue[j] -= dashUnit;
                     }
-                    bounds = ((peakValue[i] - dash) / dashUnit + 1) * dashUnit; // calculate border line ((int)((x-3)/6)+1)*6 same as powY
-                    if (bounds > 6) //  entity of peak drawing. _spectrum 0x00 is  powY=6
-                        g[isLeft].DrawLine(myPen, posX, canvas[0].Height - bounds, posX, canvas[0].Height - bounds - dash);   // draw only 1 scale from bounds
+                    bounds = ((peakValue[i] - dash) / dashUnit + 1) * dashUnit;                     // calculate border line ((int)((x-3)/6)+1)*6 same as powY
+                    if (bounds > 6)                                                                 // entity of peak drawing. _spectrum 0x00 is  powY=6
+                        g[isRight].DrawLine(myPen, posX, canvas[0].Height - bounds, posX, canvas[0].Height - bounds - dash);   // draw only 1 scale from bounds
                 }
 
                 peakCounter++;      // end of peak drawing
 
+                // debug
                 //if (form2.ShowCounterCheckBox.Checked) LabelCycle.Text = peakCounter.ToString("0000") + " / " + counterCycle.ToString()+ displayOffCounter.ToString();
 
-            }       // numberOfBar forloop ended
+            }   // numberOfBar forloop ended
 
             for (int i = 0; i < channel; i++) g[i].Dispose();
 
-            canvas[0].RotateFlip(flipRight);    // Right (I don't know why.)
-            if (channel > 1)
-                canvas[1].RotateFlip(flipLeft); // Left, May be there is no canvas[1] in "MONO"
+            canvas[0].RotateFlip(flipLeft);     // Left or mono
 
             if (channel > 1)                    // not mono
             {
-                Spectrum1.Image = canvas[1];    // even: right=canvas0, odd: left=canvas1 Why?
-                Spectrum2.Image = canvas[0];
+                canvas[1].RotateFlip(flipRight);// Right, May be there is canvas[1] only in "Stereo"
+
+                Spectrum1.Image = canvas[0];    // even: left=canvas0, odd: right=canvas1
+                Spectrum2.Image = canvas[1];
             }
             else                                // mono
                 Spectrum1.Image = canvas[0];    // mono is always to canvas0
@@ -457,14 +450,13 @@ namespace SpeAnaLED
                 displayOffCounter++;
             }
             
-                if (displayOffCounter > 90)
+            if (displayOffCounter > 90)
             {
                 if (form2.SSaverCheckBox.Checked)
                 {
                     SetThreadExecutionState(
                         EXECUTION_STATE.ES_DISPLAY_REQUIRED |
                         EXECUTION_STATE.ES_SYSTEM_REQUIRED);
-
                 }
                 else
                     SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
@@ -498,11 +490,6 @@ namespace SpeAnaLED
             }
         }
 
-        private void AnalyzerIsBusy(object sender, CheckedEventArgs ce)
-        {
-            DispatchAnalyzerIsBusy?.Invoke(sender, ce);
-        }
-
         private void SetSpectrumLayout(int formW, int formH)
         {
             // void, but the objective is to determine size of Spectrum and label location from size of form.
@@ -528,7 +515,7 @@ namespace SpeAnaLED
 
             if (!form2.HideFreqCheckBox.Checked)    // cases requiring Labels
             {
-                if (form2.HorizontalRadioButton.Checked)              // H-layout: need Labels
+                if (form2.HorizontalRadioButton.Checked)         // H-layout: need Labels
                 {
                     Spectrum1.Width = Spectrum2.Width = (formW - borderSize * 2 - leftPadding * 2) / channel; // Spectrum.Width makes no difference with or without Labels
                     Spectrum1.Height = Spectrum2.Height = formH - borderSize * 2 - titleHeight - topPadding - labelPadding - baseLabelHeight - bottomPadding;
@@ -558,7 +545,7 @@ namespace SpeAnaLED
             }
             else        // cases not requiring Labels
             {
-                if (form2.HorizontalRadioButton.Checked)      // H-layout: not need Labels
+                if (form2.HorizontalRadioButton.Checked)        // H-layout: not need Labels
                 {
                     Spectrum1.Width = Spectrum2.Width = (formW - borderSize * 2 - leftPadding * 2) / channel; // Spectrum.Width makes no difference with or without Labels
                     Spectrum1.Height = Spectrum2.Height = formH - borderSize * 2 - titleHeight - topPadding;
@@ -566,7 +553,7 @@ namespace SpeAnaLED
                     Spectrum1.Left = leftPadding;
                     Spectrum2.Left = Spectrum1.Right;// + 1;
                 }
-                else                                    // V-layout: not need Labels
+                else                                            // V-layout: not need Labels
                 {
                     Spectrum1.Width = Spectrum2.Width = formW - borderSize * 2 - leftPadding * 2;       // Spectrum.Width makes no difference with or without Labels
                     Spectrum1.Height = Spectrum2.Height = (formH - borderSize * 2 - titleHeight - topPadding - verticalSpacing * (channel - 1)) / channel; // mono:0, steereo:1
@@ -615,13 +602,13 @@ namespace SpeAnaLED
             for (int i = 0; i < maxNumberOfBar; i++)
             {
                 string labelText;
-                int freqvalues = (int)(Math.Round(Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.29), 0));    // 4.29=Round(Log(20000hz, 2) - (in increments of)10, 2);
+                double freqvalues = Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.29);    // 4.29=Round(Log(20000hz, 2) - (in increments of)10, 2);
                 if (freqvalues > 10000)
-                    labelText = (freqvalues / 1000).ToString("0") + "k";    // "khz";
+                    labelText = (Math.Round(freqvalues / 1000, MidpointRounding.AwayFromZero)).ToString("0") + "k";    // "khz";
                 else if (freqvalues > 1000)
-                    labelText = (freqvalues / 100 * 100 / 1000f).ToString("0.0") + "k";
+                    labelText = (Math.Round(freqvalues / 100, MidpointRounding.AwayFromZero) * 100 / 1000f).ToString("0.0") + "k";
                 else if (freqvalues > 100 || numberOfBar < 32)
-                    labelText = (freqvalues / 10 * 10).ToString("0");       // round -1
+                    labelText = (Math.Round(freqvalues / 10, MidpointRounding.AwayFromZero) * 10).ToString("0");       // round -1
                 else
                     labelText = freqvalues.ToString("0");
 
@@ -682,20 +669,34 @@ namespace SpeAnaLED
         //private void Spectrum1_MouseDown(object sender, MouseEventArgs e)
         //private void Spectrum2_MouseDown(object sender, MouseEventArgs e)
         {
-            int mdt = 8;    // mouse detect thickness (inner)
-
             if (e.Button == MouseButtons.Right && !form2.Visible)
                 form2.Visible = true;
             else if (e.Button == MouseButtons.Left)
                 if (form2.HideTitleCheckBox.Checked)
                 {
                     mouseDragStartPoint = new Point(e.X, e.Y);
-                    int _width = sender == Spectrum2 ? Spectrum2.Width : this.Width;
-                    pinchLeft = e.X < mdt;
-                    pinchRight = e.X > _width - mdt;
-                    pinchTop = e.Y < mdt;
-                    pinchBottom = e.Y > Height - mdt;
-                    inFormSizeChange = pinchLeft || pinchRight || pinchTop || pinchBottom;
+                    int _height, _width;// = sender == Spectrum2 ? Spectrum2.Width : this.Width;
+                    if (sender == Spectrum2)
+                    {
+                        _height = Spectrum2.Height;
+                        _width = Spectrum2.Width;
+                    }
+                    else if (sender == Spectrum1)
+                    {
+                        _height = this.Height;
+                        _width = Spectrum1.Width;
+                    }
+                    else
+                    {
+                        _height = this.Height;
+                        _width = this.Width;
+                    }
+                    
+                    pinch.left = e.X < mdt;
+                    pinch.right = e.X > _width - mdt;
+                    pinch.top = e.Y < mdt;
+                    pinch.bottom = e.Y > _height - mdt;
+                    inFormSizeChange = pinch.left || pinch.right || pinch.top || pinch.bottom;
                     if (!inFormSizeChange) Cursor = Cursors.SizeAll;
                 }
         }
@@ -706,19 +707,18 @@ namespace SpeAnaLED
             {
                 int minWidth = 64 * channel;
                 int minHeight = 64;
-                int mdt = 8;    // mouse detect thickness
 
                 if (e.Button == MouseButtons.Left)
                 {
                     if (Cursor == Cursors.SizeWE)
                     {
-                        if (pinchLeft)
+                        if (pinch.left)
                         {
                             Width -= e.X - mouseDragStartPoint.X;
                             if (Width < minWidth) Width = minWidth;
                             else Left += e.X - mouseDragStartPoint.X;
                         }
-                        else if (pinchRight)
+                        else if (pinch.right)
                         {
                             Width = e.X;
                             if (Width < minWidth) Width = minWidth;
@@ -726,13 +726,13 @@ namespace SpeAnaLED
                     }
                     else if (Cursor == Cursors.SizeNS)
                     {
-                        if (pinchTop)
+                        if (pinch.top)
                         {
                             Height -= e.Y - mouseDragStartPoint.Y;
                             if (Height < minHeight) Height = minHeight;
                             else Top += e.Y - mouseDragStartPoint.Y;
                         }
-                        else if (pinchBottom)
+                        else if (pinch.bottom)
                         {
                             Height = e.Y;
                             if (Height < minHeight) Height = minHeight;
@@ -769,7 +769,7 @@ namespace SpeAnaLED
             if (Cursor != Cursors.Default)
             {
                 Cursor = Cursors.Default;
-                inLayout = pinchLeft = pinchRight = pinchTop = pinchBottom = false;
+                inLayout = pinch.left = pinch.right = pinch.top = pinch.bottom = false;
                 SetSpectrumLayout(Width, Height);
             }
         }
@@ -780,19 +780,18 @@ namespace SpeAnaLED
             {
                 int minWidth = 64;
                 int minHeight = 32;
-                int mdt = 8;    // mouse detect thickness
-
+                
                 if (e.Button == MouseButtons.Left)
                 {
                     if (Cursor == Cursors.SizeWE)
                     {
-                        if (pinchLeft)
+                        if (pinch.left)
                         {
                             Width -= e.X - mouseDragStartPoint.X;
                             if (Width < minWidth) Width = minWidth;
                             else Left += e.X - mouseDragStartPoint.X;
                         }
-                        else if (pinchRight && form2.MonoRadioButton.Checked)
+                        else if (pinch.right && (form2.MonoRadioButton.Checked || form2.VerticalRadioButton.Checked))
                         {
                             Width = e.X;
                             if (Width < minWidth) Width = minWidth;
@@ -800,13 +799,13 @@ namespace SpeAnaLED
                     }
                     else if (Cursor == Cursors.SizeNS)
                     {
-                        if (pinchTop)
+                        if (pinch.top)
                         {
                             Height -= e.Y - mouseDragStartPoint.Y;
                             if (Height < minHeight) Height = minHeight;
                             else Top += e.Y - mouseDragStartPoint.Y;
                         }
-                        else if (pinchBottom && form2.HideFreqCheckBox.Checked)
+                        else if (pinch.bottom && form2.HideFreqCheckBox.Checked)
                         {
                             Height = e.Y;
                             if (Height < minHeight) Height = minHeight;
@@ -819,7 +818,7 @@ namespace SpeAnaLED
                     }
                 }
 
-                if (e.X < mdt || (channel < maxChannel && e.X > Spectrum1.Width - mdt))
+                if (e.X < mdt || ((channel < maxChannel || form2.VerticalRadioButton.Checked) && e.X > Spectrum1.Width - mdt))
                     Cursor = Cursors.SizeWE;
                 else if (e.Y < mdt || (form2.HideFreqCheckBox.Checked && e.Y > Height - mdt))
                     Cursor = Cursors.SizeNS;
@@ -834,34 +833,43 @@ namespace SpeAnaLED
             {
                 int minWidth = 64;
                 int minHeight = 32;
-                int mdt = 8;    // mouse detect thickness
-
+                
                 if (e.Button == MouseButtons.Left)
                 {
                     if (Cursor == Cursors.SizeWE)
                     {
-                        if (pinchLeft)
+                        if (pinch.left)
                         {
-                            ;
+                            Width -= e.X - mouseDragStartPoint.X;
+                            if (Width < minWidth) Width = minWidth;
+                            else Left += e.X - mouseDragStartPoint.X;
                         }
-                        else if (pinchRight)
+                        else if (pinch.right)
                         {
-                            Width = Spectrum1.Width + e.X;      // borderThickness is 0 at this case
+                            Width = e.X;      // borderThickness is 0 at this case
                             if (Width < minWidth) Width = minWidth;
                         }
                     }
                     else if (Cursor == Cursors.SizeNS)
                     {
-                        if (pinchTop)
+                        if (pinch.top)
                         {
                             Height -= e.Y - mouseDragStartPoint.Y;
                             if (Height < minHeight) Height = minHeight;
                             else Top += e.Y - mouseDragStartPoint.Y;
                         }
-                        else if (pinchBottom && form2.HideFreqCheckBox.Checked)
+                        else if (pinch.bottom && form2.HideFreqCheckBox.Checked)
                         {
-                            Height = e.Y;
-                            if (Height < minHeight) Height = minHeight; ;
+                            if (form2.VerticalRadioButton.Checked)
+                            {
+                                Height = e.Y * 2 + verticalSpacing;
+                                if (Height < minHeight) Height = minHeight;
+                            }
+                            else
+                            {
+                                Height = e.Y;
+                                if (Height < minHeight) Height = minHeight; ;
+                            }
                         }
                     }
                     else
@@ -871,9 +879,9 @@ namespace SpeAnaLED
                     }
                 }
 
-                if (e.X > Spectrum2.Width - mdt)
+                if (e.X > Spectrum2.Width - mdt || (form2.VerticalRadioButton.Checked && e.X < mdt))
                     Cursor = Cursors.SizeWE;
-                else if (e.Y < mdt || (form2.HideFreqCheckBox.Checked && e.Y > Height - mdt))
+                else if ((e.Y < mdt && form2.HorizontalRadioButton.Checked) || (form2.HideFreqCheckBox.Checked && e.Y > Spectrum2.Height - mdt))
                     Cursor = Cursors.SizeNS;
                 else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
                     Cursor = Cursors.Default;
@@ -904,13 +912,17 @@ namespace SpeAnaLED
             }
 
             canvasWidth = barLeftPadding + numberOfBar * ((int)penWidth + barSpacing) - (barLeftPadding - barSpacing);  // to stretch, calculate canvas size by number of bar
-            //if (!inInit) ClearSpectrum(sender, EventArgs.Empty);
             spectrumWidthScale = (float)Spectrum1.Width / baseSpectrumWidth * (maxNumberOfBar / numberOfBar);
+            
             if (!form2.HideFreqCheckBox.Checked)
             {
-                if (!form2.VerticalRadioButton.Checked)
+                if(channel < 2)
+                    LocateFrequencyLabel(Spectrum1, freqLabel_Left, false);
+                else if (!form2.VerticalRadioButton.Checked)
                     LocateFrequencyLabel(Spectrum1, freqLabel_Left, form2.LeftFlipRadioButton.Checked);
-                else for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Left[i].Visible = false;
+                else
+                    for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Left[i].Visible = false;
+
                 LocateFrequencyLabel(Spectrum2, freqLabel_Right, form2.RightFlipRadioButton.Checked);
             }
 
@@ -931,7 +943,7 @@ namespace SpeAnaLED
             peakValue = new int[maxNumberOfBar * channel];
             //counterCycle = (int)(peakHoldTimeMsec / analyzer._timer1.Interval.Milliseconds * Form2.cycleMultiplyer * (numberOfBar * channel / (float)maxNumberOfBar));
             peakHoldDescentCycle = 20 * numberOfBar / channel / form2.PeakholdDescentSpeedTrackBar.Value;       // Inverse the value so that the direction of
-            //for (int i = 0; i < channel; i++) canvas[i] = new Bitmap(Spectrum1.Width, Spectrum1.Height);        //  speed and value increase/decrease match.
+                                                                                                                // speed and value increase/decrease match.
             for (int i = 0; i < analyzer.spectrumdata.Count; i++) analyzer.spectrumdata[i] = 0x00;
 
             inInit = false;
@@ -953,7 +965,7 @@ namespace SpeAnaLED
 
             if (!form2.HideFreqCheckBox.Checked)    // cases in require labels
             {
-                if (form2.HorizontalRadioButton.Checked)  // H-layout: require labels
+                if (form2.HorizontalRadioButton.Checked)    // H-layout: require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width * channel;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height + labelPadding + baseLabelHeight + bottomPadding;
@@ -977,7 +989,17 @@ namespace SpeAnaLED
                         }
                     }
                 }
-                else                                // V-layout: require labels
+                else if (form2.VerticalFlipCheckBox.Checked)    // V-layout: V flip, require labels
+                {
+                    this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width;
+                    this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height * channel + verticalSpacing * (channel - 1) + labelPadding + baseLabelHeight + bottomPadding;
+                    if (channel > 1)
+                    {
+                        flipLeft = RotateFlipType.RotateNoneFlipNone;
+                        flipRight = RotateFlipType.RotateNoneFlipY;
+                    }
+                }
+                else                                        // V-layout: require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height * channel + verticalSpacing * (channel - 1) + labelPadding + baseLabelHeight + bottomPadding;
@@ -985,7 +1007,7 @@ namespace SpeAnaLED
             }
             else                                    // cases in not require labels
             {
-                if (form2.HorizontalRadioButton.Checked)  // H-layout: not require labels
+                if (form2.HorizontalRadioButton.Checked)    // H-layout: not require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width * channel;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height;
@@ -1006,12 +1028,21 @@ namespace SpeAnaLED
                         flipRight = RotateFlipType.RotateNoneFlipNone;
                     }
                 }
-                else                                // V-layout: not require labels
+                else                                        // V-layout: not require labels
                 {
                     this.Width = (borderSize + leftPadding) * 2 + Spectrum1.Width;
                     this.Height = borderSize * 2 + titleHeight + topPadding + Spectrum1.Height * channel + verticalSpacing * (channel - 1);
-                    flipLeft = RotateFlipType.RotateNoneFlipNone;
-                    flipRight = RotateFlipType.RotateNoneFlipNone;
+                    
+                    if (form2.VerticalFlipCheckBox.Checked && channel > 1)
+                    {
+                        flipLeft = RotateFlipType.RotateNoneFlipNone;
+                        flipRight = RotateFlipType.RotateNoneFlipY;
+                    }
+                    else
+                    {
+                        flipLeft = RotateFlipType.RotateNoneFlipNone;
+                        flipRight = RotateFlipType.RotateNoneFlipNone;
+                    }
                 }
             }
 
@@ -1168,6 +1199,7 @@ namespace SpeAnaLED
                 LocateFrequencyLabel(Spectrum2, freqLabel_Right, isFlip: form2.RightFlipRadioButton.Checked);
 
                 form2.FlipGroup.Enabled = true;
+                form2.VerticalFlipCheckBox.Enabled = false;
 
                 // shift Setting dialog location
                 if (form2.Top < this.Bottom &&
@@ -1198,7 +1230,10 @@ namespace SpeAnaLED
                 flipLeft = RotateFlipType.RotateNoneFlipNone;
                 flipRight = RotateFlipType.RotateNoneFlipNone;
 
+                Form2_VerticalFlipRadioButton_CheckChanged(sender, EventArgs.Empty);
+
                 form2.FlipGroup.Enabled = false;
+                form2.VerticalFlipCheckBox.Enabled = true;
 
                 // shift Setting dialog location
                 if (form2.Top < this.Bottom &&
@@ -1242,6 +1277,23 @@ namespace SpeAnaLED
                     LocateFrequencyLabel(Spectrum2, freqLabel_Right, isFlip: true);
                 }
 
+            }
+        }
+
+        private void Form2_VerticalFlipRadioButton_CheckChanged(object sender, EventArgs e)
+        {
+            if (!inInit && channel > 1)
+            {
+                if (form2.VerticalFlipCheckBox.Checked)
+                {
+                    flipLeft = RotateFlipType.RotateNoneFlipNone;
+                    flipRight = RotateFlipType.RotateNoneFlipY;
+                }
+                else
+                {
+                    flipLeft = RotateFlipType.RotateNoneFlipNone;
+                    flipRight = RotateFlipType.RotateNoneFlipNone;
+                }
             }
         }
 
@@ -1322,8 +1374,7 @@ namespace SpeAnaLED
         {
             if (form2.LevelMeterCheckBox.Checked)
             {
-                form2.CloseButton.Enabled =
-                form2.HideSpectrumWindowCheckBox.Enabled = true;
+                form2.CloseButton.Enabled = form2.HideSpectrumWindowCheckBox.Enabled = true;
                 form2.ExitAppButton.Enabled = form2.HideTitleCheckBox.Checked || !Visible;
                 form2.LevelMeterSensitivityGroupBox.Enabled = true; ;
 
@@ -1360,8 +1411,7 @@ namespace SpeAnaLED
         {
             if (form2.LevelStreamCheckBox.Checked)
             {
-                form2.CloseButton.Enabled =
-                form2.HideSpectrumWindowCheckBox.Enabled = true;
+                form2.CloseButton.Enabled = form2.HideSpectrumWindowCheckBox.Enabled = true;
                 form2.ExitAppButton.Enabled = form2.HideTitleCheckBox.Checked || !Visible;
                 
                 try
@@ -1401,11 +1451,10 @@ namespace SpeAnaLED
             if (form2.HideSpectrumWindowCheckBox.Checked == false)      // form1 visible
             {
                 form2.CloseButton.Enabled =
-                form2.HideSpectrumWindowCheckBox.Enabled = true;
+                form2.HideSpectrumWindowCheckBox.Enabled =
                 form2.SpectrumColorShemeGroupBox.Enabled =
                 form2.SpectrumPeakholdGroupBox.Enabled =
                 form2.SpectrumSensitivityGroupBox.Enabled =
-                form2.NumberOfBarComboBox.Enabled =
                 form2.NumberOfBarsPanel.Enabled =
                 form2.NoCGroupBox.Enabled = 
                 form2.HideFreqCheckBox.Enabled = true;
@@ -1429,7 +1478,6 @@ namespace SpeAnaLED
                 form2.SpectrumColorShemeGroupBox.Enabled =
                 form2.SpectrumPeakholdGroupBox.Enabled =
                 form2.SpectrumSensitivityGroupBox.Enabled =
-                form2.NumberOfBarComboBox.Enabled =
                 form2.NumberOfBarsPanel.Enabled =
                 form2.NoCGroupBox.Enabled =
                 form2.HideFreqCheckBox.Enabled = false;
@@ -1470,6 +1518,7 @@ namespace SpeAnaLED
 
         private void Form2_ExitAppButton_Click(object sender, EventArgs e)
         {
+            lastDefaultDevice = form2.DefaultDeviceName.Text;
             Application.Exit();
         }
 
@@ -1496,17 +1545,14 @@ namespace SpeAnaLED
             {
                 MessageBox.Show(
                     "No Config file was found.\r\n" +
-                    "Use default Parameters.\r\n" +
-                    "Please enumerate devices from \"Config\" dialog.\r\n" +
-                    "When exiting the application,\r\n" +
+                    "Default Parameters will be used.\r\n" +
+                    "When exit the application,\r\n" +
                     "Config file will be created automatically.",
                     "Config file not found - " + ProductName,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
 
-            Form2.DeviceNumber = confReader.GetValue("deviceNumber", -1);
-            devices = confReader.GetValue("devices", string.Empty);
             form2.numberOfBar = confReader.GetValue("numberOfBar", 16);
             form2.MonoRadioButton.Checked = confReader.GetValue("mono", false);
             form2.StereoRadioButton.Checked = confReader.GetValue("stereo", true);
@@ -1519,6 +1565,7 @@ namespace SpeAnaLED
             labelPadding = confReader.GetValue("labelPadding", 4);
             baseLabelWidth = confReader.GetValue("baseLabelWidth", 17);
             baseLabelHeight = confReader.GetValue("baseLabelHeight", 17);
+            mdt = confReader.GetValue("mouseDetectThickness", 8);
 
             form2.peakHoldTimeMsec = confReader.GetValue("peakHoldTimeMsec", 500);
             form2.SensitivityTrackBar.Value = confReader.GetValue("sensitivity", 80);
@@ -1530,6 +1577,7 @@ namespace SpeAnaLED
             form2.SSaverCheckBox.Checked = confReader.GetValue("preventSSaver", false);
             form2.HorizontalRadioButton.Checked = confReader.GetValue("horizontalLayout", true);
             form2.VerticalRadioButton.Checked = confReader.GetValue("verticalLayout", false);
+            form2.VerticalFlipCheckBox.Checked = confReader.GetValue("verticalFlip", false);
             form2.NoFlipRadioButton.Checked = confReader.GetValue("flipNone", true);
             form2.RightFlipRadioButton.Checked = confReader.GetValue("flipRight", false);
             form2.LeftFlipRadioButton.Checked = confReader.GetValue("flipLeft", false);
@@ -1575,12 +1623,11 @@ namespace SpeAnaLED
             param[8] = confReader.GetValue("prisumPositions_8", "0.0, 0.50, 0.70, 0.75, 1.0").Split(',');
             param[16] = confReader.GetValue("prisumPositions_16", "0.0, 0.30, 0.50, 0.60, 1.0").Split(',');
             param[32] = confReader.GetValue("prisumPositions_32", "0.0, 0.30, 0.50, 0.60, 1.0").Split(',');
-            foreach (int bar in bars)                             // 1,2,4,8,16
+            foreach (int bar in bars)                                   // 1, 2, 4,8,16,32
             {
                 prisumPositions[bar] = new float[param[bar].Length];
-                for (int j = 0; j < prisumPositions[bar].Length; j++)           // 0,1,2,3,4
+                for (int j = 0; j < prisumPositions[bar].Length; j++)   // 0,1,2,3,4    red,yellow,lime,cyan,blue
                 {
-                    prisumPositions[bar][j] = new float();
                     prisumPositions[bar][j] = float.Parse(param[bar][j]);
                 }
             }
@@ -1588,15 +1635,26 @@ namespace SpeAnaLED
             int pos = 0;
             foreach (string s in confReader.GetValue("classicPosition", "0.00, 0.30, 1.00").Split(','))
             {
-                classicPositions[pos] = new float();
                 classicPositions[pos] = float.Parse(s);
                 pos++;
             }
             pos = 0;
             foreach (string s in confReader.GetValue("simplePosition", "0.00, 1.00").Split(','))
             {
-                simplePositions[pos] = new float();
                 simplePositions[pos] = float.Parse(s);
+                pos++;
+            }
+
+            pos = 0;                                       //bands: Dummy Dummy Dummy  8,    16,   32
+            foreach (string s in confReader.GetValue("adjustMono", "0.41, 0.41, 0.41, 0.41, 0.33, 0.22").Split(','))    //    less->Hi, large->Low
+            {
+                form2.adjustTable[0][pos] = float.Parse(s);
+                pos++;
+            }
+            pos = 0;                                       //bands:  Dummy Dummy  Dummy   8,   16,   32
+            foreach (string s in confReader.GetValue("adjustStereo", "1.80, 1.80, 1.80, 1.80, 1.25, 0.90").Split(','))  //    less->Hi, large->Low
+            {
+                form2.adjustTable[1][pos] = float.Parse(s);
                 pos++;
             }
 
@@ -1629,15 +1687,15 @@ namespace SpeAnaLED
             form2.pow = confReader.GetValue("streamPower", 0.5f);
 
 
-            UNICODE = confReader.GetValue("unicode", true);                 // In conf file, add "unicode=false" cause codepage change to ANSI
+            UNICODE = confReader.GetValue("unicode", true);                 // In conf file, add "unicode=false" cause change codepage to ANSI
         }
 
         private bool SaveConfigParams()
         {
             var confWriter = new ConfigWriter();
             confWriter.AddValue("ver.", relText);
+            confWriter.AddValue("lastDefaultDevice", lastDefaultDevice);    // Save only, just to be sure
             confWriter.AddValue("numberOfBar", form2.numberOfBar);
-            confWriter.AddValue("deviceNumber", Form2.DeviceNumber);
 
             confWriter.AddValue("form1Top", this.Top);
             confWriter.AddValue("form1Left", this.Left);
@@ -1656,6 +1714,7 @@ namespace SpeAnaLED
             confWriter.AddValue("labelPadding", labelPadding);
             confWriter.AddValue("baseLabelWidth", freqLabel_Left[0].Width);
             confWriter.AddValue("baseLabelHeight", freqLabel_Left[0].Height);
+            confWriter.AddValue("mouseDetectThickness", mdt);
 
             confWriter.AddValue("peakHoldTimeMsec", form2.peakHoldTimeMsec);
             confWriter.AddValue("sensitivity", form2.SensitivityTrackBar.Value);
@@ -1675,6 +1734,7 @@ namespace SpeAnaLED
             confWriter.AddValue("rainbow", form2.RainbowRadioButton.Checked);
             confWriter.AddValue("verticalLayout", form2.VerticalRadioButton.Checked);
             confWriter.AddValue("horizontalLayout", form2.HorizontalRadioButton.Checked);
+            confWriter.AddValue("verticalFlip", form2.VerticalFlipCheckBox.Checked);
             confWriter.AddValue("flipNone", form2.NoFlipRadioButton.Checked);
             confWriter.AddValue("flipRight", form2.RightFlipRadioButton.Checked);
             confWriter.AddValue("flipLeft", form2.LeftFlipRadioButton.Checked);
@@ -1683,7 +1743,7 @@ namespace SpeAnaLED
             confWriter.AddValue("stereo", form2.StereoRadioButton.Checked);
             confWriter.AddValue("separateStream", form2.SeparateStreamRadioButton.Checked);
             confWriter.AddValue("combineStream", form2.CombineStreamRadioButton.Checked);
-
+            
             string Argb(Color[] c)
             {
                 string ret = string.Empty;
@@ -1707,7 +1767,7 @@ namespace SpeAnaLED
             confWriter.AddValue("streamPenColor", Argb(new Color[] { form4.streamPen.Color }));
             confWriter.AddValue("startPenColor", Argb(new Color[] { form4.startPen.Color }));
 
-            int[] bars = { 1, 2, 4, 8, 16 };
+            int[] bars = { 1, 2, 4, 8, 16, 32 };
             string[] strPrisumPosition = new string[maxNumberOfBar + 1];
             foreach (int bar in bars)
             {
@@ -1721,6 +1781,7 @@ namespace SpeAnaLED
             confWriter.AddValue("prisumPositions_4", strPrisumPosition[4]);
             confWriter.AddValue("prisumPositions_8", strPrisumPosition[8]);
             confWriter.AddValue("prisumPositions_16", strPrisumPosition[16]);
+            confWriter.AddValue("prisumPositions_32", strPrisumPosition[32]);
 
             string strClassicPosition = "";
             foreach (var item in classicPositions) strClassicPosition += item.ToString("0.00") + ",";
@@ -1732,16 +1793,18 @@ namespace SpeAnaLED
             strSimplePosition = strSimplePosition.Trim(',');
             confWriter.AddValue("simplePosition", strSimplePosition);
 
+            string strAdjustMono = "";
+            foreach (var item in form2.adjustTable[0]) strAdjustMono += item.ToString("0.00") + ",";
+            strAdjustMono = strAdjustMono.Trim(',');
+            confWriter.AddValue("adjustMono", strAdjustMono);
+
+            string strAdjustStereo = "";
+            foreach (var item in form2.adjustTable[1]) strAdjustStereo += item.ToString("0.00") + ",";
+            strAdjustStereo = strAdjustStereo.Trim(',');
+            confWriter.AddValue("adjustStereo", strAdjustStereo);
+
             confWriter.AddValue("rainbowFlip", rainbowFlip);
             confWriter.AddValue("streamScroll", form4.streamScrollUnit);
-
-            string devices = string.Empty;
-            for (int i = 0; i < form2.DeviceListComboBox.Items.Count; i++)
-                devices += form2.DeviceListComboBox.Items[i].ToString().TrimEnd() + ",";
-            if (devices != "Please Enumerate Devices,")
-                confWriter.AddValue("devices", devices.TrimEnd(','));
-
-            if (UNICODE == false) confWriter.AddValue("unicode", false);
 
             confWriter.AddValue("spectrum2Top", Spectrum2.Top);                 // for debug save only
             confWriter.AddValue("spectrum2Left", Spectrum2.Left);
@@ -1763,8 +1826,7 @@ namespace SpeAnaLED
             confWriter.AddValue("streamChannelSpacing", form4.streamChannelSpacing);
             confWriter.AddValue("streamPower", form2.pow);
 
-            // add "unicode=false" in config file to change cause codepage to ANSI (not saved)
-
+            if (UNICODE == false) confWriter.AddValue("unicode", false);
 
             string configFileName = @".\" + ProductName + @".conf";
             try
@@ -1798,6 +1860,4 @@ namespace SpeAnaLED
             SaveConfigParams();
         }
     }
-
-    public class CheckedEventArgs : EventArgs { public bool Checked; }
 }

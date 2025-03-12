@@ -11,8 +11,6 @@ namespace SpeAnaLED
         // common
         public int channel;
         public int numberOfBar;
-        //public ComboBox Devicelist { get { return DeviceListComboBox; } }
-        private static int deviceNumber;
 
         // layput
         public int borderSize;
@@ -31,12 +29,13 @@ namespace SpeAnaLED
         public int counterCycle;
         public int peakHoldTimeMsec;
         public float pow;
+        public float[][] adjustTable;
 
         // constants
         public const int maxChannel = 2;
         public const int maxNumberOfBar = 32;
         public const int timerIntervalMilliSeconds = 25;
-        public const float cycleMultiplyer = 50f / 16 / 2;          // 1.5625f = const50 / maxNumberOfBars / maxChannels
+        public const float cycleMultiplyer = 50f / maxNumberOfBar / maxChannel; // 0.78125f = const50 / maxNumberOfBars / maxChannels
         public const int lmPBWidth = 13 * (24 + 6);                 // level meter PictureBox width = 390 = 13LEDs * (24+6)px
         private const string gitUri = "https://github.com/osamusg/SpeAnaLED";
 
@@ -49,18 +48,15 @@ namespace SpeAnaLED
         public event EventHandler NumberOfBarChanged;
         public event EventHandler DeviceReloadRequested;
 
-        // static functions
-        public static int DeviceNumber { get { return deviceNumber; } set { deviceNumber = value; } }
-
         public Form2(Form1 _form1)
         {
             InitializeComponent();
 
             form1 = _form1;
             RelLabel.Text = form1.relText;
+            adjustTable = new float[2][] { new float[6], new float[6] };
 
             // subscribe
-            form1.DispatchAnalyzerIsBusy += AnalyzerIsBusy;
             form1.KeyDown += Form2_KeyDown;
             
             borderSize = defaultBorderSize = (form1.Width - form1.ClientSize.Width) / 2;
@@ -74,9 +70,8 @@ namespace SpeAnaLED
 
             // Params
             counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
-            
+
             // Controls
-            NumberOfBarComboBox.SelectedIndex = NumberOfBarComboBox.Items.IndexOf(numberOfBar.ToString());
             PeakholdTimeComboBox.SelectedIndex = PeakholdTimeComboBox.Items.IndexOf(peakHoldTimeMsec.ToString());
             SensitivityTextBox.Text = (SensitivityTrackBar.Value / 10f).ToString("0.0");
             PeakholdDescentSpeedTextBox.Text = PeakholdDescentSpeedTrackBar.Value.ToString();
@@ -90,33 +85,15 @@ namespace SpeAnaLED
             // Enabling
             if (channel < 2) ChannelLayoutGroup.Enabled = false;
             LabelPeakhold.Enabled = LabelMsec.Enabled = PeakholdTimeComboBox.Enabled = PeakholdCheckBox.Checked;
+            VerticalFlipCheckBox.Enabled = VerticalRadioButton.Checked;
             FlipGroup.Enabled = HorizontalRadioButton.Checked;
             HideSpectrumWindowCheckBox.Enabled = (LevelMeterCheckBox.Checked || LevelStreamCheckBox.Checked);
             LevelStreamPanel.Enabled = LevelStreamCheckBox.Checked;
 
 #if DEBUG
             ShowCounterCheckBox.Visible = true;
+            label2.Visible = true;
 #endif
-        }
-
-        private void AnalyzerIsBusy(object sender, CheckedEventArgs ce)
-        {
-            EnumerateButton.Enabled =
-            DeviceReloadButton.Enabled =
-            AutoReloadCheckBox.Enabled = !ce.Checked;
-        }
-
-        private void DeviceListComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (Form1.inInit) return;
-            deviceNumber = Convert.ToInt16(DeviceListComboBox.SelectedItem.ToString().Split(' ')[0]);
-        }
-
-        private void NumberOfBarComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            numberOfBar = Convert.ToInt16(NumberOfBarComboBox.SelectedItem);
-            counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
-            CounterCycleChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void NumberOfBarRadioButtonCheckedChanged(object sender, EventArgs e)
@@ -283,11 +260,6 @@ namespace SpeAnaLED
             NumberOfChannelChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        /*private void AutoReloadCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            //autoReloadChecked = AutoReloadCheckBox.Checked;
-        }*/
-
         private void AlfaTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
@@ -375,14 +347,16 @@ namespace SpeAnaLED
                 RainbowRadioButton.Checked = true;
             else if (e.KeyCode == Keys.O)
                 this.Visible = !this.Visible;
+            else if (e.KeyCode == Keys.P)
+                SSaverCheckBox.Checked = !SSaverCheckBox.Checked;
             else if (e.KeyCode == Keys.D)
             {
                 DeviceReloadRequested?.Invoke(this, EventArgs.Empty);
                 ClearSpectrum?.Invoke(this, EventArgs.Empty);
             }
             else if (e.KeyCode == Keys.Q)
-            {   
-                var result =  MessageBox.Show(
+            {
+                var result = MessageBox.Show(
                 "Quit?",
                 "Quit",
                 MessageBoxButtons.OKCancel,
