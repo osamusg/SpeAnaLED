@@ -11,7 +11,6 @@ namespace SpeAnaLED
         
         private const int baseClientWidth = 436;
         private const int baseClientHeight = 65;
-        private const int mdt = 8;    // mouse detect thickness (inner)
 
         private Point mouseDragStartPoint = new Point(0, 0);
         private struct RectangleBool { public bool left, right, top, bottom; }
@@ -224,10 +223,10 @@ namespace SpeAnaLED
                 {
                     mouseDragStartPoint = new Point(e.X, e.Y);
 
-                    pinch.left = e.X < mdt;
-                    pinch.right = e.X > Width - mdt;
-                    pinch.top = e.Y < mdt;
-                    pinch.bottom = e.Y > Height - mdt;
+                    pinch.left = e.X < form1.mdt;
+                    pinch.right = e.X > Width - form1.mdt;
+                    pinch.top = e.Y < form1.mdt;
+                    pinch.bottom = e.Y > Height - form1.mdt;
                     inFormSizeChange = pinch.left || pinch.right || pinch.top || pinch.bottom;
                     if (!inFormSizeChange) Cursor = Cursors.SizeAll;
                 }
@@ -278,9 +277,9 @@ namespace SpeAnaLED
                     }
                 }
 
-                if (e.X < mdt || e.X > Width - mdt)
+                if (e.X < form1.mdt || e.X > Width - form1.mdt)
                     Cursor = Cursors.SizeWE;
-                else if (e.Y < mdt || e.Y > Height - mdt)
+                else if (e.Y < form1.mdt || e.Y > Height - form1.mdt)
                     Cursor = Cursors.SizeNS;
                 else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
                     Cursor = Cursors.Default;

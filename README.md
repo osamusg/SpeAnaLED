@@ -87,7 +87,7 @@
 
 ## Other precautions
 <p><strong>SpeAnaLED</strong> is simply made to be seen and enjoyed by myself. The values including frequency displayed is most likely not accurate.</p>
-<p>If a problem occurs, first try deleting your configuration file(SpeAnaLED.conf) and restart <strong>SpeAnaLED</strong>. (After that, enumerate sound device from setting dialog again.)</p>
+<p>If a problem occurs, first try deleting your configuration file(SpeAnaLED.conf) and restart <strong>SpeAnaLED</strong>. <strike>(After that, enumerate sound device from setting dialog again.)</strike></p>
 <p>Have fun music!</p>
 
 ## License

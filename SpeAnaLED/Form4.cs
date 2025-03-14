@@ -19,7 +19,6 @@ namespace SpeAnaLED
         public Pen streamPen, startPen;
         public int streamScrollUnit = 1;                            // 1 2 4?, For test
         public int streamChannelSpacing = 0;
-        private const int mdt = 8;                                  // mouse detect thickness (inner)
 
         // event handler (Fire)
         public event FormClosedEventHandler Form_Closed;
@@ -168,10 +167,10 @@ namespace SpeAnaLED
                 {
                     mouseDragStartPoint = new Point(e.X, e.Y);
 
-                    pinch.left = e.X < mdt;
-                    pinch.right = e.X > Width - mdt;
-                    pinch.top = e.Y < mdt;
-                    pinch.bottom = e.Y > Height - mdt;
+                    pinch.left = e.X < form1.mdt;
+                    pinch.right = e.X > Width - form1.mdt;
+                    pinch.top = e.Y < form1.mdt;
+                    pinch.bottom = e.Y > Height - form1.mdt;
                     inFormSizeChange = pinch.left || pinch.right || pinch.top || pinch.bottom;
                     if (!inFormSizeChange) Cursor = Cursors.SizeAll;
                 }
@@ -222,9 +221,9 @@ namespace SpeAnaLED
                     }
                 }
 
-                if (e.X < mdt || e.X > Width - mdt)
+                if (e.X < form1.mdt || e.X > Width - form1.mdt)
                     Cursor = Cursors.SizeWE;
-                else if (e.Y < mdt || e.Y > Height - mdt)
+                else if (e.Y < form1.mdt || e.Y > Height - form1.mdt)
                     Cursor = Cursors.SizeNS;
                 else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
                     Cursor = Cursors.Default;

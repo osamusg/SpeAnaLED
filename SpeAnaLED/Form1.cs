@@ -11,10 +11,10 @@ namespace SpeAnaLED
     public partial class Form1 : Form
     {
         [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
-        static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+        private static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
         [FlagsAttribute]
-        public enum EXECUTION_STATE : uint
+        private enum EXECUTION_STATE : uint
         {
             ES_SYSTEM_REQUIRED = 0x00000001,
             ES_DISPLAY_REQUIRED = 0x00000002,
@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        public readonly string relText = "Rel." + "25030718";
+        public readonly string relText = "Rel." + "25031323";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -63,7 +63,7 @@ namespace SpeAnaLED
         private int bottomPadding;
         private int barLeftPadding;
         private float spectrumWidthScale;
-        private int mdt;                    // mouse detect thickness (inner)
+        public int mdt;                    // mouse detect thickness (inner)
         
         // condition static
         public static bool inInit;
@@ -383,12 +383,12 @@ namespace SpeAnaLED
                 g[i] = Graphics.FromImage(canvas[i]);
                 g[i].InterpolationMode = InterpolationMode.HighQualityBicubic;
             }
-            for (int i = 0; i < numberOfBar * channel; i++)     // _spectumdata receiving from analizer is max16*2=32 byte L,R,L,R,...
+            for (int i = 0; i < numberOfBar * channel; i++)     // _spectumdata receiving from analizer is max32*2=64 byte L,R,L,R,...
             {
-                if (channel > 1) isRight = i % 2;               // even: left=0, odd: right=1, mono is always 0
+                if (channel > 1) isRight = i % 2;               // even: left=0=No, odd: right=1=Yes, mono is always 0
 
-                var posX = barLeftPadding + (i - isRight) / channel * (penWidth + barSpacing);          // horizontal position
-                var powY = (int)(analyzer.spectrumdata[i] / sensitivityRatio);                          // calculate drawing vertical length
+                float posX = barLeftPadding + (i - isRight) / channel * (penWidth + barSpacing);        // horizontal position
+                int powY = (int)(analyzer.spectrumdata[i] / sensitivityRatio);                          // calculate drawing vertical length
                 g[isRight].DrawLine(bgPen, posX, canvas[0].Height, posX, 0);                            // first, draw BG from bottom to top
                 powY = ((powY - dash) / dashUnit + 1) * dashUnit;                                       // calculate LED bounds
                 if (powY > 6)                                                                           // _spectrumdata 0x00 is powY = 6
@@ -423,33 +423,30 @@ namespace SpeAnaLED
 
             }   // numberOfBar forloop ended
 
-            for (int i = 0; i < channel; i++) g[i].Dispose();
-
+            g[0].Dispose();
             canvas[0].RotateFlip(flipLeft);     // Left or mono
+            Spectrum1.Image = canvas[0];        // mono/left=canvas[0]
 
-            if (channel > 1)                    // not mono
+            if (channel > 1)                    // Right, there is canvas[1] only in "Stereo"
             {
-                canvas[1].RotateFlip(flipRight);// Right, May be there is canvas[1] only in "Stereo"
-
-                Spectrum1.Image = canvas[0];    // even: left=canvas0, odd: right=canvas1
+                g[1].Dispose();
+                canvas[1].RotateFlip(flipRight);
                 Spectrum2.Image = canvas[1];
             }
-            else                                // mono
-                Spectrum1.Image = canvas[0];    // mono is always to canvas0
 
             level = analyzer.level;
-            DispatchAnalyzerLevelChanged?.Invoke(this, EventArgs.Empty);
+            DispatchAnalyzerLevelChanged?.Invoke(this, EventArgs.Empty);        // Dispatch form3 and form4 for level meter
 
-            if (peakCounter >= counterCycle)    // if peakhold=false, counter is used screen saver preventing, so add the counter
+            // reset peakhold
+            if (peakCounter >= counterCycle)    // if peakhold=false, counter is also used screen saver preventing, so add the counter always
             {
                 peakCounter = 0;                // reset when the specified number of rounds
-
-                for (int i = 0; i < numberOfBar * channel; i++) peakValue[i] = (int)(analyzer.spectrumdata[i] / sensitivityRatio);     // reset peak also
-                //for (int i = 0; i < maxChannel; i++) meterPeakValue[i] = level[i];        // right level peak is always shown
-
+                for (int i = 0; i < numberOfBar * channel; i++)
+                    peakValue[i] = (int)(analyzer.spectrumdata[i] / sensitivityRatio);      // reset peak also
                 displayOffCounter++;
             }
-            
+
+            // Screen saver prevention
             if (displayOffCounter > 90)
             {
                 if (form2.SSaverCheckBox.Checked)
@@ -517,7 +514,7 @@ namespace SpeAnaLED
             {
                 if (form2.HorizontalRadioButton.Checked)         // H-layout: need Labels
                 {
-                    Spectrum1.Width = Spectrum2.Width = (formW - borderSize * 2 - leftPadding * 2) / channel; // Spectrum.Width makes no difference with or without Labels
+                    Spectrum1.Width = Spectrum2.Width = (formW - borderSize * 2 - leftPadding * 2) / channel;   // Spectrum.Width makes no difference with or without Labels
                     Spectrum1.Height = Spectrum2.Height = formH - borderSize * 2 - titleHeight - topPadding - labelPadding - baseLabelHeight - bottomPadding;
                     Spectrum1.Top = Spectrum2.Top = topPadding;
                     Spectrum1.Left = leftPadding;
@@ -525,23 +522,27 @@ namespace SpeAnaLED
 
                     // only H-layout requires L Ch. labels
                     if (channel < 2) LocateFrequencyLabel(Spectrum1, freqLabel_Left, isFlip: false);
-                    else LocateFrequencyLabel(Spectrum1, freqLabel_Left, isFlip: form2.LeftFlipRadioButton.Checked);
+                    else
+                    {
+                        LocateFrequencyLabel(Spectrum1, freqLabel_Left, isFlip: form2.LeftFlipRadioButton.Checked);
+                        LocateFrequencyLabel(Spectrum2, freqLabel_Right, isFlip: form2.RightFlipRadioButton.Checked);
+                    }
                 }
                 else                                            // V-layout: need Labels
                 {
-                    Spectrum1.Width = Spectrum2.Width = formW - borderSize * 2 - leftPadding * 2;       // Spectrum.Width makes no difference with or without Labels
+                    Spectrum1.Width = Spectrum2.Width = formW - borderSize * 2 - leftPadding * 2;               // Spectrum.Width makes no difference with or without Labels
                     Spectrum1.Height = Spectrum2.Height = (formH - borderSize * 2 - titleHeight - topPadding - verticalSpacing * (channel - 1) - labelPadding - baseLabelHeight - bottomPadding) / channel;
                     Spectrum1.Top = topPadding;
                     Spectrum2.Top = Spectrum1.Bottom + verticalSpacing;
                     Spectrum1.Left = Spectrum2.Left = leftPadding;
 
                     if (channel < 2) LocateFrequencyLabel(Spectrum1, freqLabel_Left, isFlip: false);
-                    else for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Left[i].Visible = false;        // stereo V layout, not required left label
+                    else
+                    {
+                        for (int i = 0; i < maxNumberOfBar; i++) freqLabel_Left[i].Visible = false;             // stereo V layout, not required left label
+                        LocateFrequencyLabel(Spectrum2, freqLabel_Right, isFlip: false);                        // only case in stereo is visible
+                    }
                 }
-
-                // in case of V-layout, no requires L Ch. labels.
-                // Common process for V and H that requires labels for R Ch.  Consider Flip.
-                LocateFrequencyLabel(Spectrum2, freqLabel_Right, isFlip: form2.RightFlipRadioButton.Checked);     // but only case in stereo is visible
             }
             else        // cases not requiring Labels
             {
@@ -602,7 +603,7 @@ namespace SpeAnaLED
             for (int i = 0; i < maxNumberOfBar; i++)
             {
                 string labelText;
-                double freqvalues = Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.29);    // 4.29=Round(Log(20000hz, 2) - (in increments of)10, 2);
+                float freqvalues = (float)Math.Pow(2, i * 10.0 / (numberOfBar - 1) + 4.29);     // 4.29=Round(Log(20000hz, 2) - (in increments of)10, 2);
                 if (freqvalues > 10000)
                     labelText = (Math.Round(freqvalues / 1000, MidpointRounding.AwayFromZero)).ToString("0") + "k";    // "khz";
                 else if (freqvalues > 1000)
@@ -610,9 +611,9 @@ namespace SpeAnaLED
                 else if (freqvalues > 100 || numberOfBar < 32)
                     labelText = (Math.Round(freqvalues / 10, MidpointRounding.AwayFromZero) * 10).ToString("0");       // round -1
                 else
-                    labelText = freqvalues.ToString("0");
+                    labelText = freqvalues.ToString(" 0");
 
-                int j = isFlip ? numberOfBar - 1 - i : i;
+                    int j = isFlip ? numberOfBar - 1 - i : i;
 
                 if (i < numberOfBar)        // Only Bar exists
                 {
@@ -620,7 +621,7 @@ namespace SpeAnaLED
                     freqLabel[i].AutoSize = true;
                     freqLabel[i].Font = new Font("Arial", labelFontSize, FontStyle.Bold);
                     freqLabel[j].Text = labelText;
-                    int labelPos = (int)(spectrum.Left + (float)(barLeftPadding + i * (penWidth + barSpacing)) / (float)(barSpacing + numberOfBar * (penWidth + barSpacing)) * spectrum.Width) - (int)(baseLabelWidth / 2);
+                    int labelPos = (int)(spectrum.Left + (float)(barLeftPadding + i * (penWidth + barSpacing)) / (float)(barSpacing + numberOfBar * (penWidth + barSpacing)) * spectrum.Width) - (int)(baseLabelWidth / 3);
                     freqLabel[i].Left = labelPos;
                     freqLabel[i].Name = "freqlabel" + (j + 1).ToString();
                     freqLabel[i].Top = spectrum.Bottom + (labelPadding + bottomPadding) / 2 - freqLabel[i].Font.Height / 2;
@@ -675,7 +676,7 @@ namespace SpeAnaLED
                 if (form2.HideTitleCheckBox.Checked)
                 {
                     mouseDragStartPoint = new Point(e.X, e.Y);
-                    int _height, _width;// = sender == Spectrum2 ? Spectrum2.Width : this.Width;
+                    int _height, _width;
                     if (sender == Spectrum2)
                     {
                         _height = Spectrum2.Height;
@@ -1518,6 +1519,7 @@ namespace SpeAnaLED
 
         private void Form2_ExitAppButton_Click(object sender, EventArgs e)
         {
+            SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
             lastDefaultDevice = form2.DefaultDeviceName.Text;
             Application.Exit();
         }
@@ -1783,22 +1785,22 @@ namespace SpeAnaLED
             confWriter.AddValue("prisumPositions_16", strPrisumPosition[16]);
             confWriter.AddValue("prisumPositions_32", strPrisumPosition[32]);
 
-            string strClassicPosition = "";
+            string strClassicPosition = string.Empty;
             foreach (var item in classicPositions) strClassicPosition += item.ToString("0.00") + ",";
             strClassicPosition = strClassicPosition.Trim(',');
             confWriter.AddValue("classicPosition", strClassicPosition);
 
-            string strSimplePosition = "";
+            string strSimplePosition = string.Empty;
             foreach (var item in simplePositions) strSimplePosition += item.ToString("0.00") + ",";
             strSimplePosition = strSimplePosition.Trim(',');
             confWriter.AddValue("simplePosition", strSimplePosition);
 
-            string strAdjustMono = "";
+            string strAdjustMono = string.Empty;
             foreach (var item in form2.adjustTable[0]) strAdjustMono += item.ToString("0.00") + ",";
             strAdjustMono = strAdjustMono.Trim(',');
             confWriter.AddValue("adjustMono", strAdjustMono);
 
-            string strAdjustStereo = "";
+            string strAdjustStereo = string.Empty;
             foreach (var item in form2.adjustTable[1]) strAdjustStereo += item.ToString("0.00") + ",";
             strAdjustStereo = strAdjustStereo.Trim(',');
             confWriter.AddValue("adjustStereo", strAdjustStereo);

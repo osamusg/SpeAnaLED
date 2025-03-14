@@ -81,13 +81,14 @@ namespace SpeAnaLED
                     "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
                     "Bass.dll Initiallize Error - " + _form2.ProductName,
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation); ;
+                    MessageBoxIcon.Exclamation);
             }
             catch
             {
                 _form2.DefaultDeviceName.Text = "WASPI device not found.";
+                devicenumber = -1;
             }
-
+            
             inInit = false;
         }
 
@@ -190,10 +191,7 @@ namespace SpeAnaLED
         // timer
         private void Timer_Tick(object sender, EventArgs e)
         {
-            float[] tmp = new float[fft.Length];
-            if (BassWasapi.BASS_WASAPI_GetData(tmp, (int)DATAFLAG) < -1) return;    // get channel fft data (float[])
-            fft[0] = 0f;                                    // padding 0
-            Array.Copy(tmp, 0, fft, 1, tmp.Length - 1);     // I don't know why need this.
+            if (BassWasapi.BASS_WASAPI_GetData(fft, (int)DATAFLAG) < -1) return;        // get channel fft data (float[])
             int bandX, powerY;
             int fftPos = 0;     // buffer data position
             int freqValue = 1;
@@ -201,25 +199,21 @@ namespace SpeAnaLED
             // computes the spectrum data, the code is taken from a bass_wasapi sample.
             for (bandX = 0; bandX < _form2.numberOfBar; bandX++)
             {
-                float[] peak = new float[] { 0f, 0f };      // 0=Left(mono), 1=Right
-
+                float[] peak = new float[] { 0f, 0f };                                  // 0=Left(mono), 1=Right
                 freqValue = (int)(Math.Pow(2, (bandX * 10.0 / _form2.numberOfBar) + freqShift) * mixfreqMultiplyer);
+                if (freqValue <= fftPos) freqValue = fftPos + 1;                        // if out of range, min. freq. selected
+                if (freqValue > valueBase - channel) freqValue = valueBase - channel;   // truncate last data
 
-                if (freqValue <= fftPos) freqValue = fftPos + 1;                                            // if out of range, min. freq. selected
-                if (freqValue > valueBase - channel) freqValue = valueBase - channel;                       // truncate last data
-
-                for (; fftPos < freqValue; fftPos += channel)                                               // freq band in interreave step
+                for (; fftPos < freqValue; fftPos += channel)                           // freq band in interreave step
                 {
-                    for (int i = 0; i < channel; i++)                                                       // interreave L,R,L,R,... or L+R,L+R,L+R...
-                    {
-                        if (peak[0] < fft[1 + fftPos]) peak[0] = fft[1 + fftPos];                           // set max _fft[x] to peak     L Ch.
-                        if (peak[1] < fft[1 + fftPos + (channel - 1)]) peak[1] = fft[1 + fftPos + (channel - 1)];                       // R Ch.
-                    }
+                    // interreave L,R,L,R,... or L+R,L+R,L+R...
+                    if (peak[0] < fft[fftPos]) peak[0] = fft[fftPos];                   // set max fft[x] to peak      L Ch. or mono
+                    if (channel > 1 && peak[1] < fft[fftPos + (channel - 1)]) peak[1] = fft[fftPos + (channel - 1)];// R Ch.
                 }
 
                 for (int i = 0; i < channel; i++)
                 {
-                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                                       // sqrt to make low values more visible
+                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                    // sqrt to make low values more visible
                     if (powerY > 255) powerY = 255;
                     if (powerY < 0) powerY = 0;
                     spectrumdata.Add((byte)powerY);
