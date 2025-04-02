@@ -15,7 +15,7 @@ namespace SpeAnaLED
         private readonly Form2 _form2;
         private float[] fft;                            // buffer for fft data
         private int channel;                            // 1: "mixed-data"(mono) 2: L & R (stereo)
-        private int devicenumber;                       // device number
+        public int devicenumber;                        // device number
         private bool enable;                            // enabled status
         private bool initialized;                       // initialized flag
         public bool inInit = true;                      // in intializing flag
@@ -37,7 +37,6 @@ namespace SpeAnaLED
 
         // for fire
         public event EventHandler SpectrumChanged;
-        public event EventHandler NumberOfChannelChanged;
 
         public Analyzer(Form2 form2)
         {
@@ -71,9 +70,9 @@ namespace SpeAnaLED
 
                 if (devicenumber <= 0) 
                     throw new InvalidOperationException("Device not found");
-                var device = BassWasapi.BASS_WASAPI_GetDeviceInfo(devicenumber);
                 
                 Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATETHREADS, false);
+                
                 if (!Bass.BASS_Init(0, mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))             // "no sound" device for Bass.dll initialization
                     MessageBox.Show(
                     "Bass.dll can't be initialized.\r\n" +
@@ -92,7 +91,7 @@ namespace SpeAnaLED
             inInit = false;
         }
 
-        private void ReloadDefaultDevice(object sender, EventArgs e)
+        protected internal void ReloadDefaultDevice(object sender, EventArgs e)
         {
             _form2.DeviceReloadButton.Enabled =
             _form2.AutoReloadCheckBox.Enabled = false;
@@ -100,7 +99,7 @@ namespace SpeAnaLED
             initialized = false;
             Enable = false;
             Free();
-            devicenumber = -1;
+            devicenumber = 0;
 
             BASS_WASAPI_DEVICEINFO device;
             int deviceCount = BassWasapi.BASS_WASAPI_GetDeviceCount();
@@ -125,8 +124,15 @@ namespace SpeAnaLED
                     if (!inInit)
                     { 
                         if (!Bass.BASS_Init(0, mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))                 // need mixfreq here
-                            throw new Exception("Bass.dll Initialize Error\r\n" + "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString());
-                        Enable = true;
+                            MessageBox.Show(
+                                "Bass.dll can't be initialized.\r\n" +
+                                "(May be Device Power-SW off?)\r\n" +
+                                "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
+                                "Bass.dll Initiallize Error - " + _form2.ProductName,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Exclamation);
+                        else
+                            Enable = true;      // also set initialize = true
                     }
                     break;
                 }
@@ -213,7 +219,7 @@ namespace SpeAnaLED
 
                 for (int i = 0; i < channel; i++)
                 {
-                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                    // sqrt to make low values more visible
+                    powerY = (int)(Math.Sqrt(peak[i]) * 3 * 255 - 4);                   // sqrt to make low values more visible
                     if (powerY > 255) powerY = 255;
                     if (powerY < 0) powerY = 0;
                     spectrumdata.Add((byte)powerY);
@@ -260,11 +266,15 @@ namespace SpeAnaLED
             SetParamFromFreq(mixfreq);         // set _DATAFLAG and _mixfreqMulti
 
             if (!Bass.BASS_Init(0, mixfreq, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
-                throw new Exception("Bass.dll Initialize Error");
-            Enable = true;
-
-            // fire channel change event to form1
-            NumberOfChannelChanged?.Invoke(this, EventArgs.Empty);
+                MessageBox.Show(
+                    "Bass.dll can't be initialized.\r\n" +
+                    "Please try Reload Device\r\n" +
+                    "ERROR CODE: " + Bass.BASS_ErrorGetCode().ToString(),
+                    "Bass.dll Initiallize Error - " + _form2.ProductName,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+            else
+                Enable = true;      // also set initialize = true
         }
 
         // helper function
@@ -296,7 +306,7 @@ namespace SpeAnaLED
                 mixfreqMultiplyer = 48000f / freq * adjustTable[channel - 1][(int)Math.Log(_form2.numberOfBar, 2)];
                 valueBase = 16384 * channel;
             }
-            else                          // 320khz and above?
+            else                          // 320khz, 384khz  and above?
             {
                 DATAFLAG = channel > 1 ? BASSData.BASS_DATA_FFT32768 | BASSData.BASS_DATA_FFT_INDIVIDUAL : BASSData.BASS_DATA_FFT16384;
                 mixfreqMultiplyer = 48000f / freq * 2f * adjustTable[channel - 1][(int)Math.Log(_form2.numberOfBar, 2)];

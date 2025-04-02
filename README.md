@@ -11,7 +11,7 @@
     - In principle, it does not affect sound quality.
     - Conversely, the performance of your great playback device does not reflect.
 - **SpeAnaLED** screens can be re-sized, so you can reside on your PC desktop by putting it on your "Startup" folder.
-- **SpeAnaLED** is a tiny program. Its size of executable file is about 100KB itself, about 900KB including dlls. In the case of my 8 years old PC, CPU load is 0.1% or less, uses about 90MB process memory. No use of DirextX 2D, only GDI/GDI+ Win32API(System.Drawing(.Drawing2D)) is used.
+- **SpeAnaLED** is a tiny program. Its size of executable file is about 120KB itself, about 900KB including dlls. In the case of my 8 years old PC, CPU load is 0.1% or less, uses about 200MB process memory. No use of DirextX 2D, only GDI/GDI+ Win32API(System.Drawing(.Drawing2D)) is used.
 - Yes, this is a one of "Reinventing the wheel" project.
 
 ## Requirements
@@ -95,5 +95,6 @@
 
 Use of each DLL(library) must be in accordance with the respective license.
   
-## Win32 Executable binaries
-See "[Releases](https://github.com/osamusg/SpeAnaLED/releases)" on the right side.
+## Windows executable binaries
+See "[Releases](https://github.com/osamusg/SpeAnaLED/releases)" on the right side.<br />
+No digital signature is included in theses binaries yet. If this bothers you, go back, check the source code and build binaries yourself from it.

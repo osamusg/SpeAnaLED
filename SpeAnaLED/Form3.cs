@@ -67,8 +67,8 @@ namespace SpeAnaLED
             else
                 FormBorderStyle = FormBorderStyle.SizableToolWindow;
 
-            Width = form2.form3Width - (FormBorderStyle == FormBorderStyle.None ? form2.defaultBorderSize * 2 : 0);
-            Height = form2.form3Height - (FormBorderStyle == FormBorderStyle.None ? form2.defaultTitleHeight + form2.defaultBorderSize : 0);
+            Width = form2.form3Width - (FormBorderStyle != FormBorderStyle.None ? form2.defaultBorderSize * 2 : 0);
+            Height = form2.form3Height - (FormBorderStyle != FormBorderStyle.None ? form2.defaultTitleHeight + form2.defaultBorderSize : 0);
             Top = form2.form3Top;
             Left = form2.form3Left;
 
@@ -95,8 +95,8 @@ namespace SpeAnaLED
             Brush greenBrush = new SolidBrush(Color.FromArgb(96, 194, 96));
             Brush redBrush = new SolidBrush(Color.FromArgb(160, 0, 0));
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            g.DrawString("-        -20   -15    -10    -7      -5     -3     -1", panelFont, greenBrush, 30, 24);
-            g.DrawString("0     +1     +3     +5    +8", panelFont, redBrush, 276, 24);
+            g.DrawString("-        -20   -15   -10     -7      -5     -3     -1", panelFont, greenBrush, 30, 26);
+            g.DrawString("0     +1     +3     +5    +8", panelFont, redBrush, 276, 26);
             g.DrawString("L", panelFont, greenBrush, 10, 11);
             //g_client.DrawString("db", panelFont, greenBrush, 10, 24);
             g.DrawString("R", panelFont, greenBrush, 10, 38);
@@ -112,7 +112,7 @@ namespace SpeAnaLED
             g_Infinity.DrawString("8", new Font(panelFontName, 12f, FontStyle.Bold), brush, 0, 0);
             g_Infinity.Dispose();
 
-            g.DrawImage(infinityCanvas, 36, 27, (int)(infinityFontWidth * 1.2), 16);
+            g.DrawImage(infinityCanvas, 36, 29, (int)(infinityFontWidth * 1.2), 16);
             g.Dispose();
 
             FormPictureBox.Image = canvas;
@@ -125,13 +125,13 @@ namespace SpeAnaLED
             Graphics g = Graphics.FromImage(canvas);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             int[] level = new int[Form2.maxChannel];
-            int leftPadding = 30;
-            int rightPadding = 16;
-            int dottedline = 30;
-            int solidline = dottedline - 7/*blankBG*/;
-            int leftBarTop = 20;
-            int rightChPadding = 26;
-            int redzone = 240;
+            const int leftPadding = 30;
+            const int rightPadding = 16;
+            const int dottedline = 30;
+            const int solidline = dottedline - 7/*blankBG*/;
+            const int leftBarTop = 20;
+            const int rightChPadding = 26;
+            const int redzone = 240;
 
             level[0] = (int)((form1.level[0] * levelMeterSensitivity + 1) / dottedline) * dottedline;       // analyzer input point and calculate bounds
             level[1] = (int)((form1.level[1] * levelMeterSensitivity + 1) / dottedline) * dottedline;
@@ -174,10 +174,10 @@ namespace SpeAnaLED
             LevelPictureBox.Image = canvas;
             LevelPictureBox.BringToFront();
 
-            if (peakCounter >= form2.counterCycle)    // if peakhold=false, counter is used screen saver preventing, so add the counter
+            if (peakCounter >= form2.counterCycle)  // if peakhold=false, counter is used screen saver preventing, so add the counter
             {
-                peakCounter = 0;                // reset when the specified number of rounds
-                for (int i = 0; i < Form2.maxChannel; i++) meterPeakValue[i] = level[i];                                                      // right level peak is always shown
+                peakCounter = 0;                    // reset when the specified number of rounds
+                for (int i = 0; i < Form2.maxChannel; i++) meterPeakValue[i] = level[i];    // right level peak is always shown
             }
         }
 
@@ -237,9 +237,13 @@ namespace SpeAnaLED
         {
             if (FormBorderStyle == FormBorderStyle.None)
             {
-                int minWidth = 64;
-                int minHeight = 32;
-                
+                const int minWidth = 128;
+                const int minHeight = 39;
+
+                if (MinimumSize.Width > minWidth) MinimumSize = new Size(minWidth, MinimumSize.Height);
+                if (MinimumSize.Height > minHeight) MinimumSize = new Size(MinimumSize.Width, minHeight);
+                MinimumSize = new Size(minWidth, minHeight);
+
                 if (e.Button == MouseButtons.Left)
                 {
                     if (Cursor == Cursors.SizeWE)
@@ -247,13 +251,11 @@ namespace SpeAnaLED
                         if (pinch.left)
                         {
                             Width -= e.X - mouseDragStartPoint.X;
-                            if (Width < minWidth) Width = minWidth;
-                            else Left += e.X - mouseDragStartPoint.X;
+                            Left += e.X - mouseDragStartPoint.X;
                         }
                         else if (pinch.right)
                         {
                             Width = e.X;
-                            if (Width < minWidth) Width = minWidth;
                         }
                     }
                     else if (Cursor == Cursors.SizeNS)
@@ -261,13 +263,41 @@ namespace SpeAnaLED
                         if (pinch.top)
                         {
                             Height -= e.Y - mouseDragStartPoint.Y;
-                            if (Height < minHeight) Height = minHeight;
-                            else Top += e.Y - mouseDragStartPoint.Y;
+                            Top += e.Y - mouseDragStartPoint.Y;
                         }
                         else if (pinch.bottom)
                         {
                             Height = e.Y;
-                            if (Height < minHeight) Height = minHeight;
+                        }
+                    }
+                    else if (Cursor == Cursors.SizeNESW)
+                    {
+                        if (pinch.left && pinch.bottom)
+                        {
+                            Width -= e.X - mouseDragStartPoint.X;
+                            Left += e.X - mouseDragStartPoint.X;
+                            Height = e.Y;
+                        }
+                        else if (pinch.right && pinch.top)
+                        {
+                            Width = e.X;
+                            Height -= e.Y - mouseDragStartPoint.Y;
+                            Top += e.Y - mouseDragStartPoint.Y;
+                        }
+                    }
+                    else if (Cursor == Cursors.SizeNWSE)
+                    {
+                        if (pinch.right && pinch.bottom)
+                        {
+                            Width = e.X;
+                            Height = e.Y;
+                        }
+                        else if (pinch.left && pinch.top)
+                        {
+                            Width -= e.X - mouseDragStartPoint.X;
+                            Left += e.X - mouseDragStartPoint.X;
+                            Height -= e.Y - mouseDragStartPoint.Y;
+                            Top += e.Y - mouseDragStartPoint.Y;
                         }
                     }
                     else
@@ -277,12 +307,23 @@ namespace SpeAnaLED
                     }
                 }
 
-                if (e.X < form1.mdt || e.X > Width - form1.mdt)
-                    Cursor = Cursors.SizeWE;
-                else if (e.Y < form1.mdt || e.Y > Height - form1.mdt)
-                    Cursor = Cursors.SizeNS;
-                else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
-                    Cursor = Cursors.Default;
+                if (MouseButtons != MouseButtons.Left)
+                {
+                    if (e.X < form1.mdt && e.Y < form1.mdt)                         // LeftTop
+                        Cursor = Cursors.SizeNWSE;
+                    else if (e.X > Width - form1.mdt && e.Y < form1.mdt)            // RightTop
+                        Cursor = Cursors.SizeNESW;
+                    else if (e.X < form1.mdt && e.Y > Height - form1.mdt)           // LeftBottom
+                        Cursor = Cursors.SizeNESW;
+                    else if (e.X > Width - form1.mdt && e.Y > Height - form1.mdt)   // RightBottom
+                        Cursor = Cursors.SizeNWSE;
+                    else if (e.X < form1.mdt || e.X > Width - form1.mdt)
+                        Cursor = Cursors.SizeWE;
+                    else if (e.Y < form1.mdt || e.Y > Height - form1.mdt)
+                        Cursor = Cursors.SizeNS;
+                    else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
+                        Cursor = Cursors.Default;
+                }
             }
         }
 

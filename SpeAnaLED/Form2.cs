@@ -241,21 +241,30 @@ namespace SpeAnaLED
 
         }
 
-        private void EnumerateButton_Click(object sender, EventArgs e)
+        /*private void EnumerateButton_Click(object sender, EventArgs e)
         {
             ClearSpectrum?.Invoke(this, EventArgs.Empty);
         }
-
+        */
         private void DeviceReloadButton_Click(object sender, EventArgs e)
         {
-            DeviceReloadRequested?.Invoke(this, EventArgs.Empty);
             ClearSpectrum?.Invoke(this, EventArgs.Empty);
+            DeviceReloadRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void MonoRadioButton_CheckedChanged(object sender, EventArgs e)
         //private void StereoRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            channel = MonoRadioButton.Checked ? 1 : 2;
+            if (MonoRadioButton.Checked)
+            {
+                channel = 1;
+                //LevelStreamPanel.Enabled = false;
+            }
+            else
+            {
+                channel = 2;
+                //LevelStreamPanel.Enabled = true;
+            }
             counterCycle = (int)(peakHoldTimeMsec / timerIntervalMilliSeconds * numberOfBar * channel * cycleMultiplyer);
             NumberOfChannelChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -349,6 +358,14 @@ namespace SpeAnaLED
                 this.Visible = !this.Visible;
             else if (e.KeyCode == Keys.P)
                 SSaverCheckBox.Checked = !SSaverCheckBox.Checked;
+            else if (e.KeyCode == Keys.Left && (Form)sender != this)
+                ((Form)sender).Left -= 1;
+            else if (e.KeyCode == Keys.Right && (Form)sender != this)
+                ((Form)sender).Left += 1;
+            else if (e.KeyCode == Keys.Up && (Form)sender != this)
+                ((Form)sender).Top -= 1;
+            else if (e.KeyCode == Keys.Down && (Form)sender != this)
+                ((Form)sender).Top += 1;
             else if (e.KeyCode == Keys.D)
             {
                 DeviceReloadRequested?.Invoke(this, EventArgs.Empty);
@@ -358,7 +375,7 @@ namespace SpeAnaLED
             {
                 var result = MessageBox.Show(
                 "Quit?",
-                "Quit",
+                ProductName,
                 MessageBoxButtons.OKCancel,
                 MessageBoxIcon.Question
                 );

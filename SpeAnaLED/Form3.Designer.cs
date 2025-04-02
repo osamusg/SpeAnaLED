@@ -40,8 +40,7 @@
             // LevelPictureBox
             // 
             this.LevelPictureBox.BackColor = System.Drawing.Color.Transparent;
-            this.LevelPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.LevelPictureBox.Location = new System.Drawing.Point(-1, 29);
+            this.LevelPictureBox.Location = new System.Drawing.Point(0, 30);
             this.LevelPictureBox.Name = "LevelPictureBox";
             this.LevelPictureBox.Size = new System.Drawing.Size(223, 22);
             this.LevelPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -92,7 +91,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(436, 63);
+            this.ClientSize = new System.Drawing.Size(436, 64);
             this.Controls.Add(this.LevelPictureBox);
             this.Controls.Add(this.RightValueLabel);
             this.Controls.Add(this.LeftValueLabel);
@@ -101,7 +100,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(144, 48);
+            this.MinimumSize = new System.Drawing.Size(128, 39);
             this.Name = "Form3";
             this.ShowInTaskbar = false;
             this.Text = "Level Meter - SpeAnaLED";

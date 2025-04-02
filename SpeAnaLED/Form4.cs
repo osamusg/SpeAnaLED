@@ -32,10 +32,11 @@ namespace SpeAnaLED
 
             // subscribe
             form2.CombineStreamRadioButton.CheckedChanged += Form2_CombineStreamRadioButton_CheckedChanged;
-            form2.SeparateStreamRadioButton.CheckedChanged += Form2_CombineStreamRadioButton_CheckedChanged;
             form2.StreamColorButton.Click += Form2_StreamColorButton_Click;
             form2.AlfaChannelChanged += Form2_AlfaChannelChanged;
+            //form2.MonoRadioButton.CheckedChanged += Form4_SizeChanged;
             form1.DispatchAnalyzerLevelChanged += Form1_ReceiveSpectrumData;
+            //form1.SpectrumCleared += Form4_SizeChanged;
 
             Form4_SizeChanged(this, EventArgs.Empty);
 
@@ -50,8 +51,8 @@ namespace SpeAnaLED
             else
                 FormBorderStyle = FormBorderStyle.SizableToolWindow;
 
-            Width = form2.form4Width - (FormBorderStyle == FormBorderStyle.None ? form2.defaultBorderSize * 2 : 0);
-            Height = form2.form4Height - (FormBorderStyle == FormBorderStyle.None ? form2.defaultTitleHeight + form2.defaultBorderSize : 0);
+            Width = form2.form4Width - (FormBorderStyle == FormBorderStyle.None ? 0 : form2.defaultBorderSize * 2);
+            Height = form2.form4Height - (FormBorderStyle == FormBorderStyle.None ? 0 : form2.defaultTitleHeight + form2.defaultBorderSize);
             Top = form2.form4Top;
             Left = form2.form4Left;
 
@@ -128,12 +129,16 @@ namespace SpeAnaLED
             streamPen.Color = Color.FromArgb(Int16.Parse(form2.AlfaTextBox.Text), streamPen.Color.R, streamPen.Color.G, streamPen.Color.B);
         }
 
-        protected internal void Form4_SizeChanged(object sender, EventArgs e)
+        private void Form4_SizeChanged(object sender, EventArgs e)
         {
             if (Form1.inLayout) return;
             StreamPictureBox.Top = StreamPictureBox.Left = 0;
             StreamPictureBox.Size = new Size(ClientSize.Width, ClientSize.Height);
+            //if (form2.MonoRadioButton.Checked)
+            //    streamCombineMode = 1;
+            //else
             streamCombineMode = form2.CombineStreamRadioButton.Checked ? 1 : 2;
+            
             for (int i = 0; i < streamCombineMode; i++)
             {
                 streamBaseLine[i] = ((StreamPictureBox.Height - 1) - streamChannelSpacing) / Form2.maxChannel / streamCombineMode;
@@ -181,9 +186,13 @@ namespace SpeAnaLED
         {
             if (FormBorderStyle == FormBorderStyle.None)
             {
-                int minWidth = 64;
-                int minHeight = 32;
-                
+                int minWidth = 128;
+                int minHeight = 39;
+
+                if (MinimumSize.Width > minWidth) MinimumSize = new Size(minWidth, MinimumSize.Height);
+                if (MinimumSize.Height > minHeight) MinimumSize = new Size(MinimumSize.Width, minHeight);
+                MinimumSize = new Size(minWidth, minHeight);
+
                 if (e.Button == MouseButtons.Left)
                 {
                     if (Cursor == Cursors.SizeWE)
@@ -191,13 +200,11 @@ namespace SpeAnaLED
                         if (pinch.left)
                         {
                             Width -= e.X - mouseDragStartPoint.X;
-                            if (Width < minWidth) Width = minWidth;
-                            else Left += e.X - mouseDragStartPoint.X;
+                            Left += e.X - mouseDragStartPoint.X;
                         }
                         else if (pinch.right)
                         {
                             Width = e.X;
-                            if (Width < minWidth) Width = minWidth;
                         }
                     }
                     else if (Cursor == Cursors.SizeNS)
@@ -205,13 +212,41 @@ namespace SpeAnaLED
                         if (pinch.top)
                         {
                             Height -= e.Y - mouseDragStartPoint.Y;
-                            if (Height < minHeight) Height = minHeight;
-                            else Top += e.Y - mouseDragStartPoint.Y;
+                            Top += e.Y - mouseDragStartPoint.Y;
                         }
                         else if (pinch.bottom)
                         {
                             Height = e.Y;
-                            if (Height < minHeight) Height = minHeight;
+                        }
+                    }
+                    else if (Cursor == Cursors.SizeNESW)
+                    {
+                        if (pinch.left && pinch.bottom)
+                        {
+                            Width -= e.X - mouseDragStartPoint.X;
+                            Left += e.X - mouseDragStartPoint.X;
+                            Height = e.Y;
+                        }
+                        else if (pinch.right && pinch.top)
+                        {
+                            Width = e.X;
+                            Height -= e.Y - mouseDragStartPoint.Y;
+                            Top += e.Y - mouseDragStartPoint.Y;
+                        }
+                    }
+                    else if (Cursor == Cursors.SizeNWSE)
+                    {
+                        if (pinch.right && pinch.bottom)
+                        {
+                            Width = e.X;
+                            Height = e.Y;
+                        }
+                        else if (pinch.left && pinch.top)
+                        {
+                            Width -= e.X - mouseDragStartPoint.X;
+                            Left += e.X - mouseDragStartPoint.X;
+                            Height -= e.Y - mouseDragStartPoint.Y;
+                            Top += e.Y - mouseDragStartPoint.Y;
                         }
                     }
                     else
@@ -221,12 +256,23 @@ namespace SpeAnaLED
                     }
                 }
 
-                if (e.X < form1.mdt || e.X > Width - form1.mdt)
-                    Cursor = Cursors.SizeWE;
-                else if (e.Y < form1.mdt || e.Y > Height - form1.mdt)
-                    Cursor = Cursors.SizeNS;
-                else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
-                    Cursor = Cursors.Default;
+                if (MouseButtons != MouseButtons.Left)
+                {
+                    if (e.X < form1.mdt && e.Y < form1.mdt)                         // LeftTop
+                        Cursor = Cursors.SizeNWSE;
+                    else if (e.X > Width - form1.mdt && e.Y < form1.mdt)            // RightTop
+                        Cursor = Cursors.SizeNESW;
+                    else if (e.X < form1.mdt && e.Y > Height - form1.mdt)           // LeftBottom
+                        Cursor = Cursors.SizeNESW;
+                    else if (e.X > Width - form1.mdt && e.Y > Height - form1.mdt)   // RightBottom
+                        Cursor = Cursors.SizeNWSE;
+                    else if (e.X < form1.mdt || e.X > Width - form1.mdt)
+                        Cursor = Cursors.SizeWE;
+                    else if (e.Y < form1.mdt || e.Y > Height - form1.mdt)
+                        Cursor = Cursors.SizeNS;
+                    else if (Cursor != Cursors.SizeAll && e.Button == MouseButtons.None)
+                        Cursor = Cursors.Default;
+                }
             }
         }
 

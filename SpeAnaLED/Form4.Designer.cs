@@ -71,7 +71,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(144, 64);
+            this.MinimumSize = new System.Drawing.Size(128, 32);
             this.Name = "Form4";
             this.ShowInTaskbar = false;
             this.Text = "Level Stream - SpeAnaLED";

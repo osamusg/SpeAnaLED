@@ -50,6 +50,7 @@
             this.PeakholdCheckBox = new System.Windows.Forms.CheckBox();
             this.SSaverCheckBox = new System.Windows.Forms.CheckBox();
             this.ChannelLayoutGroup = new System.Windows.Forms.GroupBox();
+            this.VerticalFlipCheckBox = new System.Windows.Forms.CheckBox();
             this.FlipGroup = new System.Windows.Forms.GroupBox();
             this.NoFlipRadioButton = new System.Windows.Forms.RadioButton();
             this.RightFlipRadioButton = new System.Windows.Forms.RadioButton();
@@ -89,10 +90,10 @@
             this.NumberOfBarLabel = new System.Windows.Forms.Label();
             this.DefaultDeviceName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.VerticalFlipCheckBox = new System.Windows.Forms.CheckBox();
             this.RefreshNormalRadio = new System.Windows.Forms.RadioButton();
             this.RefreshFastRadio = new System.Windows.Forms.RadioButton();
             this.RefreshModeGroupBox = new System.Windows.Forms.GroupBox();
+            this.TaskTrayCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             this.SpectrumColorShemeGroupBox.SuspendLayout();
             this.SpectrumSensitivityGroupBox.SuspendLayout();
@@ -363,6 +364,17 @@
             this.ChannelLayoutGroup.TabStop = false;
             this.ChannelLayoutGroup.Text = "Spectrum Channel Layout";
             // 
+            // VerticalFlipCheckBox
+            // 
+            this.VerticalFlipCheckBox.AutoSize = true;
+            this.VerticalFlipCheckBox.Enabled = false;
+            this.VerticalFlipCheckBox.Location = new System.Drawing.Point(46, 43);
+            this.VerticalFlipCheckBox.Name = "VerticalFlipCheckBox";
+            this.VerticalFlipCheckBox.Size = new System.Drawing.Size(116, 19);
+            this.VerticalFlipCheckBox.TabIndex = 28;
+            this.VerticalFlipCheckBox.Text = "R.ch Vertical Flip";
+            this.VerticalFlipCheckBox.UseVisualStyleBackColor = true;
+            // 
             // FlipGroup
             // 
             this.FlipGroup.Controls.Add(this.NoFlipRadioButton);
@@ -578,7 +590,7 @@
             this.HideSpectrumWindowCheckBox.AutoSize = true;
             this.HideSpectrumWindowCheckBox.Enabled = false;
             this.HideSpectrumWindowCheckBox.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HideSpectrumWindowCheckBox.Location = new System.Drawing.Point(221, 200);
+            this.HideSpectrumWindowCheckBox.Location = new System.Drawing.Point(44, 241);
             this.HideSpectrumWindowCheckBox.Name = "HideSpectrumWindowCheckBox";
             this.HideSpectrumWindowCheckBox.Size = new System.Drawing.Size(139, 18);
             this.HideSpectrumWindowCheckBox.TabIndex = 55;
@@ -589,7 +601,7 @@
             // 
             this.LevelMeterCheckBox.AutoSize = true;
             this.LevelMeterCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LevelMeterCheckBox.Location = new System.Drawing.Point(206, 181);
+            this.LevelMeterCheckBox.Location = new System.Drawing.Point(29, 222);
             this.LevelMeterCheckBox.Name = "LevelMeterCheckBox";
             this.LevelMeterCheckBox.Size = new System.Drawing.Size(88, 19);
             this.LevelMeterCheckBox.TabIndex = 56;
@@ -689,7 +701,7 @@
             // 
             // StreamColorButton
             // 
-            this.StreamColorButton.Font = new System.Drawing.Font("Arial", 8F);
+            this.StreamColorButton.Font = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.StreamColorButton.Location = new System.Drawing.Point(4, 20);
             this.StreamColorButton.Name = "StreamColorButton";
             this.StreamColorButton.Size = new System.Drawing.Size(65, 19);
@@ -793,6 +805,7 @@
             // DefaultDeviceName
             // 
             this.DefaultDeviceName.BackColor = System.Drawing.SystemColors.Control;
+            this.DefaultDeviceName.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DefaultDeviceName.Location = new System.Drawing.Point(12, 28);
             this.DefaultDeviceName.Name = "DefaultDeviceName";
             this.DefaultDeviceName.ReadOnly = true;
@@ -809,17 +822,6 @@
             this.label2.TabIndex = 64;
             this.label2.Text = "label2(debug)";
             this.label2.Visible = false;
-            // 
-            // VerticalFlipCheckBox
-            // 
-            this.VerticalFlipCheckBox.AutoSize = true;
-            this.VerticalFlipCheckBox.Enabled = false;
-            this.VerticalFlipCheckBox.Location = new System.Drawing.Point(46, 43);
-            this.VerticalFlipCheckBox.Name = "VerticalFlipCheckBox";
-            this.VerticalFlipCheckBox.Size = new System.Drawing.Size(116, 19);
-            this.VerticalFlipCheckBox.TabIndex = 28;
-            this.VerticalFlipCheckBox.Text = "R.ch Vertical Flip";
-            this.VerticalFlipCheckBox.UseVisualStyleBackColor = true;
             // 
             // RefreshNormalRadio
             // 
@@ -850,7 +852,7 @@
             this.RefreshModeGroupBox.Controls.Add(this.RefreshFastRadio);
             this.RefreshModeGroupBox.Controls.Add(this.RefreshNormalRadio);
             this.RefreshModeGroupBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RefreshModeGroupBox.Location = new System.Drawing.Point(12, 211);
+            this.RefreshModeGroupBox.Location = new System.Drawing.Point(422, 420);
             this.RefreshModeGroupBox.Name = "RefreshModeGroupBox";
             this.RefreshModeGroupBox.Size = new System.Drawing.Size(185, 49);
             this.RefreshModeGroupBox.TabIndex = 58;
@@ -858,12 +860,24 @@
             this.RefreshModeGroupBox.Text = "Refresh Mode";
             this.RefreshModeGroupBox.Visible = false;
             // 
+            // TaskTrayCheckBox
+            // 
+            this.TaskTrayCheckBox.AutoSize = true;
+            this.TaskTrayCheckBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TaskTrayCheckBox.Location = new System.Drawing.Point(206, 182);
+            this.TaskTrayCheckBox.Name = "TaskTrayCheckBox";
+            this.TaskTrayCheckBox.Size = new System.Drawing.Size(143, 19);
+            this.TaskTrayCheckBox.TabIndex = 65;
+            this.TaskTrayCheckBox.Text = "Store in the Task Tray";
+            this.TaskTrayCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 599);
             this.ControlBox = false;
+            this.Controls.Add(this.TaskTrayCheckBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.DefaultDeviceName);
             this.Controls.Add(this.LevelStreamPanel);
@@ -994,5 +1008,6 @@
         protected internal System.Windows.Forms.RadioButton RefreshNormalRadio;
         protected internal System.Windows.Forms.RadioButton RefreshFastRadio;
         private System.Windows.Forms.GroupBox RefreshModeGroupBox;
+        protected internal System.Windows.Forms.CheckBox TaskTrayCheckBox;
     }
 }
