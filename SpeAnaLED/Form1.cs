@@ -22,7 +22,7 @@ namespace SpeAnaLED
             ES_CONTINUOUS = 0X80000000,
         }
 
-        public readonly string relText = "Rel." + "25040221";
+        public readonly string relText = "Rel." + "25042016";
         private readonly Analyzer analyzer;
         private readonly Form2 form2 = null;
         private Form3 form3 = null;
@@ -286,18 +286,14 @@ namespace SpeAnaLED
                 endPointY = 0;
                 form2.RainbowFlipCheckBox.Enabled = true;
             }
+
             // set Gradient color pen
-            if (!form2.RainbowRadioButton.Checked)
-            {
-                brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
-                { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
-            }
-            else if (!rainbowFlip)              // Blue -> Red
+            if (form2.RainbowRadioButton.Checked && !rainbowFlip)              // Blue -> Red
             {
                 brush = new LinearGradientBrush(new Point(endPointX, endPointY), new Point(0, 0), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                 { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
             }
-            else                                // Red -> Blue
+            else
             {
                 brush = new LinearGradientBrush(new Point(0, 0), new Point(endPointX, endPointY), Color.FromArgb(255, 0, 0), Color.FromArgb(0, 0, 255))
                 { InterpolationColors = new ColorBlend() { Colors = colors, Positions = positions } };
@@ -684,13 +680,15 @@ namespace SpeAnaLED
             if (e.Button == MouseButtons.Right)
                 AppContextMenuStrip.Show();
             else if (e.Button == MouseButtons.Left)
-                Activate();
+                this.WindowState = FormWindowState.Normal;
+            Activate();
         }
 
         private void ConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!form2.Visible)
                 form2.Visible = true;
+            form2.Activate();
         }
 
         private void SpectrumToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1341,19 +1339,23 @@ namespace SpeAnaLED
                     form3.Visible = false;
                 if (form2.LevelStreamCheckBox.Checked)
                     form4.Visible = false;
+                this.WindowState = FormWindowState.Normal;
+
                 if (form2.TaskTrayCheckBox.Checked)
                 {
-                    form2.ShowInTaskbar = this.ShowInTaskbar = false;
+                    this.ShowInTaskbar = false;
+                    form2.ShowInTaskbar = false;
                     NotifyIcon.Visible = true;
                     //NotifyIcon.ShowBalloonTip(1000, ProductName, ProductName + " is running in the background.", ToolTipIcon.Info);
-                    if (this.Visible) Activate();
                 }
                 else
                 {
-                    form2.ShowInTaskbar = this.ShowInTaskbar = true;
+                    this.ShowInTaskbar = true;
+                    form2.ShowInTaskbar = true;
                     NotifyIcon.Visible = false;
-                    if (this.Visible) Activate();
                 }
+                Activate();
+                
                 Screen screen = Screen.FromPoint(new Point(this.Left, this.Top));
                 if (screen != Screen.PrimaryScreen)
                 {       // These are needed in case of different resolution in multi display
@@ -1364,15 +1366,13 @@ namespace SpeAnaLED
                     form4.Left += 1;
                     form4.Left -= 1;
                 }
+
                 if (!form2.HideSpectrumWindowCheckBox.Checked)
                     this.Visible = true;
                 if (form2.LevelMeterCheckBox.Checked)
                     form3.Visible = true;
                 if (form2.LevelStreamCheckBox.Checked)
                     form4.Visible = true;
-
-                form2.Activate();
-
             }
         }
 
@@ -1577,6 +1577,7 @@ namespace SpeAnaLED
 
                 titleHeight = 0;
                 borderSize = 0;
+                Form1_SizeChanged(this, EventArgs.Empty);
             }
             else
             {

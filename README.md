@@ -21,7 +21,7 @@
     - [bass.dll](http://www.un4seen.com/download.php?bass24) (Ver.2.4)
     - [basswasapi.dll](http://www.un4seen.com/download.php?basswasapi24) (Ver.2.4)
     - [Bass.NET.dll](https://www.nuget.org/api/v2/package/Bass.NetWrapper/2.4.12.5) (Ver.2.4.12.3 from [nuget.org](https://nuget.org). 2.4.17~ doesn't work with)
-- virtualdreams's
+- [virtualdreams](https://github.com/virtualdreams)'s
     - [ConfigFile.dll](https://www.nuget.org/packages/ConfigFile/1.0.9)
 - Sound card or device supports WASAPI
 - Software to play music supports WASAPI
